@@ -1,0 +1,9 @@
+
+# Here is a version ith variables:
+
+(f (f x)) = ((repeat f) x) 
+
+#show ((repeat (repeat %f)) %x) 
+
+variable f x 
+

@@ -1,0 +1,21 @@
+# A simple version where we learn some positive and negative and examine the properties of a new element
+# which is not constrained to be p or n
+
+
+True := (K K)
+True   != ((attract p1) p2)
+True   != ((attract p2) p1)
+True = ((attract p1) n1)
+True = ((attract p1) n2)
+True = ((attract p2) n1)
+True = ((attract p2) n2)
+
+True != ((attract n1) n2)
+True != ((attract n2) n1)
+True = ((attract n1) p1)
+True = ((attract n1) p2)
+True = ((attract n2) p1)
+True = ((attract n2) p2)
+
+# Give one example of a single interaction
+True = ((attract n1) x1)

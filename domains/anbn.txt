@@ -1,0 +1,18 @@
+unique start accept state_a state_aa state_aaa state_aaaa  state_b state_bb state_bbb state_bbbb
+unique a b
+
+state_a  = (a start)
+accept   = (b state_a)
+
+state_aa = (a state_a)
+state_b  = (b state_aa)
+accept   = (b state_b)
+
+state_aaa = (a state_aa)
+state_bb = (b state_aaa)
+state_b = (b state_bb)
+
+state_aaaa = (a state_aaa)
+state_bbb = (b state_aaaa)
+state_bb  = (b state_bbb)
+

@@ -1,0 +1,17 @@
+unique barak sasha malia michelle
+unique father mother sister husband wife
+
+
+barak = (father sasha)
+barak = (father malia)
+
+michelle = (mother sasha)
+michelle = (mother malia)
+
+sasha = (sister malia)
+malia = (sister sasha)
+
+barak = (husband michelle)
+michelle = (wife barak) 
+
+

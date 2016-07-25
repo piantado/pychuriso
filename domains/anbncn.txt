@@ -1,0 +1,28 @@
+unique start accept state_a state_aa state_aaa state_aaaa state_bbcc state_bcc state_cc state_c  state_bbbccc state_bbccc state_bccc state_ccc state_bbbbcccc state_bbbcccc state_bbcccc state_bcccc state_cccc
+unique a b c
+
+state_a  = (a start)
+state_c  = (b state_a)
+accept   = (c state_c)
+
+state_aa   = (a state_a)
+state_bbcc = (b state_aa)
+state_bcc  = (b state_bbcc)
+state_cc   = (b state_bcc)
+state_c    = (c state_cc)
+
+state_aaa   = (a state_aa)
+state_bbbccc = (b state_aaa)
+state_bbccc  = (b state_bbbccc)
+state_bccc  = (b state_bbccc)
+state_ccc   = (b state_bccc)
+state_cc    = (c state_ccc)
+
+state_aaaa   = (a state_aaa)
+state_bbbbcccc = (b state_aaaa)
+state_bbbcccc  = (b state_bbbbcccc)
+state_bbcccc  = (b state_bbbcccc)
+state_bcccc  = (b state_bbcccc)
+state_cccc   = (b state_bcccc)
+state_ccc    = (c state_cccc)
+

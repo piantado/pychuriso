@@ -1,0 +1,16 @@
+unique true false and or not
+
+true  = ((and true) true)
+
+false = ((and true) false)
+false = ((and false) true)
+false = ((and false) false)
+
+true  = ((or true) true)
+true  = ((or true) false)
+true  = ((or false) true)
+false = ((or false) false)
+
+false = (not true)
+true  = (not false)
+

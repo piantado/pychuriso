@@ -1,0 +1,37 @@
+# Build up cons, cdr, car
+
+# https://en.wikipedia.org/wiki/Cons
+#cons:   La.Lb.Lm.(m a b)
+#car:    def car z (z (p q p))
+#cdr:    def car z (z (p q q))
+
+# Maybe not necessary, but a good hint for searching
+unique car cons cdr 
+
+# If we want to fix this to have one value
+#define car ((S C K) I)
+#define car (K)
+
+%x = (car (cons %x %y)) 
+%y = (cdr (cons %x %y)) 
+
+show (car (cons %x (cons %y %z))) 
+show (cdr (cons %x (cons %y %z))) 
+
+show (car (cons (cons %y %z) %x)) 
+show (car (car (cons (cons %y %z) %x))) 
+
+show (car (cons (cons (cons %y %w) %z) %x)) 
+show (car (car (cons (cons (cons %y %w) %z) %x))) 
+show (car (car (car (cons (cons (cons %y %w) %z) %x)))) 
+
+variable %x %y %z
+
+
+
+
+
+
+
+
+

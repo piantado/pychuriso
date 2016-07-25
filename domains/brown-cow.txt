@@ -1,0 +1,17 @@
+
+unique True False
+unique brown cow is dangerous
+
+True  := (K K)
+False := K
+pair  := ((B C) (C I)) 
+
+False = (is-dangerous brown)
+False = (is-dangerous cow)
+True  = (is-dangerous (pair brown cow))
+
+True  = (is-brown brown)
+False = (is-brown cow)
+
+variable X
+True  = (is-brown (pair brown X)) 

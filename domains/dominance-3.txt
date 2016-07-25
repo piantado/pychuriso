@@ -1,0 +1,14 @@
+
+unique True a b c d
+True := (K K)
+
+True =  ((dom a) b)
+True =  ((dom a) c)
+True != ((dom b) a)
+True =  ((dom b) c)
+True =  ((dom b) d)
+True != ((dom c) a)
+True != ((dom c) b)
+True =  ((dom c) d)
+True != ((dom d) b)
+True != ((dom d) c)

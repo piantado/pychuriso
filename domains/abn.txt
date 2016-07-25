@@ -1,0 +1,14 @@
+unique accept state_a invalid start
+unique a b
+
+state_a  = (a start)
+accept   = (b state_a)
+
+state_a  = (a accept)
+
+invalid  = (b accept)
+invalid  = (a invalid)
+invalid  = (b invalid)
+
+
+

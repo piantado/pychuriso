@@ -1,0 +1,10 @@
+variable f
+
+# simple definition of the fixed point combinator, requiring equal traces
+
+(f (Y f)) ~= (Y f)
+
+
+
+
+
