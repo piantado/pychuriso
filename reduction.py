@@ -30,7 +30,7 @@ class LengthException(ReductionException):
     pass
 
 
-def reduce(s):
+def reduce_combinator(s):
     """
     Reduce a string s to normal form
     """
@@ -102,8 +102,8 @@ def reduce(s):
 
     return s
 
-def apply(f,x):
-    return reduce('.'+f+x)
+def app(f,x):
+    return reduce_combinator('.'+f+x)
 
 def update_defines(defined, facts):
     # go through the facts, pushing updates to defines
@@ -113,7 +113,7 @@ def update_defines(defined, facts):
     for f in facts:
         if f.op == '=': # we can only push equality constraints
             if f.rhs not in defined:
-                defined[f.rhs] = apply(defined[f.f], defined[f.x])
+                defined[f.rhs] = app(defined[f.f], defined[f.x])
         else:
             raise Exception("Cannot have anything other than = in update defines.")
 
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     for c in all_combinators():
         try:
-            rc = reduce(c)
+            rc = reduce_combinator(c)
             print is_normal_form(c), tostring(c), "->", tostring(rc)
             assert is_normal_form(rc), "*** Reduce should have returned normal form combinators"
         except ReductionException:

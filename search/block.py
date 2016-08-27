@@ -4,7 +4,7 @@ The dumbest and simplest search algorithm (mainly for debugging, checking): enum
 depth bound that is independent on each. This is dumb because depth n solutions re-search all of depth 1...(n-1) solutions.
 
 """
-from reduce import *
+from reduction import *
 from misc import is_gensym
 from combinators import all_combinators
 from SimpleFact import SimpleFact
@@ -49,7 +49,7 @@ def search_(partial, facts, unique, max_depth, show=False):
         else:
             # f0.f and f0.x are defined, but f0.partial is not, so push and recurse
             try:
-                v = apply(partial[f0.f], partial[f0.x])
+                v = app(partial[f0.f], partial[f0.x])
                 assert is_normal_form(v)
 
                 if f0.op != '=':

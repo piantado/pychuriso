@@ -14,10 +14,9 @@ Options:
 
 from search.simplex import search
 from parser import parse_source
-from reduce import tostring, apply, update_defines, ReductionException
+from reduction import tostring,  update_defines, ReductionException
 from programs import is_normal_form
 from misc import is_gensym
-import reduce
 from copy import deepcopy
 from SimpleFact import compute_complexity
 
@@ -73,7 +72,7 @@ def display_winner(partial, variables, facts, shows):
 
 
 def order_facts(start, facts):
-    """ Come up with an ordering of facts """
+    """ Come up with an ordering of facts. For now just greedy """
 
     defined = set(start.keys())
     ofacts = [] # ordered version

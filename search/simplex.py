@@ -9,7 +9,7 @@ NOTE: This is still inefficient because it re-searches early strings
 
 """
 
-from reduce import *
+from reduction import *
 from misc import is_gensym
 from combinators import combinators_at_depth, get_depth
 from SimpleFact import SimpleFact, compute_complexity
@@ -70,7 +70,7 @@ def search_(partial, facts, unique, depth, show=False):
             if f0.op == '=':
 
                 try:
-                    v = apply(partial[f0.f], partial[f0.x])
+                    v = app(partial[f0.f], partial[f0.x])
 
                     if check_unique(partial, unique, f0.rhs, v):
                         # print "Pushing %s := %s" % (f0.rhs, v)
@@ -91,7 +91,7 @@ def search_(partial, facts, unique, depth, show=False):
                 raise Exception("Cannot push non-equality constraint")
             elif f0.op == '~=':  #partial eval
                 try:
-                    v = apply(partial[f0.f], partial[f0.x])
+                    v = app(partial[f0.f], partial[f0.x])
                 except ReductionException as r:
                     v = r
 
