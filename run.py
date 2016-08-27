@@ -1,9 +1,9 @@
 """A Python implementation of churiso and binary lambda calculus
 
+Options:
 Usage:
     pychuriso.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
-Options:
     -v --verbose                  Display the search incrementally (used for debugging).
     --search-basis=<combinators>  The search basis [default: ISKBC].
     --show-gs                     Show the auxiliary gs variables

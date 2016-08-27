@@ -1,4 +1,4 @@
-from reduce import apply, ReductionException
+from reduction import app, ReductionException
 
 PARTIAL_LEN = 20 # In ~= comparison, how many chars do we compare?
 
@@ -22,17 +22,17 @@ class SimpleFact(object):
         """ Return true if the solution satisfies this fact """
         if self.op == '=':
             try:
-                return apply(solution[self.f], solution[self.x]) == solution[self.rhs]
+                return app(solution[self.f], solution[self.x]) == solution[self.rhs]
             except ReductionException:
                 return False
         elif self.op == '!=':
             try:
-                return apply(solution[self.f], solution[self.x]) != solution[self.rhs]
+                return app(solution[self.f], solution[self.x]) != solution[self.rhs]
             except ReductionException:
                 return False
         elif self.op == "~=": # partial evaluation, allowing non-halting computation
             try: # try this and store the value (partial computation) if we get an exception
-                lhs = apply(solution[self.f], solution[self.x])
+                lhs = app(solution[self.f], solution[self.x])
             except ReductionException as r:
                 lhs = r.value
 
