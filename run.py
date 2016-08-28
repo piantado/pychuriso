@@ -19,19 +19,17 @@ from programs import is_normal_form
 from misc import is_gensym
 from copy import deepcopy
 from SimpleFact import compute_complexity
-
-from random import shuffle
+import reduction
 
 TOTAL_SOLUTION_COUNT = 0
-
 
 def get_reduction_count(soln, facts):
     """ How many total reductions does it take? """
 
-    start = reduce.GLOBAL_REDUCE_COUNTER
+    start = reduction.GLOBAL_REDUCE_COUNTER
     for f in facts:
-        f.check(soln) # run all of the applies
-    return reduce.GLOBAL_REDUCE_COUNTER - start
+        assert f.check(soln), f  # run all of the applies
+    return reduction.GLOBAL_REDUCE_COUNTER - start
 
 def display_winner(partial, variables, facts, shows):
     """ Display a solution. This is zero-delimited so we can sort -z, with run times and lengths at the top """

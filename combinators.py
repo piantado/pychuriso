@@ -1,4 +1,4 @@
-MAX_CACHE=11 # cache all combinators up to this length
+MAX_CACHE=8 # cache all combinators up to this length
 
 # this is used for reading in the search basis
 combinator2program = {'S':'S',

@@ -20,54 +20,51 @@ def search_(partial, facts, unique, max_depth, show=False):
     else:
 
         f0 = facts[0]
+        f, x, y = f0.f, f0.x, f0.rhs  # (f x) = y
 
-        if f0.f not in partial:
-
-            for v in all_combinators(max_depth=max_depth, normal=True):
-                if check_unique(partial, unique, f0.f, v):
-                    partial[f0.f] = v # add this and recurse
-                    for s in search_(partial, facts, unique, max_depth, show=show):
-                        yield s
-                    del partial[f0.f]
-
-        elif f0.x not in partial:
+        if f not in partial:
 
             for v in all_combinators(max_depth=max_depth, normal=True):
-                if check_unique(partial, unique, f0.x, v):
-                    partial[f0.x] = v # add this and recurse
+                if check_unique(partial, unique, f, v):
+                    partial[f] = v # add this and recurse
                     for s in search_(partial, facts, unique, max_depth, show=show):
                         yield s
-                    del partial[f0.x]
+                    del partial[f]
 
-        elif f0.rhs in partial: # this is defined, so either accept or not depending on the op
+        elif x not in partial:
+            for v in all_combinators(max_depth=max_depth, normal=True):
+                if check_unique(partial, unique, x, v):
+                    partial[x] = v # add this and recurse
+                    for s in search_(partial, facts, unique, max_depth, show=show):
+                        yield s
+                    del partial[x]
+
+        elif y in partial: # this is defined, so either accept or not depending on the op
 
             if f0.check(partial):
-                for s in search_(partial, facts[1:], unique, depth=depth, show=show):
+                for s in search_(partial, facts[1:], unique, max_depth, show=show):
                     yield s
 
 
         else:
-            # f0.f and f0.x are defined, but f0.partial is not, so push and recurse
+            # f,x defined but y is not, so push and recurse
             try:
-                v = app(partial[f0.f], partial[f0.x])
-                assert is_normal_form(v)
-
+                v = app(partial[f], partial[x])
+                
                 if f0.op != '=':
                     raise Exception("Cannot push non-equality constraint")
 
-                if check_unique(partial, unique, f0.rhs, v):
+                if check_unique(partial, unique, y, v):
 
-                    partial[f0.rhs] = v
-
-                    for s in search_(partial, facts[1:], unique, max_depth=max_depth, show=show):
+                    partial[y] = v
+                    for s in search_(partial, facts[1:], unique, max_depth, show=show):
                         yield s
-
-                    del partial[f0.rhs]
+                    del partial[y]
 
             except ReductionException:
 
-                if f0.rhs in partial: # hmm needed? In case we get a reduction exception? O
-                    del partial[f0.rhs]
+                if y in partial: # hmm needed? In case we get a reduction exception? O
+                    del partial[y]
 
                 pass
 

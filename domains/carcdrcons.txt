@@ -12,21 +12,10 @@ unique car cons cdr
 #define car ((S C K) I)
 #define car (K)
 
-%x = (car (cons %x %y)) 
-%y = (cdr (cons %x %y)) 
+x = (car (cons x y)) 
+y = (cdr (cons x y)) 
 
-show (car (cons %x (cons %y %z))) 
-show (cdr (cons %x (cons %y %z))) 
-
-show (car (cons (cons %y %z) %x)) 
-show (car (car (cons (cons %y %z) %x))) 
-
-show (car (cons (cons (cons %y %w) %z) %x)) 
-show (car (car (cons (cons (cons %y %w) %z) %x))) 
-show (car (car (car (cons (cons (cons %y %w) %z) %x)))) 
-
-variable %x %y %z
-
+variable x y 
 
 
 
