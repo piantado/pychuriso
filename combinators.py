@@ -5,9 +5,10 @@ combinator2program = {'S':'S',
                       'K':'K',
                       'I':'..SKK',
                       'B':'..S.KSK',
-                      'C':'..S.K..S.K..SS.KKKS'}
+                      'C':'..S.K..S.K..SS.KKKS',
+                      'E':'E'}
 
-SEARCH_BASIS = ['S', 'K'] # what we use to search for combinators
+SEARCH_BASIS = ['S', 'K', 'E'] # what we use to search for combinators
 
 from programs import is_normal_form
 

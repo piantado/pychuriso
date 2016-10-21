@@ -88,6 +88,23 @@ def reduce_combinator(s):
 
                 stepped = True
                 break
+            if i+9<=end and s[i:i+5]=='....E': #AAAAExyab -> if x==y: a else b
+
+                x, xend = next_chunk(s, i+5)
+                y, yend = next_chunk(s, xend+1)
+                a, aend = next_chunk(s, yend+1)
+                b, bend = next_chunk(s, aend+1)
+
+                if reduce_combinator(x)==reduce_combinator(y):
+                    s = s[:i] + a + s[bend+1:]
+                else:
+                    s = s[:i] + b + s[bend+1:]
+
+                stepped = True
+                break
+
+
+
 
         if not stepped:
            break
@@ -123,13 +140,13 @@ def update_defines(defined, facts):
 if __name__ == "__main__":
     from combinators import all_combinators
 
-    for c in all_combinators():
+    '''for c in all_combinators():
         try:
             rc = reduce_combinator(c)
             print is_normal_form(c), tostring(c), "->", tostring(rc)
             assert is_normal_form(rc), "*** Reduce should have returned normal form combinators"
         except ReductionException:
-            print "*ReductionException*"
+            print "*ReductionException*"'''
     #
     # print reduce('AAASAASSSKK')
     # print reduce('AAASxyzww')
@@ -137,5 +154,14 @@ if __name__ == "__main__":
     # print reduce('AAASxyz')
     #
     # print reduce('qqAAASxyzww')
+    print reduce_combinator('.....SKSKxy')
+    print reduce_combinator('..Kxy')
+    print reduce_combinator('....E.....SKKKxy..Kxyab')
+    print reduce_combinator('....E.....SKSKxy..Kxyab')
+    print reduce_combinator('....E.....KxySxyzab')
+    print reduce_combinator('....E.......KxySxyzKxySxyz')
+
+
+
 
 
