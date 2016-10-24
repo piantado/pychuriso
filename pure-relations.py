@@ -5,7 +5,7 @@ Usage:
     run.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
     -v --verbose                  Display the search incrementally (used for debugging).
-    --search-basis=<combinators>  The search basis [default: ISKBC].
+    --search-basis=<combinators>  The search basis [default: ISKBCE].
     --show-gs                     Show the auxiliary gs variables
     --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 20].
     --max-find=<int>              Exit if you find this many combinators [default: 10000].
@@ -61,7 +61,7 @@ if __name__ == "__main__":
                 l  =  sum(len(v) for v in solution.values())
                 rc = get_reduction_count(solution, facts)
 
-                print "#", l, rc, solution
+                #print "#", l, rc, solution
 
                 for gi, g in enumerate(generalizations):
                     d = deepcopy(solution)
@@ -71,7 +71,10 @@ if __name__ == "__main__":
                         d['*show*'] = 'NON-HALT'
                     equalset = {k for k in d.keys() if d[k] == d['*show*']} - {'*show*', 'I'}
                     if len(equalset) == 0:
-                        equalset = {'d'}
+                        if i == 4:
+                            equalset = {'d'}
+                        else:
+                            equalset = {'c'}
 
 
                     print>> f, i,which, gi, l, rc, g.f+g.x, ''.join(equalset)
