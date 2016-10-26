@@ -2,14 +2,15 @@
 
 Options:
 Usage:
-    run.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    run.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--max-depth=<int>] [--max-find=<int>] [--no-order] [--output=<string>]
 
     -v --verbose                  Display the search incrementally (used for debugging).
-    --search-basis=<combinators>  The search basis [default: ISKBCE].
+    --search-basis=<combinators>  The search basis [default: ISKBC].
     --show-gs                     Show the auxiliary gs variables
     --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 20].
     --max-find=<int>              Exit if you find this many combinators [default: 10000].
     --no-order                    Do not re-order the constraints
+    --output=<string>             The name of the output file
 """
 
 
@@ -54,7 +55,7 @@ if __name__ == "__main__":
                            SimpleFact('c', 'c', '=', '*show*'),
                            ]
 
-        with open('/home/Jenna/Desktop/PureRelations/outputwE.csv', 'a') as f:
+        with open('/home/Jenna/Desktop/PureRelations/Rscripts/'+arguments['--output']+'.csv', 'a') as f:
             # Now do the search
             for which, solution in enumerate(search(start, facts, uniques, int(arguments['--max-depth']), show=arguments['--verbose'])):
 

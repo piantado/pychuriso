@@ -103,6 +103,17 @@ def reduce_combinator(s):
                 stepped = True
                 break
 
+            if i+5<=end and s[i:i+3]=='..T': # AATxy -> yx
+                x, xend = next_chunk(s, i+3)
+                y, yend = next_chunk(s, xend+1)
+
+                s = s[:i] + y + x + s[(yend+1):]
+
+                stepped = True
+                break
+
+
+
 
 
 
@@ -160,6 +171,8 @@ if __name__ == "__main__":
     print reduce_combinator('....E.....SKSKxy..Kxyab')
     print reduce_combinator('....E.....KxySxyzab')
     print reduce_combinator('....E.......KxySxyzKxySxyz')
+    print reduce_combinator('....SS.SKxy')
+    print reduce_combinator('..Txy')
 
 
 
