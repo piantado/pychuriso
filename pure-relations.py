@@ -62,7 +62,7 @@ if __name__ == "__main__":
                 l  =  sum(len(v) for v in solution.values())
                 rc = get_reduction_count(solution, facts)
 
-                #print "#", l, rc, solution
+                print "#", l, rc, solution
 
                 for gi, g in enumerate(generalizations):
                     d = deepcopy(solution)
