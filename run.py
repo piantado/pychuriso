@@ -12,7 +12,7 @@ Usage:
     --no-order                    Do not re-order the constraints
 """
 
-from search.simplex import search
+from search.block import search
 from parser import parse_source
 from reduction import tostring,  update_defines, ReductionException
 from programs import is_normal_form
