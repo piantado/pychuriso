@@ -33,6 +33,8 @@ class LengthException(ReductionException):
 def reduce_combinator(s):
     """
     Reduce a string s to normal form
+
+    NOTE: IF you update combinators implemented here, be sure to update programs.is_normal_form
     """
     iters = 0
 
