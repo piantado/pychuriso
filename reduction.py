@@ -62,6 +62,13 @@ def reduce_combinator(s):
 
                 stepped = True
                 break
+            if i+3<=end and s[i:i+2]=='.I': # AIx -> x
+                x, xend = next_chunk(s, i+2)
+
+                s = s[:i] + x + s[xend+1:]
+
+                stepped = True
+                break
             if i+9<=end and s[i:i+5]=='....E': #AAAAExyab -> if x==y: a else b
 
                 x, xend = next_chunk(s, i+5)
@@ -182,6 +189,7 @@ if __name__ == "__main__":
     print reduce_combinator('...Bxyz')
     print reduce_combinator('...Sxyz')
     print reduce_combinator('..Wxy')
+    print reduce_combinator('.Ix')
 
 
 
