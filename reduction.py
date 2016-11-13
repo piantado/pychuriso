@@ -12,7 +12,6 @@ MAX_REDUCE = 100
 
 GLOBAL_REDUCE_COUNTER = 0 # how many reductions total have we done?
 
-from combinators import SEARCH_BASIS
 from programs import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

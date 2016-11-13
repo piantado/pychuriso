@@ -22,7 +22,7 @@ from programs import is_normal_form
 def set_search_basis(combinators):
     global SEARCH_BASIS
 
-    SEARCH_BASIS = [c for c in combinators] # [combinator2program[c] for c in combinators]
+    SEARCH_BASIS = [combinator2program[c] for c in combinators]
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
