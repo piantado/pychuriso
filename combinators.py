@@ -5,7 +5,7 @@ combinator2program = {'S':'S',
                       'K':'K',
                       'I':'..SKK',
                       'B':'..S.KSK',
-                      'C':'..S.K..S.K..SS.KKKS',
+                      'C':'...S.K..S.K..SS.KKKS',
                       'W':'..SS.SK',
                       'E':'E',
                       'T':'T',
@@ -22,7 +22,7 @@ from programs import is_normal_form
 def set_search_basis(combinators):
     global SEARCH_BASIS
 
-    SEARCH_BASIS = [combinator2program[c] for c in combinators]
+    SEARCH_BASIS = [c for c in combinators] # [combinator2program[c] for c in combinators]
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,7 +106,7 @@ def check_applies(c):
 
 
 def next_combinator(c):
-    """ A string-based counter for combinators. Right now, very stupid and slow """
+    """ A string-based counter for combinators. Right now, very stupid and slow and only works for SK"""
     c = list(c)
     while True:
 
