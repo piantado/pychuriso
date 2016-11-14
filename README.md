@@ -7,5 +7,5 @@ requirements
 ============
 
 pyparsing
-docopt:
-http://docopt.org/
+docopt:[Docopt Explained]
+(http://docopt.org/)
