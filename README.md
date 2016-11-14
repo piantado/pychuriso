@@ -1,7 +1,7 @@
 pychuriso
 =========
 
-A python implemnentation of churiso. 
+A python implemnentation of ChurIso. 
 
 requirements
 ============
