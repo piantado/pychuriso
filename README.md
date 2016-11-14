@@ -15,8 +15,16 @@ The base facts can be encoded using S and K. The system that ChurIso finds is co
 combinators
 -----------
 A **combinator** is a higher-order function that uses only function application and earlier defined combinators to define a result from its arguments. You have already seen *S* and *K*. These are reduced as follows:
-> K(x y) → x</br>
->S(x y z) → (x z (y z))
+> (**K**x y) → x</br>
+>(**S**x y z) → (x z (y z))</br>
+
+Other combinators include:
+>(**I**x) → x
+>C
+>B
+>W
+>T
+>E
 
 requirements
 ============
