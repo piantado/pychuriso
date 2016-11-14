@@ -26,8 +26,10 @@ Other combinators include:
 
 These combinators can be expressed in terms of **S** and **K**. See more about this below in the section on ```combinators.py```. Other combinators cannot be expressed in terms of **S** and **K**, but can be implemented in ChurIso.
 
->T</br>
->E</br>
+>(**T** x y) = (y x)</br>
+>(**M** x) = (x x)</br>
+>(**E** x y a b)  ```if x == y: return a  else: return b```</br>
+
 
 requirements
 ============
