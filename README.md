@@ -14,17 +14,20 @@ The base facts can be encoded using S and K. The system that ChurIso finds is co
 
 combinators
 -----------
-A **combinator** is a higher-order function that uses only function application and earlier defined combinators to define a result from its arguments. You have already seen *S* and *K*. These are reduced as follows:
-> (**K**x y) → x</br>
->(**S**x y z) → (x z (y z))</br>
+A **combinator** is a higher-order function that uses only function application and earlier defined combinators to define a result from its arguments. You have already seen **S** and **K**. These are reduced as follows:
+> (**K** x y) = x</br>
+>(**S** x y z) = (x z (y z))</br>
 
 Other combinators include:
->(**I**x) → x
->C
->B
->W
->T
->E
+>(**I** x) = x</br>
+>(**B** x y z) = x (y z)</br>
+>(**C** x y z = (x z y)</br>
+>(**W** x y) = (x y y)</br>
+
+These combinators can be expressed in terms of **S** and **K**. See more about this below in the section on ```combinators.py```. Other combinators cannot be expressed in terms of **S** and **K**, but can be implemented in ChurIso.
+
+>T</br>
+>E</br>
 
 requirements
 ============
