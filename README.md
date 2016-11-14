@@ -2,7 +2,7 @@ pychuriso
 =========
 
 A python implementation of ChurIso. 
-The name "ChurIso" comes from _**Chur**ch Encoding_, which corresponds to building a structure in a purely logical system that is _**Iso**morphic_ to another system. You can read more about Church Encoding [here](https://en.wikipedia.org/wiki/Church_encoding). ChurIso finds the mapping (with the fastest running time) of symbols to combinators that are consistent with _base facts_. The following is an example of which representation ChurIso finds for base facts about the Seasons:
+The name "ChurIso" comes from _**Chur**ch Encoding_, which corresponds to building a structure in a purely logical system that is _**Iso**morphic_ to another system. You can read more about Church Encoding [here](https://en.wikipedia.org/wiki/Church_encoding). For an overview of combinatory logic, you should start [here](https://en.wikipedia.org/wiki/Combinatory_logic). ChurIso finds the mapping (with the fastest running time) of symbols to combinators that are consistent with _base facts_. The following is an example of which representation ChurIso finds for base facts about the Seasons:
 ```
 (succ) winter → spring              spring := (K (K K))
 (succ spring) → summer              winter := (K (S (K K) (K (K K))))
