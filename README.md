@@ -33,6 +33,12 @@ These combinators can be expressed in terms of **S** and **K**. See more about t
 
 the facts
 ----------
+The base facts to be encoded are written in an input.txt file. Examples of these can be found in pychuriso/domains. Some examples of current domains are:
+- boolean logic
+- integers
+- magnetism
+- kinship
+
 
 parsing the input
 ----------
