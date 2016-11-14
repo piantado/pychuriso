@@ -1,4 +1,5 @@
 MAX_CACHE=8 # cache all combinators up to this length
+import re
 
 # this is used for reading in the search basis
 combinator2program = {'S':'S',
@@ -20,9 +21,24 @@ from programs import is_normal_form
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def set_search_basis(combinators):
+    """
+    This parses the string of combinators that we will search over. We can either include a combinator defined in terms of SK
+    (thus penalizing length/complexity in that way) or as a primitive itself. The convention is that combinators you
+    wish to define in terms of SK should be followed by "sk" (case sensitive). So SKIskBskCW will include I And B in terms
+    of SK, but C and W was primitives themselves
+    """
+
     global SEARCH_BASIS
 
-    SEARCH_BASIS = [combinator2program[c] for c in combinators]
+    # parse the combinator string
+    SEARCH_BASIS = []
+    for cstr, c, sk in re.findall("(([A-Z])(sk)?)", combinators):
+        if sk == 'sk':
+            SEARCH_BASIS.append(combinator2program[c])
+        elif sk == '':
+            SEARCH_BASIS.append(c)
+        else:
+            raise Exception("Bad sk type in combinator string: "+cstr)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,7 +122,7 @@ def check_applies(c):
 
 
 def next_combinator(c):
-    """ A string-based counter for combinators. Right now, very stupid and slow """
+    """ A string-based counter for combinators. Right now, very stupid and slow and only works for SK"""
     c = list(c)
     while True:
 

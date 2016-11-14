@@ -37,8 +37,23 @@ def tostring(s, start=0):
         return s[start]
 
 def is_normal_form(s):
-    """ Assuming the right number of elements in the string, it is normal form if these substrings don't occur"""
-    return "..K" not in s and "...S" not in s #SLOWER: s.find("..K")==-1 and s.find("...S")==-1
+    """
+    Assuming the right number of elements in the string, it is normal form if these substrings don't occur
+    NOTE: seems faster than string.find
+    TODO: We should recompile this into a regex instead of a bunch of string matches
+    """
+
+    return ("..K" not in s) and   \
+           ("...S" not in s) and  \
+           (".I" not in s) and    \
+           ("....E" not in s) and \
+           ("..T" not in s) and   \
+           (".M" not in s) and    \
+           ("...B" not in s) and  \
+           ("...C" not in s) and  \
+           ("..W" not in s)
+
+
 
 def next_chunk(s, start):
     """ Return a substring of the next complete combinator found and its final position """

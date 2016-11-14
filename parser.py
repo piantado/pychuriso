@@ -8,7 +8,7 @@ Parsing routines for churiso source files. NOTE: This currently only handles bin
 
 import pyparsing as pp
 
-w = pp.Word(pp.alphanums+'%_-')
+w = pp.Word(pp.alphanums+'%_*-')
 lp = pp.Suppress("(")
 rp = pp.Suppress(")")
 
@@ -122,10 +122,11 @@ def parse_source(file):
 
                 se = r.groups()[0]
 
+                # make some facts for this with *show* as the symbol (which is where display looks for it)
                 showfacts = []
-                binarize(sexp.parseString(se)[0], showfacts, op='=', y="*show*")
-                assert se not in shows, "*** Error: multiple identical shows"
+                parse_statement("*show* = " + se, showfacts)
 
+                assert se not in shows, "*** Error: multiple identical shows"
                 shows[se] = showfacts
                 continue
 

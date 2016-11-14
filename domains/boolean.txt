@@ -1,5 +1,8 @@
 unique true false and or not
 
+true := K
+false := (K K)
+
 true  = ((and true) true)
 
 false = ((and true) false)

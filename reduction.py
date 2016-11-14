@@ -12,7 +12,6 @@ MAX_REDUCE = 100
 
 GLOBAL_REDUCE_COUNTER = 0 # how many reductions total have we done?
 
-from combinators import SEARCH_BASIS
 from programs import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,41 +32,17 @@ class LengthException(ReductionException):
 def reduce_combinator(s):
     """
     Reduce a string s to normal form
+
+    NOTE: IF you update combinators implemented here, be sure to update programs.is_normal_form
     """
     iters = 0
 
-    while True: # tODO: Maybe checking whether its normal form here is faster?
+    while True:
         stepped = False
         iters += 1 # how many reduction steps have we taken?
-        #print iters, s, tostring(s)
 
-        ## TODO: REWRITE WITH string find for speed!
         end = len(s)
 
-        """
-        # ONLY a little faster:
-        kpos = s.find("..K")
-        spos = s.find("...S")
-
-        if kpos >= 0 and (kpos<spos or spos<0) and kpos+5 <= end: # if we can do a k and its before an s
-            i = kpos
-            x, xend = next_chunk(s, i+3)
-            y, yend = next_chunk(s, xend+1)
-
-            s = s[:i] + x + s[(yend+1):]
-
-            stepped = True
-
-        elif spos >= 0 and spos >= 0 and spos+7 <= end:
-            i = spos
-            x, xend = next_chunk(s, i+4)
-            y, yend = next_chunk(s, xend+1)
-            z, zend = next_chunk(s, yend+1)
-
-            s = s[:i] + '..' + x + z + '.' + y + z + s[zend+1:]
-
-            stepped = True
-        """
         for i in xrange(end): # each character
 
             if i+5<=end and s[i:i+3]=='..K': # AAKxy -> x
@@ -85,6 +60,13 @@ def reduce_combinator(s):
                 z, zend = next_chunk(s, yend+1)
 
                 s = s[:i] + '..' + x + z + '.' + y + z + s[zend+1:]
+
+                stepped = True
+                break
+            if i+3<=end and s[i:i+2]=='.I': # AIx -> x
+                x, xend = next_chunk(s, i+2)
+
+                s = s[:i] + x + s[xend+1:]
 
                 stepped = True
                 break
@@ -147,13 +129,6 @@ def reduce_combinator(s):
                 stepped = True
                 break
 
-
-
-
-
-
-
-
         if not stepped:
            break
         else:
@@ -215,6 +190,7 @@ if __name__ == "__main__":
     print reduce_combinator('...Bxyz')
     print reduce_combinator('...Sxyz')
     print reduce_combinator('..Wxy')
+    print reduce_combinator('.Ix')
 
 
 
