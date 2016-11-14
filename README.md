@@ -31,6 +31,33 @@ These combinators can be expressed in terms of **S** and **K**. See more about t
 >(**E** x y a b)  ```if x == y: return a  else: return b```</br>
 
 
+the facts
+----------
+
+parsing the input
+----------
+
+the basis
+----------
+
+reduction
+----------
+
+the search
+-----------
+
+run.py
+-----------
+
+
+
+
+
+
+
+
+
+
 requirements
 ============
 
