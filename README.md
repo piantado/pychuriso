@@ -23,11 +23,11 @@ Other combinators include:
 >(**B** x y z) = x (y z)</br>
 >(**C** x y z = (x z y)</br>
 >(**W** x y) = (x y y)</br>
+>(**T** x y) = (y x)</br>
+>(**M** x) = (x x)</br>
 
 These combinators can be expressed in terms of **S** and **K**. See more about this below in the section on ```combinators.py```. Other combinators cannot be expressed in terms of **S** and **K**, but can be implemented in ChurIso.
 
->(**T** x y) = (y x)</br>
->(**M** x) = (x x)</br>
 >(**E** x y a b)  ```if x == y: return a  else: return b```</br>
 
 
