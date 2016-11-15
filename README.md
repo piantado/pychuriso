@@ -21,10 +21,10 @@ A **combinator** is a higher-order function that uses only function application 
 Other combinators include:
 >(**I** x) = x</br>
 >(**B** x y z) = x (y z)</br>
->(**C** x y z = (x z y)</br>
->(**W** x y) = (x y y)</br>
->(**T** x y) = (y x)</br>
->(**M** x) = (x x)</br>
+>(**C** x y z = x z y</br>
+>(**W** x y) = x y y</br>
+>(**T** x y) = y x</br>
+>(**M** x) = x x</br>
 
 These combinators can be expressed in terms of **S** and **K**. See more about this below in the section on ```combinators.py```. Other combinators cannot be expressed in terms of **S** and **K**, but can be implemented in ChurIso.
 
@@ -38,10 +38,28 @@ The base facts to be encoded are written in an input.txt file. Examples of these
 - integers
 - magnetism
 - kinship
+- Scheme ```cons```, ```cdr```, ```car```
+- dominance relations
+- propositional logic (e.g. brown cow)
+
+There are **4** keywords that can be used in the input file.
+>```unique```: each of the symbols following ```unique``` must be represented by distinct combinator structures.</br>
+>```define```: allows you to explicitly set a combinator structure for a specified symbol.</br>
+>```variable```: functions like "for all", where anything of the form specified will map to the same symbol.</br>
+>```show```: indicates to print out the solution to a new problem, given the combinators mapped to the base facts.</br>
 
 
 parsing the input
 ----------
+pychuriso has a parser to handle the input.txt file. This uses regular expressions to return:
+>```
+    defines   = {}
+    variables = []
+    uniques   = []
+    facts     = []
+    shows     = dict()
+```
+> single statements are parsed using ```binarize()```
 
 the basis
 ----------
