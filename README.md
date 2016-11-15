@@ -63,11 +63,11 @@ pychuriso has a parser to handle the input.txt file. This uses regular expressio
 
 reduction
 ----------
-As we mentioned earlier, ```succ := ((S ((S S) S)) K)``` applied to ```spring := (K (K K))``` will yield the combinator structure of ```summer := K```. This reduction happens in ```reduction.py```, where strings are reduced to normal form. Here, the ```reduce_combinator``` code specifies how each combinator is handled. By the definition of the K combinator above, ```reduce_combinator``` will take a string ".Kxy" and return "x". Along the way, ```reduce_combinator``` keeps track of how many reduction steps have been taken via ```GLOBAL_REDUCE_COUNTER```. This is one measure of complexity.
+As we mentioned earlier, ```succ := ((S ((S S) S)) K)``` applied to ```spring := (K (K K))``` will yield the combinator structure of ```summer := K```. This reduction happens in ```reduction.py```, where strings are reduced to normal form. Here, the ```reduce_combinator``` code specifies how each combinator is handled. By the definition of the K combinator above, ```reduce_combinator``` will take a string ".Kxy" and return "x". Along the way, ```reduce_combinator``` keeps track of how many reduction steps have been taken via ```GLOBAL_REDUCE_COUNTER```. This is one measure of complexity. Note that the combinators **BCTMWE** have reduction routines that do _not_ rely on **S** and **K**. This is further discussed in the section below.
 
 the basis
 ----------
-The combinator basis that you use is up to you! While traditional SKI combinatory logic is available, pychuriso also supports other combinator bases (mentioned above). For the combinators that can be expressed in terms of S and K, there is an option to use an SK basis in their reduction (and therefore their complexity).
+The combinator basis that you use is up to you! While traditional SKI combinatory logic is available, pychuriso also supports other combinator bases (mentioned above). For the combinators that can be expressed in terms of S and K, there is an option to use an SK basis in their reduction (and therefore in computing their complexity). There is also the option to rely on a single-step reduction routine in ```reduce_combinator```. This flexibility allows you to choose how you want to measure complexity, and allows you to observe the effects of different combinator bases on generalization results.
 
 
 
