@@ -110,7 +110,7 @@ def order_facts(start, facts):
 if __name__ == "__main__":
 
     from docopt import docopt
-    arguments = docopt(__doc__, version="pychuriso 0.001")
+    arguments = docopt(__doc__, version="pychuriso 0.002")
 
     defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
 
