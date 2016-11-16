@@ -2,6 +2,10 @@ import ply.yacc as yacc
 
 from lexer import tokens
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Each line of source
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 def p_line(p):
     """ line : statement
              | variable_statement
@@ -58,7 +62,7 @@ def p_statement(p):
                  | struct PEQ struct
                  | struct IN LB structlist RB"""
 
-    if p[2] == '=' or p[2] == '!=':
+    if p[2] == '=' or p[2] == '!=' or p[2] == '~=':
         p[0] = ['statement', p[1], p[2], p[3]]
     else:
         assert p[2] == 'in'
@@ -166,6 +170,13 @@ def combinator_from_binary_list(l):
     else:
         return l
 
+def string_from_binary_list(l):
+    if isinstance(l, list):
+        assert len(l) == 2, "List must be binary!"
+        return '(%s %s)' % (string_from_binary_list(l[0]), string_from_binary_list(l[1]))
+    else:
+        return l
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Code for handling the tree structures of combinators
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,7 +200,7 @@ def load_source(file):
             p = parser.parse(l)
 
             t = p[0] # first thing is the kind of line we're handling
-            print ">>", p
+            # print ">>", p
 
 
             # and update depending on what the line is
@@ -201,12 +212,17 @@ def load_source(file):
             elif t == 'variable':
                 variables.extend(p[1])
             elif t == 'show':
-                shows.append({'l':make_left_binary(p[1])})
+
+                p1b = make_left_binary(p[1])
+
+                showfacts = []
+                make_facts_binary(p1b, showfacts, op='=', y='*show*')
+
+                shows.append( (string_from_binary_list(p1b), showfacts) )
             elif t == 'statement':
                 lhs, op, rhs = p[1], p[2], p[3]
 
                 if op == 'in':
-                    print ">>", p
                     if isinstance(lhs, list):  # must make a gs for it
                         gs = gensym()
                         make_facts_binary(lhs, facts, op='=',  y=gs)
@@ -228,7 +244,7 @@ def load_source(file):
                 elif op == '=' or op == '!=' or op == '~=':
 
                     if (not isinstance(lhs, list)) and (not isinstance(rhs, list)):
-                        assert False, "*** Cannot have symbol equality (x=y). Use I := I, (I x) = y"
+                        assert False, "*** Cannot have symbol equality (x=y). Use I := (S K K), (I x) = y"
 
                     if not isinstance(rhs, list):
                         make_facts_binary(lhs, facts, op=op, y=rhs)

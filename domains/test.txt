@@ -1,16 +1,15 @@
+#unique f x y
 
-(f x) = x
-(y x) = y
+#(f x) in {x,y}
+#(f y) in {x,y}
 
-I := I
+#show (f x)
+#show (f y)
+#show (x y)
+#show (y x)
 
-(I f) = y 
+variable x y 
 
-(f y) in {f,y}
-
-#true := ((K K S) (S G B) C)
-#(x true) = (f (y true))
-
-#f in {true, x}
+(rk x y) = y
 
 
