@@ -67,12 +67,12 @@ As we mentioned earlier, ```succ := ((S ((S S) S)) K)``` applied to ```spring :=
 
 the basis
 ----------
-The combinator basis that you use is up to you! While traditional SKI combinatory logic is available, pychuriso also supports other combinator bases (mentioned above). For the combinators that can be expressed in terms of S and K, there is an option to use an SK basis in their reduction (and therefore in computing their complexity). There is also the option to rely on a single-step reduction routine in ```reduce_combinator```. This flexibility allows you to choose how you want to measure complexity, and allows you to observe the effects of different combinator bases on generalization results.
-
-
+The combinator basis that you use is up to you! While traditional SKI combinatory logic is available, pychuriso also supports other combinator bases (mentioned above). For the combinators that can be expressed in terms of S and K, there is an option to use an SK basis in their reduction (and therefore in computing their complexity). There is also the option to rely on a single-step reduction routine in ```reduce_combinator```. This flexibility allows you to choose how you want to measure complexity, and allows you to observe the effects of different combinator bases on generalization results. Use the command line argument ```--search-basis``` to denote the combinator basis you want to use (e.g. ```--search-basis SKIBC```).
+As mentioned, **BCTMW** can be defined in terms of S and K  (thus penalizing length/complexity in that way). They can also be primitives themselves, with only one reduction step. The convention is that combinators you wish to define in terms of SK should be followed by "sk" (case sensitive). So SKIskBskCW will include I and B in terms of SK, but C and W as primitives themselves.
 
 the search
 -----------
+
 
 run.py
 -----------
