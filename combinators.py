@@ -12,7 +12,7 @@ combinator2program = {'S':'S',
                       'T':'T',
                       'M':'M'}
 
-SEARCH_BASIS = ['S', 'K'] # what we use to search for combinators
+SEARCH_BASIS = ['S', 'K'] # what we use to search for combinatorss
 
 from programs import is_normal_form
 

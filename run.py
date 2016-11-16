@@ -13,13 +13,14 @@ Usage:
 """
 
 from search.block import search
-from parser import parse_source
+# from parser import parse_source
 from reduction import tostring,  update_defines, ReductionException
 from programs import is_normal_form
 from misc import is_gensym
 from copy import deepcopy
 from SimpleFact import compute_complexity
 import reduction
+from parser import load_source
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -103,35 +104,45 @@ def order_facts(start, facts):
 
     return ofacts
 
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":
 
     from docopt import docopt
     arguments = docopt(__doc__, version="pychuriso 0.001")
 
-    defines, variables, uniques, facts, shows =  parse_source(arguments['<input>'])
+    defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
 
-    # Set the search basis
-    import combinators
-    combinators.set_search_basis(arguments['--search-basis'])
+    print defines
+    print variables
+    print uniques
+    print facts
+    print shows
 
-    # set up the starting solution
-    start = dict()
-    for d,v in defines.items(): start[d] = v  # add the defines
-    for v in variables:         start[v] = v  # variables have themselves as values, already asserted to be single chars
-
-    # test out the ordering of facts
-    if not arguments['--no-order']:
-        facts = order_facts(start, facts)
-        print "# Best fact ordering: yielding score %s" % compute_complexity(defines, facts), facts
-    else:
-        print "# Running with fact ordering %s" % compute_complexity(defines, facts), facts
-
-    MAX_FIND = int(arguments['--max-find'])
-
-    # Now do the search
-    for solution in search(start, facts, uniques, int(arguments['--max-depth']), show=arguments['--verbose']):
-        display_winner(solution, variables, facts, shows)
-
-        if TOTAL_SOLUTION_COUNT > MAX_FIND:
-            break
+    #
+    #
+    # # Set the search basis
+    # import combinators
+    # combinators.set_search_basis(arguments['--search-basis'])
+    #
+    # # set up the starting solution
+    # start = dict()
+    # for d,v in defines.items(): start[d] = v  # add the defines
+    # for v in variables:         start[v] = v  # variables have themselves as values, already asserted to be single chars
+    #
+    # # test out the ordering of facts
+    # if not arguments['--no-order']:
+    #     facts = order_facts(start, facts)
+    #     print "# Best fact ordering: yielding score %s" % compute_complexity(defines, facts), facts
+    # else:
+    #     print "# Running with fact ordering %s" % compute_complexity(defines, facts), facts
+    #
+    # MAX_FIND = int(arguments['--max-find'])
+    #
+    # # Now do the search
+    # for solution in search(start, facts, uniques, int(arguments['--max-depth']), show=arguments['--verbose']):
+    #     display_winner(solution, variables, facts, shows)
+    #
+    #     if TOTAL_SOLUTION_COUNT > MAX_FIND:
+    #         break

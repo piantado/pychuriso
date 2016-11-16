@@ -1,18 +1,12 @@
 
-#variable x
+variable x y z
 
-x = (f x)
+show (x y)
 
-show (f x x)
+true := ((K K S) (S G B) C)
 
+(x true) != (f (y true))
 
-#x = (g x)
-
-#y = (f x)
-
-#a = (f x)
-#b = ((f a) a)
-#c = (f c)
-#d = (f c)
+f in {a,b,c}
 
 

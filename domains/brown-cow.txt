@@ -1,6 +1,7 @@
 
 unique True False
-unique brown cow is dangerous
+unique brown cow 
+unique is-dangerous is-brown
 
 True  := (K K)
 False := K
