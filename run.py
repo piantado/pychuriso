@@ -2,19 +2,20 @@
 
 Options:
 Usage:
-    pychuriso.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    pychuriso.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
     -v --verbose                  Display the search incrementally (used for debugging).
     --search-basis=<combinators>  The search basis [default: ISKBC].
     --show-gs                     Show the auxiliary gs variables
+    --condensed                   Give condensed output
+    --not-normal-form             Search does not require combinators to be normal form
     --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 20].
     --max-find=<int>              Exit if you find this many combinators [default: 10000].
     --no-order                    Do not re-order the constraints
 """
 
 from search.block import search
-# from parser import parse_source
-from reduction import tostring,  update_defines, ReductionException
+from reduction import tostring,  app, ReductionException
 from programs import is_normal_form
 from misc import is_gensym
 from copy import deepcopy
@@ -53,21 +54,47 @@ def display_winner(defines, solution, variables, facts, shows):
 
         assert k in defines or is_normal_form(v)
         print "%s := %s" % (k, tostring(v))
-    # FIX SHOWS
-    # for s, f in shows.items():
-    #     d = deepcopy(solution)
-    #     try:
-    #         update_defines(d, f)
-    #     except ReductionException:
-    #         d['*show*'] = 'NON-HALT'
-    #
-    #     equalset = {k for k in d.keys() if d[k]==d['*show*']}- {'*show*'} # which of our defines is this equal to?
-    #
-    #     print "show %s -> %s == {%s}" % (s, tostring(d['*show*']), ', '.join(equalset) )
+
+    for s, sf in shows:
+        d = deepcopy(solution)
+        try:
+            update_defines(d, sf)
+        except ReductionException:
+            d['*show*'] = 'NON-HALT'
+
+        equalset = [ k for k in d.keys() if d[k]==d['*show*'] and k != "*show*" and not is_gensym(k) ]# which of our defines is this equal to?
+
+        print "show %s -> %s == {%s}" % (s, tostring(d['*show*']), ', '.join(equalset) )
 
     print "\0"
 
-    TOTAL_SOLUTION_COUNT += 1
+
+def condensed_display(defines, solution, variables, facts, shows):
+    """ A single-line output, of the type that might be used for grammar inference """
+    global TOTAL_SOLUTION_COUNT
+    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts),
+
+    # next get the counts of each combinator
+    for c in 'SKIBCWETM':
+        nc = sum([v.count(c) for v in solution.values()])
+        # print [v.count(c) for v in solution.values()]
+        print nc,
+
+    # and show the shows
+    for s, sf in shows:
+        d = deepcopy(solution)
+        try:
+            update_defines(d, sf)
+        except ReductionException:
+            d['*show*'] = 'NON-HALT'
+
+        equalset = [k for k in d.keys() if d[k] == d['*show*'] and k != "*show*" and not is_gensym(k)] # which of our defines is this equal to?
+        print "\"%s\"" % ','.join(list(equalset)),
+
+    print "\n",
+
+
+
 
 
 def order_facts(start, facts):
@@ -105,6 +132,20 @@ def order_facts(start, facts):
     return ofacts
 
 
+def update_defines(defined, facts):
+    # go through the facts, pushing updates to defines
+    # this is used to "eval" a complex expression
+    # thus, running this and looking at the appropriate item of defined is like evaling a complex expression
+
+    for f in facts:
+        assert isinstance(f, EqualityFact)
+
+        if f.y not in defined:
+            defined[f.y] = app(defined[f.f], defined[f.x])
+        else:
+            assert f.y == app(defined[f.f], defined[f.x])
+
+    return defined
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":
@@ -133,8 +174,16 @@ if __name__ == "__main__":
     MAX_FIND = int(arguments['--max-find'])
 
     # Now do the search
-    for solution in search(start, facts, uniques, int(arguments['--max-depth']), show=arguments['--verbose']):
-        display_winner(defines, solution, variables, facts, shows)
+    global TOTAL_SOLUTION_COUNT
+    for solution in search(start, facts, uniques, int(arguments['--max-depth']), normal=not arguments['--not-normal-form'], show=arguments['--verbose']):
 
-        if TOTAL_SOLUTION_COUNT > MAX_FIND:
-            break
+        if arguments['--condensed']:
+            condensed_display(defines, solution, variables, facts, shows)
+        else:
+            display_winner(defines, solution, variables, facts, shows)
+
+            if TOTAL_SOLUTION_COUNT > MAX_FIND:
+                break
+
+            TOTAL_SOLUTION_COUNT += 1
+
