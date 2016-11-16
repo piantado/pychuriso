@@ -22,25 +22,24 @@ def search_(partial, facts, unique, max_depth, show=False):
 
         f0 = facts[0]
 
-        open_symbols = set(f0.dependents()) - set(partial.keys()) # what symbols do we need?
+        open_symbols = list(set(f0.dependents()) - set(partial.keys())) # what symbols do we need?
 
         if len(open_symbols) == 0:
             if f0.check(partial):
                 # remove the fact and go on
-                for s in search_(partial, facts[1:], unique, max_depth, show=show):
-                    yield s
+                for soln in search_(partial, facts[1:], unique, max_depth, show=show):
+                    yield soln
 
-        elif len(open_symbols) == 1 and isinstance(f0, EqualityFact) and open_symbols[0] == f0.y:
+        elif isinstance(f0, EqualityFact) and f0.f in partial and f0.x in partial:
             # we can push an equality constraint
-
             try:
                 v = app(partial[f0.f], partial[f0.x])
 
                 if check_unique(partial, unique, f0.y, v):
 
-                    partial[y] = v
-                    for s in search_(partial, facts[1:], unique, max_depth, show=show):
-                        yield s
+                    partial[f0.y] = v
+                    for soln in search_(partial, facts[1:], unique, max_depth, show=show):
+                        yield soln
                     del partial[f0.y]
             except ReductionException:
                 if f0.y in partial:  # hmm needed? In case we get a reduction exception? O
@@ -52,8 +51,8 @@ def search_(partial, facts, unique, max_depth, show=False):
             for v in all_combinators(max_depth=max_depth, normal=True):
                 if check_unique(partial, unique, s, v):
                     partial[s] = v  # add this and recurse
-                    for s in search_(partial, facts, unique, max_depth, show=show):
-                        yield s
+                    for soln in search_(partial, facts, unique, max_depth, show=show):
+                        yield soln
                     del partial[s]
 
 

@@ -55,6 +55,7 @@ def p_symlist(p):
 def p_statement(p):
     """statement : struct EQ struct
                  | struct NEQ struct
+                 | struct PEQ struct
                  | struct IN LB structlist RB"""
 
     if p[2] == '=' or p[2] == '!=':
@@ -108,6 +109,7 @@ parser = yacc.yacc()
 # Code for handling the tree structures of combinators
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+from Facts import *
 from misc import gensym
 
 def make_left_binary(l):
@@ -146,6 +148,24 @@ def make_facts_binary(l, to, op='=', y=None):
         make_facts_binary(x, to, '=', gs)
         x = gs
 
+    if op == '=':
+        to.append(EqualityFact(f,x,y))
+    elif op == '!=':
+        to.append(InEqualityFact(f,x,y))
+    elif op == '~=':
+        to.append(PartialEqualityFact(f,x,y))
+    else:
+        assert False, "Bad fact type %s" % op
+
+def combinator_from_binary_list(l):
+    # Takes a list like ['a', ['b', 'c']] and converts to .a.bc
+
+    if isinstance(l, list):
+        assert len(l) == 2, "List must be binary!"
+        return '.' + combinator_from_binary_list(l[0]) + combinator_from_binary_list(l[1])
+    else:
+        return l
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Code for handling the tree structures of combinators
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -170,11 +190,12 @@ def load_source(file):
 
             t = p[0] # first thing is the kind of line we're handling
             print ">>", p
-            # print p
+
+
             # and update depending on what the line is
             if t == 'define':
                 assert p[1] not in defines, "*** Duplicate define for %s " % p[1]
-                defines[p[1]] = make_left_binary(p[2])
+                defines[p[1]] = combinator_from_binary_list(make_left_binary(p[2]))
             elif t == 'unique':
                 uniques.append( p[1] )
             elif t == 'variable':
@@ -185,18 +206,36 @@ def load_source(file):
                 lhs, op, rhs = p[1], p[2], p[3]
 
                 if op == 'in':
+                    print ">>", p
                     if isinstance(lhs, list):  # must make a gs for it
                         gs = gensym()
-                        make_facts_binary(lhs, facts, op='=', y=gs)
-                        make_facts_binary(rhs, facts, op='in', y=gs)
+                        make_facts_binary(lhs, facts, op='=',  y=gs)
+                        lhs = gs # for below
 
-                elif op == '=' or op == '!=':
+                    # now for each rhs, make a binary symbol
+                    new_rhs = []
+                    for r in rhs:
+                        if isinstance(r, str): # just a symbol, can be stored as is
+                            new_rhs.append(r)
+                        else:
+                            assert isinstance(rhs, list) # a structure, so define a symbol
+                            gs = gensym()
+                            make_facts_binary(r, facts, op='=', y=gs)
+                            new_rhs.append(gs)
+                    # Now make the right kind of fact
+                    facts.append(InFact(lhs, new_rhs))
+
+                elif op == '=' or op == '!=' or op == '~=':
+
+                    if (not isinstance(lhs, list)) and (not isinstance(rhs, list)):
+                        assert False, "*** Cannot have symbol equality (x=y). Use I := I, (I x) = y"
 
                     if not isinstance(rhs, list):
                         make_facts_binary(lhs, facts, op=op, y=rhs)
-                    if not isinstance(lhs, list):
+                    elif not isinstance(lhs, list):
                         make_facts_binary(rhs, facts, op=op, y=lhs)
                     else:
+
                         # if we are both lists, make a gensym
                         assert isinstance(lhs, list) and isinstance(rhs, list)
                         gs = gensym()

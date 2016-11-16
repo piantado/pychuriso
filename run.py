@@ -18,9 +18,9 @@ from reduction import tostring,  update_defines, ReductionException
 from programs import is_normal_form
 from misc import is_gensym
 from copy import deepcopy
-from SimpleFact import compute_complexity
 import reduction
 from parser import load_source
+from Facts import compute_complexity, EqualityFact
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -32,14 +32,14 @@ def get_reduction_count(soln, facts):
         assert f.check(soln), f  # run all of the applies
     return reduction.GLOBAL_REDUCE_COUNTER - start
 
-def display_winner(partial, variables, facts, shows):
+def display_winner(defines, solution, variables, facts, shows):
     """ Display a solution. This is zero-delimited so we can sort -z, with run times and lengths at the top """
 
     print "################################################################################"
     global TOTAL_SOLUTION_COUNT
 
     # confirm all constraints
-    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in partial.values()), get_reduction_count(partial, facts)
+    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
 
     print "# ---------- In SK basis ----------"
     for k, v in solution.items():
@@ -51,19 +51,19 @@ def display_winner(partial, variables, facts, shows):
             assert v==k
             continue
 
-        assert is_normal_form(v)
+        assert k in defines or is_normal_form(v)
         print "%s := %s" % (k, tostring(v))
-
-    for s, f in shows.items():
-        d = deepcopy(partial)
-        try:
-            update_defines(d, f)
-        except ReductionException:
-            d['*show*'] = 'NON-HALT'
-
-        equalset = {k for k in d.keys() if d[k]==d['*show*']}- {'*show*'} # which of our defines is this equal to?
-
-        print "show %s -> %s == {%s}" % (s, tostring(d['*show*']), ', '.join(equalset) )
+    # FIX SHOWS
+    # for s, f in shows.items():
+    #     d = deepcopy(solution)
+    #     try:
+    #         update_defines(d, f)
+    #     except ReductionException:
+    #         d['*show*'] = 'NON-HALT'
+    #
+    #     equalset = {k for k in d.keys() if d[k]==d['*show*']}- {'*show*'} # which of our defines is this equal to?
+    #
+    #     print "show %s -> %s == {%s}" % (s, tostring(d['*show*']), ', '.join(equalset) )
 
     print "\0"
 
@@ -79,7 +79,7 @@ def order_facts(start, facts):
     while len(facts) > 0:
 
         # first see if we can verify any facts (thus pruning the search)
-        lst = [f for f in facts if set([f.f, f.x, f.rhs]).issubset(defined) ]  # if everything is defined
+        lst = [f for f in facts if set(f.dependents()).issubset(defined) ]  # if everything is defined
         if len(lst) > 0:
             ofacts.extend(lst) # we can push them all
             for f in lst:
@@ -87,20 +87,20 @@ def order_facts(start, facts):
             continue
 
         # next see if we can push any constraints
-        lst = [f for f in facts if f.op=='=' and set([f.f, f.x]).issubset(defined)]  # anything we can push
+        lst = [f for f in facts if isinstance(f, EqualityFact) and set([f.f, f.x]).issubset(defined)]  # anything we can push
         if len(lst) > 0:
             ofacts.append(lst[0]) # only push the first, since that may permit verifying facts
-            defined.add(lst[0].rhs)
+            defined.add(lst[0].y)
             facts.remove(lst[0])
             continue
 
         # otherwise just pull the first fact (TODO: We can make this smart--pull facts that let us define more), pull facts that only need one f or x
+        # TODO: Pick the one with the fewest dependents not in defined
         f = facts[0]
         ofacts.append(f)
         del facts[0]
-        defined.add(f.f) # either it here already or we have to add it
-        defined.add(f.x)
-        defined.add(f.rhs)
+        defined.update(f.dependents())
+
 
     return ofacts
 
@@ -114,35 +114,27 @@ if __name__ == "__main__":
 
     defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
 
-    print defines
-    print variables
-    print uniques
-    print facts
-    print shows
+    # Set the search basis
+    import combinators
+    combinators.set_search_basis(arguments['--search-basis'])
 
-    #
-    #
-    # # Set the search basis
-    # import combinators
-    # combinators.set_search_basis(arguments['--search-basis'])
-    #
-    # # set up the starting solution
-    # start = dict()
-    # for d,v in defines.items(): start[d] = v  # add the defines
-    # for v in variables:         start[v] = v  # variables have themselves as values, already asserted to be single chars
-    #
-    # # test out the ordering of facts
-    # if not arguments['--no-order']:
-    #     facts = order_facts(start, facts)
-    #     print "# Best fact ordering: yielding score %s" % compute_complexity(defines, facts), facts
-    # else:
-    #     print "# Running with fact ordering %s" % compute_complexity(defines, facts), facts
-    #
-    # MAX_FIND = int(arguments['--max-find'])
-    #
-    # # Now do the search
-    # for solution in search(start, facts, uniques, int(arguments['--max-depth']), show=arguments['--verbose']):
-    #     display_winner(solution, variables, facts, shows)
-    #
-    #     if TOTAL_SOLUTION_COUNT > MAX_FIND:
-    #         break
+    # set up the starting solution
+    start = dict()
+    for d,v in defines.items(): start[d] = v  # add the defines
+    for v in variables:         start[v] = v  # variables have themselves as values, already asserted to be single chars
+
+    # test out the ordering of facts
+    if not arguments['--no-order']:
+        facts = order_facts(start, facts)
+        print "# Best fact ordering: yielding score %s" % compute_complexity(defines, facts), facts
+    else:
+        print "# Running with fact ordering %s" % compute_complexity(defines, facts), facts
+
+    MAX_FIND = int(arguments['--max-find'])
+
+    # Now do the search
+    for solution in search(start, facts, uniques, int(arguments['--max-depth']), show=arguments['--verbose']):
+        display_winner(defines, solution, variables, facts, shows)
+
+        if TOTAL_SOLUTION_COUNT > MAX_FIND:
+            break

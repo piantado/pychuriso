@@ -2,7 +2,7 @@
 
 import ply.lex as lex
 
-tokens = ['LP', 'RP', 'LB', 'RB', 'SYM', 'EQ', 'NEQ', 'ASSN', 'COMMA']
+tokens = ['LP', 'RP', 'LB', 'RB', 'SYM', 'EQ', 'NEQ', 'PEQ', 'ASSN', 'COMMA']
 
 reserved = {
     'variable' : 'VARIABLE_KW',
@@ -21,6 +21,7 @@ t_RP = r'\)'
 t_EQ =   r'='
 t_NEQ = r'\!='
 t_ASSN = r':='
+t_PEQ  = r'\~='
 t_COMMA = r','
 
 # Define symbols, anything allowed in an S-expressionn
