@@ -2,10 +2,10 @@
 
 Options:
 Usage:
-    pychuriso.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--show-gs] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
-    -v --verbose                  Display the search incrementally (used for debugging).
-    --search-basis=<combinators>  The search basis [default: ISKBC].
+    -t --trace                  Display the search incrementally (used for debugging).
+    --search-basis=<combinators>  The search basis [default: ISK].
     --show-gs                     Show the auxiliary gs variables
     --condensed                   Give condensed output
     --not-normal-form             Search does not require combinators to be normal form
@@ -42,7 +42,7 @@ def display_winner(defines, solution, variables, facts, shows):
     # confirm all constraints
     print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
 
-    print "# ---------- In SK basis ----------"
+    # print "# ---------- In search basis ----------"
     for k, v in solution.items():
 
         if is_gensym(k) and not arguments['--show-gs']:
@@ -70,7 +70,11 @@ def display_winner(defines, solution, variables, facts, shows):
 
 
 def condensed_display(defines, solution, variables, facts, shows):
-    """ A single-line output, of the type that might be used for grammar inference """
+    """
+        A single-line output, of the type that might be used for grammar inference
+        This prints out the solution unmber, total length, reduction count, counts for a bunch of combinators
+        then followed by the symbols each show equals
+    """
     global TOTAL_SOLUTION_COUNT
     print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts),
 
@@ -92,8 +96,6 @@ def condensed_display(defines, solution, variables, facts, shows):
         print "\"%s\"" % ','.join(list(equalset)),
 
     print "\n",
-
-
 
 
 
@@ -174,16 +176,15 @@ if __name__ == "__main__":
     MAX_FIND = int(arguments['--max-find'])
 
     # Now do the search
-    global TOTAL_SOLUTION_COUNT
-    for solution in search(start, facts, uniques, int(arguments['--max-depth']), normal=not arguments['--not-normal-form'], show=arguments['--verbose']):
+    for solution in search(start, facts, uniques, int(arguments['--max-depth']), normal=not arguments['--not-normal-form'], show=arguments['--trace']):
 
         if arguments['--condensed']:
             condensed_display(defines, solution, variables, facts, shows)
         else:
             display_winner(defines, solution, variables, facts, shows)
 
-            if TOTAL_SOLUTION_COUNT > MAX_FIND:
-                break
+        if TOTAL_SOLUTION_COUNT >= MAX_FIND:
+            break
 
-            TOTAL_SOLUTION_COUNT += 1
+        TOTAL_SOLUTION_COUNT += 1
 
