@@ -7,7 +7,7 @@ depth bound that is independent on each. This is dumb because depth n solutions 
 from reduction import *
 from misc import is_gensym
 from combinators import all_combinators
-from SimpleFact import SimpleFact
+from Facts import *
 from misc import check_unique
 
 def search_(partial, facts, unique, max_depth, show=False):
@@ -16,57 +16,46 @@ def search_(partial, facts, unique, max_depth, show=False):
     if show: print "Searching with partial ", max_depth, ["%s:%s"% (k,tostring(v))  for k,v in partial.items()  if not is_gensym(k) ], facts[:1]
 
     if len(facts) == 0:
+        # A good solution
         yield partial
-    else:
+    else: # otherwise keep searching
 
         f0 = facts[0]
-        f, x, y = f0.f, f0.x, f0.rhs  # (f x) = y
 
-        if f not in partial:
+        open_symbols = set(f0.dependents()) - set(partial.keys()) # what symbols do we need?
 
-            for v in all_combinators(max_depth=max_depth, normal=True):
-                if check_unique(partial, unique, f, v):
-                    partial[f] = v # add this and recurse
-                    for s in search_(partial, facts, unique, max_depth, show=show):
-                        yield s
-                    del partial[f]
-
-        elif x not in partial:
-            for v in all_combinators(max_depth=max_depth, normal=True):
-                if check_unique(partial, unique, x, v):
-                    partial[x] = v # add this and recurse
-                    for s in search_(partial, facts, unique, max_depth, show=show):
-                        yield s
-                    del partial[x]
-
-        elif y in partial: # this is defined, so either accept or not depending on the op
-
+        if len(open_symbols) == 0:
             if f0.check(partial):
+                # remove the fact and go on
                 for s in search_(partial, facts[1:], unique, max_depth, show=show):
                     yield s
 
+        elif len(open_symbols) == 1 and isinstance(f0, EqualityFact) and open_symbols[0] == f0.y:
+            # we can push an equality constraint
 
-        else:
-            # f,x defined but y is not, so push and recurse
             try:
-                v = app(partial[f], partial[x])
-                
-                if f0.op != '=':
-                    raise Exception("Cannot push non-equality constraint")
+                v = app(partial[f0.f], partial[f0.x])
 
-                if check_unique(partial, unique, y, v):
+                if check_unique(partial, unique, f0.y, v):
 
                     partial[y] = v
                     for s in search_(partial, facts[1:], unique, max_depth, show=show):
                         yield s
-                    del partial[y]
-
+                    del partial[f0.y]
             except ReductionException:
+                if f0.y in partial:  # hmm needed? In case we get a reduction exception? O
+                    del partial[f0.y]
+        else:
+            # define an open symbol
+            s = open_symbols[0]
 
-                if y in partial: # hmm needed? In case we get a reduction exception? O
-                    del partial[y]
+            for v in all_combinators(max_depth=max_depth, normal=True):
+                if check_unique(partial, unique, s, v):
+                    partial[s] = v  # add this and recurse
+                    for s in search_(partial, facts, unique, max_depth, show=show):
+                        yield s
+                    del partial[s]
 
-                pass
 
 
 
