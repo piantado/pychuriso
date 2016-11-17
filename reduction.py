@@ -114,7 +114,7 @@ def reduce_combinator(s):
                 y, yend = next_chunk(s, xend+1)
                 z, zend = next_chunk(s, yend+1)
 
-                s = s[:i] + '...' + x + z + y + s[zend+1:]
+                s = s[:i] + '..' + x + z + y + s[zend+1:]
 
                 stepped = True
                 break
