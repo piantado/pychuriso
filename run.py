@@ -123,12 +123,24 @@ def order_facts(start, facts):
             facts.remove(lst[0])
             continue
 
+        # otherwise pick the fact with the fewest dependents
+        bestval = 9e99
+        best = None
+        for f in facts:
+            fv = len(set(f.dependents())-defined)
+            if fv < bestval:
+                bestval = fv
+                best = f
+        facts.remove(f)
+        ofacts.append(f)
+        defined.update(f.dependents())
+
         # otherwise just pull the first fact (TODO: We can make this smart--pull facts that let us define more), pull facts that only need one f or x
         # TODO: Pick the one with the fewest dependents not in defined
-        f = facts[0]
-        ofacts.append(f)
-        del facts[0]
-        defined.update(f.dependents())
+        # f = facts[0]
+        # ofacts.append(f)
+        # del facts[0]
+        # defined.update(f.dependents())
 
 
     return ofacts

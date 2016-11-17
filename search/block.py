@@ -23,6 +23,7 @@ def search_(partial, facts, unique, max_depth, normal=True, show=False):
         f0 = facts[0]
 
         open_symbols = list(set(f0.dependents()) - set(partial.keys())) # what symbols do we need?
+        # print f0, open_symbols, partial
 
         if len(open_symbols) == 0:
             if f0.check(partial):
