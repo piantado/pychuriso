@@ -15,13 +15,15 @@ Usage:
 """
 
 from search.block import search
-from reduction import tostring,  app, ReductionException
+from reduction import tostring,  reduce_combinator, ReductionException
 from programs import is_normal_form
 from misc import is_gensym
 from copy import deepcopy
 import reduction
 from parser import load_source
 from Facts import compute_complexity, EqualityFact
+from combinators import substitute
+from misc import flatten
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -56,9 +58,8 @@ def display_winner(defines, solution, variables, facts, shows):
         print "%s := %s" % (k, tostring(v))
 
     for s, sf in shows:
-        d = deepcopy(solution)
         try:
-            update_defines(d, sf)
+            r = reduce_combinator(substitute(sf, solution))
         except ReductionException:
             d['*show*'] = 'NON-HALT'
 
@@ -116,7 +117,7 @@ def order_facts(start, facts):
             continue
 
         # next see if we can push any constraints
-        lst = [f for f in facts if isinstance(f, EqualityFact) and set([f.f, f.x]).issubset(defined)]  # anything we can push
+        lst = [f for f in facts if isinstance(f, EqualityFact) and f.can_push(defined)]  # anything we can push
         if len(lst) > 0:
             ofacts.append(lst[0]) # only push the first, since that may permit verifying facts
             defined.add(lst[0].y)
@@ -156,6 +157,9 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version="pychuriso 0.002")
 
     defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
+
+    print facts
+
 
     # Set the search basis
     import combinators
