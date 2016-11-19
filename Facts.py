@@ -1,115 +1,98 @@
-from reduction import app, ReductionException, reduce_combinator
+from reduction import ReductionException, reduce_combinator
+from combinators import substitute
+from misc import flatten
 
-class SimpleFact(object):
-    def __init__(self, f, x, y):
+class Fact(object):
+    # store a constraint, e.g. lhs=rhs, where = vs !=, etc. determined by subclassing
+    def __init__(self, lhs, rhs):
         # A constraint that (f x) = y (perhaps with other equality constraints)
         # where f, x, y are all single symbols
 
-        assert isinstance(f, str), "f must be a single symbol"
-        self.f = f
-
-        assert isinstance(x, str), "x must be a single symbol"
-        self.x = x
-
-        assert isinstance(y, str), "y must be a single symbol"
-        self.y = y
+        self.lhs = lhs
+        self.rhs = rhs
 
     def __repr__(self):
         return str(self)
+
+    def can_push(self, defined): # only can push Equality
+        return False
 
     def check(self, solution):
         raise NotImplementedError
 
     def dependents(self):
         # What symbols are we dependent on?
-        return [self.f, self.x, self.y]
+        return set(flatten(self.lhs)) | set(flatten(self.rhs))
 
-class EqualityFact(SimpleFact):
+class EqualityFact(Fact):
     def __str__(self):
-        return "Fact<(%s %s) = %s>" % (self.f, self.x, self.y)
+        return "Fact<%s = %s>" % (self.lhs, self.rhs)
+
+    def can_push(self, defined):
+        return isinstance(self.rhs, str) and \
+               self.rhs not in defined and \
+               set(flatten(self.lhs)).issubset(set(defined))
 
     def check(self, solution):
         try:
-            return app(solution[self.f], solution[self.x]) == solution[self.y]
+            return reduce_combinator(substitute(self.lhs, solution)) == reduce_combinator(substitute(self.rhs, solution))
         except ReductionException:
             return False
 
-class InEqualityFact(SimpleFact):
+class InEqualityFact(Fact):
     def __str__(self):
-        return "Fact<(%s %s) != %s>" % (self.f, self.x, self.y)
+        return "Fact<%s != %s>" % (self.lhs, self.rhs)
 
     def check(self, solution):
-        # print ">>", self
         try:
-            return app(solution[self.f], solution[self.x]) != solution[self.y]
+            return reduce_combinator(substitute(self.lhs, solution)) != reduce_combinator(substitute(self.rhs, solution))
         except ReductionException:
             return False
 
-class InFact(SimpleFact):
-    def __init__(self, x, y):
 
-        assert isinstance(x, str), "x must be a single symbol"
-        self.x = x
+class Disjunction(Fact):
+    def __init__(self, disjuncts):
+        self.disjuncts = disjuncts
 
-        self.y = y
-        for yi in y:
-            assert isinstance(yi, str), "yi must be a single symbol"
+    def add(self, x):
+        self.disjuncts.append(x)
 
     def __str__(self):
-        return "Fact<%s in %s>" % (self.x, set(self.y))
+        return "Disjunction<%s>" % tuple(self.disjuncts)
 
     def dependents(self):
-        return [self.x] + self.y # y is not a list of dependent symbols
+        deps = set()
+        for d in self.disjuncts:
+            deps.update(d.dependents())
+        return list(deps)
 
     def check(self, solution):
-        try:
-            xr = reduce_combinator(solution[self.x])
-        except ReductionException:
-            return False
-
-        for r in self.y:
+        for d in self.disjuncts:
             try:
-                if xr == reduce_combinator(solution[r]):
+                if d.check(solution):
                     return True
             except ReductionException:
                 pass
-
         return False
 
-
-class PartialEqualityFact(SimpleFact):
+class PartialEqualityFact(Fact):
     PARTIAL_LEN = 20
 
     def __str__(self):
-        return "Fact<(%s %s) ~= %s>" % (self.f, self.x, self.y)
+        return "Fact<%s ~= %s>" % (self.lhs, self.rhs)
 
     def check(self, solution):
         try:  # try this and store the value (partial computation) if we get an exception
-
-            lhs = app(solution[self.f], solution[self.x])
+            lhs = reduce_combinator(substitute(self.lhs, solution))
         except ReductionException as r:
             lhs = r.value
 
+        try:  # try this and store the value (partial computation) if we get an exception
+            rhs = reduce_combinator(substitute(self.rhs, solution))
+        except ReductionException as r:
+            rhs = r.value
+
         # and now compare the first PARTIAL_LEN characters to the y
-        return lhs[:self.PARTIAL_LEN] == self.y
+        return lhs[:self.PARTIAL_LEN] == rhs[:self.PARTIAL_LEN]
 
 
-
-
-def compute_complexity(defines, facts):
-    """ How many remaining searches through combinators do we need?
-        Our search is O(compute_complexity(defines, facts))
-     """
-
-    defined = set(defines.keys())
-    cplx = 0
-    for f in facts:
-        if isinstance(f, EqualityFact) and f.f in defined and f.x in defined:
-            defined.add(f.y) # can push
-        else:
-            # we face O(dependents) search
-            openset = set(f.dependents()) - defined
-            cplx += len(openset)
-            defined.update(openset)
-
-    return cplx

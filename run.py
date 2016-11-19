@@ -2,7 +2,7 @@
 
 Options:
 Usage:
-    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--show-gs] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
     -t --trace                  Display the search incrementally (used for debugging).
     --search-basis=<combinators>  The search basis [default: ISK].
@@ -15,13 +15,14 @@ Usage:
 """
 
 from search.block import search
-from reduction import tostring,  app, ReductionException
+from reduction import tostring,  reduce_combinator, ReductionException
 from programs import is_normal_form
-from misc import is_gensym
 from copy import deepcopy
 import reduction
 from parser import load_source
-from Facts import compute_complexity, EqualityFact
+from FactOrder import compute_complexity, order_facts
+from combinators import substitute
+from misc import flatten
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -45,9 +46,6 @@ def display_winner(defines, solution, variables, facts, shows):
     # print "# ---------- In search basis ----------"
     for k, v in solution.items():
 
-        if is_gensym(k) and not arguments['--show-gs']:
-            continue
-
         if k in variables:
             assert v==k
             continue
@@ -56,9 +54,8 @@ def display_winner(defines, solution, variables, facts, shows):
         print "%s := %s" % (k, tostring(v))
 
     for s, sf in shows:
-        d = deepcopy(solution)
         try:
-            update_defines(d, sf)
+            r = reduce_combinator(substitute(sf, solution))
         except ReductionException:
             d['*show*'] = 'NON-HALT'
 
@@ -88,7 +85,7 @@ def condensed_display(defines, solution, variables, facts, shows):
     for s, sf in shows:
         d = deepcopy(solution)
         try:
-            update_defines(d, sf)
+            r = reduce_combinator(substitute(sf, solution))
         except ReductionException:
             d['*show*'] = 'NON-HALT'
 
@@ -96,70 +93,6 @@ def condensed_display(defines, solution, variables, facts, shows):
         print "\"%s\"" % ','.join(list(equalset)),
 
     print "\n",
-
-
-
-def order_facts(start, facts):
-    """ Come up with an ordering of facts. For now just greedy """
-
-    defined = set(start.keys())
-    ofacts = [] # ordered version
-
-    while len(facts) > 0:
-
-        # first see if we can verify any facts (thus pruning the search)
-        lst = [f for f in facts if set(f.dependents()).issubset(defined) ]  # if everything is defined
-        if len(lst) > 0:
-            ofacts.extend(lst) # we can push them all
-            for f in lst:
-                facts.remove(f)
-            continue
-
-        # next see if we can push any constraints
-        lst = [f for f in facts if isinstance(f, EqualityFact) and set([f.f, f.x]).issubset(defined)]  # anything we can push
-        if len(lst) > 0:
-            ofacts.append(lst[0]) # only push the first, since that may permit verifying facts
-            defined.add(lst[0].y)
-            facts.remove(lst[0])
-            continue
-
-        # otherwise pick the fact with the fewest dependents
-        bestval = 9e99
-        best = None
-        for f in facts:
-            fv = len(set(f.dependents())-defined)
-            if fv < bestval:
-                bestval = fv
-                best = f
-        facts.remove(f)
-        ofacts.append(f)
-        defined.update(f.dependents())
-
-        # otherwise just pull the first fact (TODO: We can make this smart--pull facts that let us define more), pull facts that only need one f or x
-        # TODO: Pick the one with the fewest dependents not in defined
-        # f = facts[0]
-        # ofacts.append(f)
-        # del facts[0]
-        # defined.update(f.dependents())
-
-
-    return ofacts
-
-
-def update_defines(defined, facts):
-    # go through the facts, pushing updates to defines
-    # this is used to "eval" a complex expression
-    # thus, running this and looking at the appropriate item of defined is like evaling a complex expression
-
-    for f in facts:
-        assert isinstance(f, EqualityFact)
-
-        if f.y not in defined:
-            defined[f.y] = app(defined[f.f], defined[f.x])
-        else:
-            assert f.y == app(defined[f.f], defined[f.x])
-
-    return defined
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":

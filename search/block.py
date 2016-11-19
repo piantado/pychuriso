@@ -5,7 +5,6 @@ depth bound that is independent on each. This is dumb because depth n solutions 
 
 """
 from reduction import *
-from misc import is_gensym
 from combinators import all_combinators
 from Facts import *
 from misc import check_unique
@@ -31,17 +30,17 @@ def search_(partial, facts, unique, max_depth, normal=True, show=False):
                 for soln in search_(partial, facts[1:], unique, max_depth, normal=normal, show=show):
                     yield soln
 
-        elif isinstance(f0, EqualityFact) and f0.f in partial and f0.x in partial:
+        elif isinstance(f0, EqualityFact) and f0.can_push(partial):
             # we can push an equality constraint
             try:
-                v = app(partial[f0.f], partial[f0.x])
+                v = reduce_combinator(substitute(f0.lhs, partial))
 
                 if check_unique(partial, unique, f0.y, v):
 
-                    partial[f0.y] = v
+                    partial[f0.rhs] = v
                     for soln in search_(partial, facts[1:], unique, max_depth, normal=normal, show=show):
                         yield soln
-                    del partial[f0.y]
+                    del partial[f0.rhs]
             except ReductionException:
                 if f0.y in partial:  # hmm needed? In case we get a reduction exception? O
                     del partial[f0.y]

@@ -8,6 +8,7 @@ from lexer import tokens
 
 def p_line(p):
     """ line : statement
+             | disjunction
              | variable_statement
              | define_statement
              | unique_statement
@@ -56,32 +57,35 @@ def p_symlist(p):
 # combinator structures
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+
 def p_statement(p):
     """statement : struct EQ struct
                  | struct NEQ struct
-                 | struct PEQ struct
-                 | struct IN LB structlist RB"""
+                 | struct PEQ struct"""
+    op = p[2]
+    if op == '=':
+        p[0] = EqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
+    if op == '!=':
+        p[0] = InEqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
+    if op == '~=':
+        p[0] = PartialEqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
 
-    if p[2] == '=' or p[2] == '!=' or p[2] == '~=':
-        p[0] = ['statement', p[1], p[2], p[3]]
-    else:
-        assert p[2] == 'in'
-        p[0] = ['statement', p[1], 'in', p[4]]
+def p_disjunction(p):
+    """ disjunction : statement DISJ statement
+                    | disjunction DISJ statement"""
 
-# used in the RHS of "in" operations
-def p_structlist(p):
-    """ structlist : struct
-                   | structlist COMMA struct"""
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
+    if isinstance(p[1], Disjunction):
         p[0] = p[1]
-        p[1].append(p[3])
+        p[0].add(make_left_binary(p[3]))
+    else:
+        p[0] = Disjunction([make_left_binary(p[1]), make_left_binary(p[3])])
 
 def p_struct(p):
     """struct : SYM
               | struct struct
               | LP struct RP """
+    # This returns a list of lists for a structure
     if len(p) == 2: # SYM
         p[0] = p[1]
     elif len(p) == 3: # struct struct
@@ -114,7 +118,6 @@ parser = yacc.yacc()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from Facts import *
-from misc import gensym
 
 def make_left_binary(l):
     """
@@ -131,35 +134,6 @@ def make_left_binary(l):
         newl = [ [make_left_binary(l[0]), make_left_binary(l[1])] ]
         newl.extend(l[2:])
         return make_left_binary(newl)
-
-
-def make_facts_binary(l, to, op='=', y=None):
-    """
-    Take a l and decompose it into binary rules, putting them all into "to",
-    with the SimpleFact using op and (f x)=y.
-    """
-
-    l = make_left_binary(l)
-    f, x = l
-
-    if isinstance(f, list):
-        gs = gensym()
-        make_facts_binary(f, to, '=', gs) # these must be equals
-        f = gs
-
-    if isinstance(x, list):
-        gs = gensym()
-        make_facts_binary(x, to, '=', gs)
-        x = gs
-
-    if op == '=':
-        to.append(EqualityFact(f,x,y))
-    elif op == '!=':
-        to.append(InEqualityFact(f,x,y))
-    elif op == '~=':
-        to.append(PartialEqualityFact(f,x,y))
-    else:
-        assert False, "Bad fact type %s" % op
 
 def combinator_from_binary_list(l):
     # Takes a list like ['a', ['b', 'c']] and converts to .a.bc
@@ -199,63 +173,24 @@ def load_source(file):
 
             p = parser.parse(l)
 
-            t = p[0] # first thing is the kind of line we're handling
-            # print ">>", p
+            if isinstance(p, Fact):
+                facts.append(p)
+            else:
 
+                t = p[0] # first thing is the kind of line we're handling
 
-            # and update depending on what the line is
-            if t == 'define':
-                assert p[1] not in defines, "*** Duplicate define for %s " % p[1]
-                defines[p[1]] = combinator_from_binary_list(make_left_binary(p[2]))
-            elif t == 'unique':
-                uniques.append( p[1] )
-            elif t == 'variable':
-                variables.extend(p[1])
-            elif t == 'show':
+                # and update depending on what the line is
+                if t == 'define':
+                    assert p[1] not in defines, "*** Duplicate define for %s " % p[1]
+                    defines[p[1]] = combinator_from_binary_list(make_left_binary(p[2]))
+                elif t == 'unique':
+                    uniques.append( p[1] )
+                elif t == 'variable':
+                    variables.extend(p[1])
+                elif t == 'show':
 
-                p1b = make_left_binary(p[1])
+                    p1b = make_left_binary(p[1])
 
-                showfacts = []
-                make_facts_binary(p1b, showfacts, op='=', y='*show*')
-
-                shows.append( (string_from_binary_list(p1b), showfacts) )
-            elif t == 'statement':
-                lhs, op, rhs = p[1], p[2], p[3]
-
-                if op == 'in':
-                    if isinstance(lhs, list):  # must make a gs for it
-                        gs = gensym()
-                        make_facts_binary(lhs, facts, op='=',  y=gs)
-                        lhs = gs # for below
-
-                    # now for each rhs, make a binary symbol
-                    new_rhs = []
-                    for r in rhs:
-                        if isinstance(r, str): # just a symbol, can be stored as is
-                            new_rhs.append(r)
-                        else:
-                            assert isinstance(rhs, list) # a structure, so define a symbol
-                            gs = gensym()
-                            make_facts_binary(r, facts, op='=', y=gs)
-                            new_rhs.append(gs)
-                    # Now make the right kind of fact
-                    facts.append(InFact(lhs, new_rhs))
-
-                elif op == '=' or op == '!=' or op == '~=':
-
-                    if (not isinstance(lhs, list)) and (not isinstance(rhs, list)):
-                        assert False, "*** Cannot have symbol equality (x=y). Use I := (S K K), (I x) = y"
-
-                    if not isinstance(rhs, list):
-                        make_facts_binary(lhs, facts, op=op, y=rhs)
-                    elif not isinstance(lhs, list):
-                        make_facts_binary(rhs, facts, op=op, y=lhs)
-                    else:
-
-                        # if we are both lists, make a gensym
-                        assert isinstance(lhs, list) and isinstance(rhs, list)
-                        gs = gensym()
-                        make_facts_binary(lhs, facts, op='=', y=gs)  # one is equal to gs
-                        make_facts_binary(rhs, facts, op=op, y=gs)  # one is op-equal to gs
+                    shows.append( (string_from_binary_list(p1b), p1b) )
 
     return defines, variables, uniques, facts, shows

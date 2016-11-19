@@ -143,6 +143,12 @@ def next_combinator(c):
         if check_applies(c):
             return ''.join(c)
 
+def substitute(x, defns):
+    if isinstance(x, list):
+        assert len(x)==2
+        return '.'+substitute(x[0], defns)+substitute(x[1], defns)
+    else:
+        return defns.get(x,x)
 
 
 if __name__ == "__main__":
