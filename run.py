@@ -21,7 +21,7 @@ from misc import is_gensym
 from copy import deepcopy
 import reduction
 from parser import load_source
-from Facts import compute_complexity, EqualityFact
+from FactOrder import compute_complexity, order_facts
 from combinators import substitute
 from misc import flatten
 
@@ -89,7 +89,7 @@ def condensed_display(defines, solution, variables, facts, shows):
     for s, sf in shows:
         d = deepcopy(solution)
         try:
-            update_defines(d, sf)
+            r = reduce_combinator(substitute(sf, solution))
         except ReductionException:
             d['*show*'] = 'NON-HALT'
 
@@ -98,58 +98,6 @@ def condensed_display(defines, solution, variables, facts, shows):
 
     print "\n",
 
-
-
-def order_facts(start, facts):
-    """ Come up with an ordering of facts. For now just greedy """
-
-    defined = set(start.keys())
-    ofacts = [] # ordered version
-
-    while len(facts) > 0:
-
-        # first see if we can verify any facts (thus pruning the search)
-        lst = [f for f in facts if set(f.dependents()).issubset(defined) ]  # if everything is defined
-        if len(lst) > 0:
-            ofacts.extend(lst) # we can push them all
-            for f in lst:
-                facts.remove(f)
-            continue
-
-        # next see if we can push any constraints
-        lst = [f for f in facts if isinstance(f, EqualityFact) and f.can_push(defined)]  # anything we can push
-        if len(lst) > 0:
-            ofacts.append(lst[0]) # only push the first, since that may permit verifying facts
-            defined.add(lst[0].y)
-            facts.remove(lst[0])
-            continue
-
-        # otherwise just pull the first fact (TODO: We can make this smart--pull facts that let us define more), pull facts that only need one f or x
-        # TODO: Pick the one with the fewest dependents not in defined
-        f = facts[0]
-        ofacts.append(f)
-        del facts[0]
-        defined.update(f.dependents())
-
-
-    return ofacts
-
-
-def update_defines(defined, facts):
-    # go through the facts, pushing updates to defines
-    # this is used to "eval" a complex expression
-    # thus, running this and looking at the appropriate item of defined is like evaling a complex expression
-
-    for f in facts:
-        assert isinstance(f, EqualityFact)
-
-        if f.y not in defined:
-            defined[f.y] = app(defined[f.f], defined[f.x])
-        else:
-            assert f.y == app(defined[f.f], defined[f.x])
-
-    return defined
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":
 
@@ -157,9 +105,6 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version="pychuriso 0.002")
 
     defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
-
-    print facts
-
 
     # Set the search basis
     import combinators

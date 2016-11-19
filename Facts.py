@@ -1,8 +1,6 @@
-from reduction import app, ReductionException, reduce_combinator
-import collections
+from reduction import ReductionException, reduce_combinator
 from combinators import substitute
 from misc import flatten
-
 
 class Fact(object):
     # store a constraint, e.g. lhs=rhs, where = vs !=, etc. determined by subclassing
@@ -98,23 +96,3 @@ class PartialEqualityFact(Fact):
         return lhs[:self.PARTIAL_LEN] == rhs[:self.PARTIAL_LEN]
 
 
-
-
-def compute_complexity(defines, facts):
-    """ How many remaining searches through combinators do we need?
-        Our search is O(compute_complexity(defines, facts))
-     """
-
-    defined = set(defines.keys())
-    cplx = 0
-    for f in facts:
-        print f, f.dependents()
-        if isinstance(f, EqualityFact) and f.can_push(defines):
-            defined.add(f.rhs) # can push
-        else:
-            # we face O(dependents) search
-            openset = set(f.dependents()) - defined
-            cplx += len(openset)
-            defined.update(openset)
-
-    return cplx
