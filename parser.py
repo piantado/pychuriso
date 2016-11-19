@@ -9,6 +9,7 @@ from lexer import tokens
 def p_line(p):
     """ line : statement
              | disjunction
+             | in_statement
              | variable_statement
              | define_statement
              | unique_statement
@@ -81,6 +82,10 @@ def p_disjunction(p):
     else:
         p[0] = Disjunction([make_left_binary(p[1]), make_left_binary(p[3])])
 
+# def p_in_statement(p):
+#     """ in_statement : struct IN LB structlist RB """
+
+
 def p_struct(p):
     """struct : SYM
               | struct struct
@@ -110,8 +115,6 @@ def p_error(p):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 parser = yacc.yacc()
-
-# print parser.parse("f = ((g a) (b c) d e f)")
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Code for handling the tree structures of combinators

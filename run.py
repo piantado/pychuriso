@@ -22,7 +22,6 @@ import reduction
 from parser import load_source
 from FactOrder import compute_complexity, order_facts
 from combinators import substitute
-from misc import flatten
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -59,9 +58,9 @@ def display_winner(defines, solution, variables, facts, shows):
         except ReductionException:
             d['*show*'] = 'NON-HALT'
 
-        equalset = [ k for k in d.keys() if d[k]==d['*show*'] and k != "*show*" and not is_gensym(k) ]# which of our defines is this equal to?
+        equalset = [k for k in solution.keys() if solution[k] == r]  # which of our defines is this equal to?
 
-        print "show %s -> %s == {%s}" % (s, tostring(d['*show*']), ', '.join(equalset) )
+        print "show %s -> %s == {%s}" % (s, tostring(r), ', '.join(equalset))
 
     print "\0"
 

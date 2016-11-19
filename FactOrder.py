@@ -46,7 +46,7 @@ def compute_complexity(defines, facts):
     defined = set(defines.keys())
     cplx = 0
     for f in facts:
-        print f, f.dependents()
+        # print f, f.dependents()
         if isinstance(f, EqualityFact) and f.can_push(defines):
             defined.add(f.rhs) # can push
         else:

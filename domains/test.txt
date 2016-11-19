@@ -1,15 +1,7 @@
-#unique f x y
+unique x y
 
-#(f x) in {x,y}
-#(f y) in {x,y}
+(x y) = x | (x y) = y
 
-#show (f x)
-#show (f y)
-#show (x y)
-#show (y x)
-
-variable x y 
-
-(rk x y) = y
-
+show (x y)
+show (y x)
 

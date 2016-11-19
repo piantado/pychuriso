@@ -58,7 +58,7 @@ class Disjunction(Fact):
         self.disjuncts.append(x)
 
     def __str__(self):
-        return "Disjunction<%s>" % tuple(self.disjuncts)
+        return "Disjunction<%s>" % ','.join(map(str, self.disjuncts))
 
     def dependents(self):
         deps = set()
