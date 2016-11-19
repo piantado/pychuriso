@@ -2,7 +2,7 @@
 
 Options:
 Usage:
-    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--show-gs] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
     -t --trace                  Display the search incrementally (used for debugging).
     --search-basis=<combinators>  The search basis [default: ISK].
@@ -17,7 +17,6 @@ Usage:
 from search.block import search
 from reduction import tostring,  reduce_combinator, ReductionException
 from programs import is_normal_form
-from misc import is_gensym
 from copy import deepcopy
 import reduction
 from parser import load_source
@@ -46,9 +45,6 @@ def display_winner(defines, solution, variables, facts, shows):
 
     # print "# ---------- In search basis ----------"
     for k, v in solution.items():
-
-        if is_gensym(k) and not arguments['--show-gs']:
-            continue
 
         if k in variables:
             assert v==k

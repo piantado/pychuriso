@@ -118,7 +118,6 @@ parser = yacc.yacc()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from Facts import *
-from misc import gensym
 
 def make_left_binary(l):
     """
