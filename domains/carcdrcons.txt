@@ -15,7 +15,7 @@ unique car cons cdr
 x = (car (cons x y)) 
 y = (cdr (cons x y)) 
 
-variable x y 
+forall x y 
 
 
 

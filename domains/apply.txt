@@ -1,0 +1,4 @@
+forall f
+forall x
+
+(f x) = (apply f x)

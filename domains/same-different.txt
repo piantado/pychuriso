@@ -1,0 +1,24 @@
+# Look at same/different in a small toy domain
+# showing that you can learn each without knowing their relation
+
+unique true false
+
+true  = (same a a)
+true  = (same b b)
+
+false = (same a b)
+false = (same b a)
+
+false  = (different a a)
+false  = (different b b)
+
+true = (different a b)
+true = (different b a)
+
+forall x y 
+(different x y) = (not (same x y))
+
+
+
+
+

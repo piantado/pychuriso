@@ -1,9 +1,8 @@
 
-# Here is a version ith variables:
+# Here is a version ith foralls:
+
+forall f x 
 
 (f (f x)) = ((repeat f) x) 
 
-#show ((repeat (repeat %f)) %x) 
-
-variable f x 
 

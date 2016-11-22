@@ -1,0 +1,32 @@
+
+unique one two three four
+
+# Define integers through the first few meanings
+two = (succ one) 
+three = (succ two) 
+four = (succ three) 
+
+# And print these for everything we find:
+show (succ four) 
+show (succ (succ four)) 
+show (succ (succ (succ four))) 
+
+unique even odd
+True := (K K)
+
+True != (even one)
+True = (even two)
+True != (even three)
+True = (even four)
+
+True =  (odd one)
+True != (odd two)
+True =  (odd three)
+True != (odd four)
+
+show (even (succ four)) 
+show (even (succ (succ four))) 
+show (even (succ (succ (succ four)))) 
+show (odd (succ four)) 
+show (odd (succ (succ four))) 
+show (odd (succ (succ (succ four)))) 

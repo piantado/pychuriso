@@ -1,0 +1,10 @@
+
+unique True a b c
+True := (K K)
+
+True = (dom a b)
+show (dom a c)
+True != (dom b a)
+True = (dom b c)
+show (dom c a)
+True != (dom c b)
