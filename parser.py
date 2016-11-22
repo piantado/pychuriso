@@ -9,7 +9,6 @@ from lexer import tokens
 def p_line(p):
     """ line : statement
              | disjunction
-             | in_statement
              | variable_statement
              | define_statement
              | unique_statement

@@ -35,7 +35,7 @@ def search_(partial, facts, unique, max_depth, normal=True, show=False):
             try:
                 v = reduce_combinator(substitute(f0.lhs, partial))
 
-                if check_unique(partial, unique, f0.y, v):
+                if check_unique(partial, unique, f0.rhs, v):
 
                     partial[f0.rhs] = v
                     for soln in search_(partial, facts[1:], unique, max_depth, normal=normal, show=show):

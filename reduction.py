@@ -36,6 +36,7 @@ def reduce_combinator(s):
     """
     iters = 0
 
+
     while True:
         stepped = False
         iters += 1 # how many reduction steps have we taken?

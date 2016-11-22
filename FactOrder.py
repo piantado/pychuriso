@@ -24,7 +24,7 @@ def order_facts(start, facts):
         lst = [f for f in facts if isinstance(f, EqualityFact) and f.can_push(defined)]  # anything we can push
         if len(lst) > 0:
             ofacts.append(lst[0]) # only push the first, since that may permit verifying facts
-            defined.add(lst[0].y)
+            defined.add(lst[0].rhs)
             facts.remove(lst[0])
             continue
 
