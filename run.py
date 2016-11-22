@@ -77,7 +77,6 @@ def condensed_display(defines, solution, variables, facts, shows):
     # next get the counts of each combinator
     for c in 'SKIBCWETM':
         nc = sum([v.count(c) for v in solution.values()])
-        # print [v.count(c) for v in solution.values()]
         print nc,
 
     # and show the shows

@@ -8,7 +8,7 @@ from lexer import tokens
 
 def p_line(p):
     """ line : fact
-             | variable_statement
+             | forall_statement
              | define_statement
              | unique_statement
              | show_statement"""
@@ -19,12 +19,12 @@ def p_line(p):
 # Keywords
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def p_variable_statement(p):
-    """ variable_statement : VARIABLE_KW symlist"""
+def p_forall_statement(p):
+    """ forall_statement : FORALL_KW symlist"""
     for a in p[2]:
         assert len(a) == 1, "*** Variables must be single characters %s" % a
 
-    p[0] = ('variable', p[2])
+    p[0] = ('forall', p[2])
 
 def p_unique_statement(p):
     """ unique_statement : UNIQUE_KW symlist"""
@@ -200,7 +200,7 @@ def load_source(file):
                     defines[p[1]] = combinator_from_binary_list(make_left_binary(p[2]))
                 elif t == 'unique':
                     uniques.append( p[1] )
-                elif t == 'variable':
+                elif t == 'forall':
                     variables.extend(p[1])
                 elif t == 'show':
 

@@ -5,7 +5,7 @@ import ply.lex as lex
 tokens = ['LP', 'RP', 'SYM', 'EQ', 'NEQ', 'PEQ', 'ASSN', 'OR', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA']
 
 reserved = {
-    'variable' : 'VARIABLE_KW',
+    'forall'   : 'FORALL_KW',
     'unique'   : 'UNIQUE_KW',
     'show'     : 'SHOW_KW',
     'in'       : 'IN',

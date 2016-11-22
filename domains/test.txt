@@ -3,12 +3,14 @@ unique x y
 #(x x) in {x,y}
 #(y y) in {x,y}
 
+forall f
 
-(x x) in { (x y), y }
+(x f x) in { (x y), y }
 
 #(x y) = x | (x x) = x | (y y) = y 
 
 show (x y)
+show (x f x)
 show (x x)
 show (y y)
 
