@@ -154,28 +154,3 @@ if __name__ == "__main__":
             assert is_normal_form(rc), "*** Reduce should have returned normal form combinators"
         except ReductionException:
             print "*ReductionException*"'''
-    #
-    # print reduce('AAASAASSSKK')
-    # print reduce('AAASxyzww')
-    # print reduce('qqAAASxyz')
-    # print reduce('AAASxyz')
-    #
-    # print reduce('qqAAASxyzww')
-    print reduce_combinator('.....SKSKxy') # x
-    print reduce_combinator('..Kxy')# x
-    print reduce_combinator('....E.....SKKKxy..Kxyab')# a
-    print reduce_combinator('....E.....SKSKxy..Kxyab')# a
-    print reduce_combinator('....E.....KxySxyzab')# b
-    print reduce_combinator('....E.......KxySxyzKxySxyz')# Sxyz
-    print reduce_combinator('....SS.SKxy')
-    print reduce_combinator('.Txy') # Txy -> yx
-    print reduce_combinator('.Mx') # Mx -> xx
-    print reduce_combinator('.....S.KSKabc')
-    print reduce_combinator('...Bxyz')
-    print reduce_combinator('...Sxyz')
-    print reduce_combinator('..Wxy')
-    print reduce_combinator('.Ix')
-
-
-
-
