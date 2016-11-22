@@ -24,9 +24,23 @@ class Fact(object):
         # What symbols are we dependent on?
         return set(flatten(self.lhs)) | set(flatten(self.rhs))
 
+class NegationFact(Fact):
+    """ Negation of a fact """
+    def __init__(self, f):
+        self.fact = f
+
+    def __str__(self):
+        return "<not %s>" % (self.fact)
+
+    def check(self, solution):
+        return not self.fact.check(solution)
+
+    def dependents(self):
+        return self.fact.dependents()
+
 class EqualityFact(Fact):
     def __str__(self):
-        return "Fact<%s = %s>" % (self.lhs, self.rhs)
+        return "<%s = %s>" % (self.lhs, self.rhs)
 
     def can_push(self, defined):
         return isinstance(self.rhs, str) and \
@@ -41,7 +55,7 @@ class EqualityFact(Fact):
 
 class InEqualityFact(Fact):
     def __str__(self):
-        return "Fact<%s != %s>" % (self.lhs, self.rhs)
+        return "<%s != %s>" % (self.lhs, self.rhs)
 
     def check(self, solution):
         try:
@@ -49,6 +63,38 @@ class InEqualityFact(Fact):
         except ReductionException:
             return False
 
+class InFact(Fact):
+    def __init__(self, lhs, rhsset):
+        self.lhs = lhs
+        self.rhsset = rhsset
+
+    def __str__(self):
+        return "<%s in {%s}>" % (self.lhs, ', '.join([str(x) for x in self.rhsset]))
+
+    def add(self, v):
+        self.rhsset.add(v)
+
+    def dependents(self):
+        s = set(flatten(self.lhs))
+        for x in self.rhsset:
+            s = s | set(flatten(x))
+        return s
+
+    def check(self, solution):
+        try:
+            v = reduce_combinator(substitute(self.lhs, solution))
+        except ReductionException:
+            v = "*NOHALT*"
+
+        for x in self.rhsset:
+            try:
+                xv = reduce_combinator(substitute(x, solution))
+            except ReductionException:
+                xv = "*NOHALT*"
+
+            if xv == v:
+                return True
+        return False
 
 class Disjunction(Fact):
     def __init__(self, disjuncts):
@@ -58,7 +104,7 @@ class Disjunction(Fact):
         self.disjuncts.append(x)
 
     def __str__(self):
-        return "Disjunction<%s>" % ','.join(map(str, self.disjuncts))
+        return "<%s>" % '|'.join(map(str, self.disjuncts))
 
     def dependents(self):
         deps = set()
@@ -79,7 +125,7 @@ class PartialEqualityFact(Fact):
     PARTIAL_LEN = 20
 
     def __str__(self):
-        return "Fact<%s ~= %s>" % (self.lhs, self.rhs)
+        return "<%s ~= %s>" % (self.lhs, self.rhs)
 
     def check(self, solution):
         try:  # try this and store the value (partial computation) if we get an exception

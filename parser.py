@@ -7,8 +7,7 @@ from lexer import tokens
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def p_line(p):
-    """ line : statement
-             | disjunction
+    """ line : fact
              | variable_statement
              | define_statement
              | unique_statement
@@ -53,36 +52,50 @@ def p_symlist(p):
         p[0] = p[1]
         p[0].append(p[2])
 
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# combinator structures
+# Base combinator rules
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
-def p_statement(p):
-    """statement : struct EQ struct
-                 | struct NEQ struct
-                 | struct PEQ struct"""
-    op = p[2]
-    if op == '=':
+def p_fact(p):
+    """fact : struct EQ struct
+            | struct NEQ struct
+            | struct PEQ struct
+            | struct IN LBRACE fact_set RBRACE
+            | NOT fact
+            | LBRACKET fact RBRACKET
+            | fact OR fact """
+    if p[2] == '=':
         p[0] = EqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
-    if op == '!=':
+    elif p[2] == '!=':
         p[0] = InEqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
-    if op == '~=':
+    elif p[2] == '~=':
         p[0] = PartialEqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
+    elif p[2] == 'in':
+        p[0] = InFact(make_left_binary(p[1]), [make_left_binary(v) for v in p[4]])
+    elif p[1] == 'not':
+        assert isinstance(p[2], Fact)
+        p[0] = NegationFact(p[2])
+    elif p[1] == '[':
+        assert isinstance(p[2], Fact)
+        p[0] = p[2]
+    elif p[2] == '|':
+        if isinstance(p[1], Disjunction):
+            p[0] = p[1]
+            p[0].add(make_left_binary(p[3]))
+        else:
+            p[0] = Disjunction([make_left_binary(p[1]), make_left_binary(p[3])])
 
-def p_disjunction(p):
-    """ disjunction : statement DISJ statement
-                    | disjunction DISJ statement"""
 
-    if isinstance(p[1], Disjunction):
-        p[0] = p[1]
-        p[0].add(make_left_binary(p[3]))
+def p_fact_set(p):
+    """ fact_set : struct
+                 | struct COMMA struct"""
+    if len(p) == 2:
+        p[0] = [p[1]]
     else:
-        p[0] = Disjunction([make_left_binary(p[1]), make_left_binary(p[3])])
-
-# def p_in_statement(p):
-#     """ in_statement : struct IN LB structlist RB """
+        p[0] = p[1]
+        p[1].append(p[3])
 
 
 def p_struct(p):
@@ -178,7 +191,7 @@ def load_source(file):
             if isinstance(p, Fact):
                 facts.append(p)
             else:
-
+                print "#", l
                 t = p[0] # first thing is the kind of line we're handling
 
                 # and update depending on what the line is

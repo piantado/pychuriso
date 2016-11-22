@@ -2,12 +2,14 @@
 
 import ply.lex as lex
 
-tokens = ['LP', 'RP', 'SYM', 'EQ', 'NEQ', 'PEQ', 'ASSN', 'DISJ']
+tokens = ['LP', 'RP', 'SYM', 'EQ', 'NEQ', 'PEQ', 'ASSN', 'OR', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA']
 
 reserved = {
     'variable' : 'VARIABLE_KW',
     'unique'   : 'UNIQUE_KW',
-    'show'     : 'SHOW_KW'
+    'show'     : 'SHOW_KW',
+    'in'       : 'IN',
+    'not'      : 'NOT'
 }
 tokens += reserved.values()
 
@@ -19,7 +21,12 @@ t_EQ =   r'='
 t_NEQ = r'\!='
 t_ASSN = r':='
 t_PEQ  = r'\~='
-t_DISJ = r'\|'
+t_OR = r'\|'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
+t_COMMA = r','
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
 
 # Define symbols, anything allowed in an S-expressionn
 def t_SYM(t):

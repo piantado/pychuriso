@@ -1,7 +1,14 @@
 unique x y
 
-(x y) = x | (x y) = y
+#(x x) in {x,y}
+#(y y) in {x,y}
+
+
+(x x) in { (x y), y }
+
+#(x y) = x | (x x) = x | (y y) = y 
 
 show (x y)
-show (y x)
+show (x x)
+show (y y)
 
