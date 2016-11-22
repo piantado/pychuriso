@@ -90,12 +90,12 @@ def p_fact(p):
 
 def p_fact_set(p):
     """ fact_set : struct
-                 | struct COMMA struct"""
+                 | fact_set COMMA struct"""
     if len(p) == 2:
         p[0] = [p[1]]
     else:
         p[0] = p[1]
-        p[1].append(p[3])
+        p[0].append(p[3])
 
 
 def p_struct(p):

@@ -3,9 +3,11 @@ unique x y
 #(x x) in {x,y}
 #(y y) in {x,y}
 
-forall f
+forall f g
 
-(x f x) in { (x y), y }
+[not (f x) in {x,y,z}] | (f x) = f | (f x) = f
+
+#| (g x) = y | x = y
 
 #(x y) = x | (x x) = x | (y y) = y 
 
