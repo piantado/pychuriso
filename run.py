@@ -87,7 +87,7 @@ def condensed_display(defines, solution, variables, facts, shows):
         except ReductionException:
             r = 'NON-HALT'
 
-        equalset = [k for k in d.keys() if d[k] == d['*show*'] and k != "*show*" and not is_gensym(k)] # which of our defines is this equal to?
+        equalset = [k for k in solution.keys() if solution[k] == r] # which of our defines is this equal to?
         print "\"%s\"" % ','.join(list(equalset)),
 
     print "\n",
