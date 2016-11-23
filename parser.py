@@ -191,7 +191,6 @@ def load_source(file):
             if isinstance(p, Fact):
                 facts.append(p)
             else:
-                print "#", l
                 t = p[0] # first thing is the kind of line we're handling
 
                 # and update depending on what the line is
