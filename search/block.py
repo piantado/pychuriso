@@ -12,7 +12,7 @@ from misc import check_unique
 def search_(partial, facts, unique, max_depth, normal=True, show=False):
     """ Take a partial solution and some facts and enumerate the remaining solutions at this depth """
 
-    if show: print "Searching with partial ", max_depth, ["%s:%s"% (k,tostring(v))  for k,v in partial.items()  if not is_gensym(k) ], facts[:1]
+    if show: print "Searching with partial ", max_depth, ["%s:%s"% (k,tostring(v))  for k,v in partial.items()], facts[:1]
 
     if len(facts) == 0:
         # A good solution
