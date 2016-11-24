@@ -42,10 +42,12 @@ The base facts to be encoded are written in an input.txt file. Examples of these
 - dominance relations
 - propositional logic (e.g. brown cow)
 
-There are **4** keywords that can be used in the input file.
+There are key language features that can be used in the input file.
 >```unique```: each of the symbols following ```unique``` must be represented by distinct combinator structures.</br>
 >```define```: allows you to explicitly set a combinator structure for a specified symbol.</br>
->```variable```: functions like "for all", where anything of the form specified will map to the same symbol.</br>
+>```forall```: anything of the form specified will map to the same symbol.</br>
+>```not```: negation of facts. e.g. ```[not (f x) = y]```<br>
+
 >```show```: indicates to print out the solution to a new problem, given the combinators mapped to the base facts.</br>
 
 
@@ -54,7 +56,7 @@ parsing the input
 pychuriso has a parser to handle the input.txt file. This uses regular expressions to return:
 >```
     defines   = {}
-    variables = []
+    forall = []
     uniques   = []
     facts     = []
     shows     = dict()
