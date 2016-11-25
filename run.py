@@ -98,11 +98,11 @@ if __name__ == "__main__":
     from docopt import docopt
     arguments = docopt(__doc__, version="pychuriso 0.002")
 
-    defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
-
-    # Set the search basis
+    # Set the search basis (must happen before parsing or else it overwrites "add" keywords)
     import combinators
     combinators.set_search_basis(arguments['--search-basis'])
+
+    defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
 
     # set up the starting solution
     start = dict()

@@ -11,6 +11,7 @@ def p_line(p):
              | forall_statement
              | define_statement
              | unique_statement
+             | add_statement
              | show_statement"""
     # print "Line:", list(p)
     p[0] = p[1]
@@ -37,6 +38,11 @@ def p_show_statement(p):
 def p_define_statement(p):
     """ define_statement : SYM ASSN struct """
     p[0] = ('define', p[1], p[3])
+
+def p_add_statement(p):
+    """ add_statement : ADD_KW struct """
+    p[0] = ('add', p[2])
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # List of symbols
@@ -171,6 +177,7 @@ def string_from_binary_list(l):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import re
+import combinators
 
 def load_source(file):
 
@@ -201,6 +208,8 @@ def load_source(file):
                     uniques.append( p[1] )
                 elif t == 'forall':
                     variables.extend(p[1])
+                elif t == 'add': # add to the search basis
+                    combinators.add_to_search_basis(combinator_from_binary_list(make_left_binary(p[1])))
                 elif t == 'show':
 
                     p1b = make_left_binary(p[1])

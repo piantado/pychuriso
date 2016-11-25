@@ -34,12 +34,16 @@ def set_search_basis(combinators):
     SEARCH_BASIS = []
     for cstr, c, sk in re.findall("(([A-Z])(sk)?)", combinators):
         if sk == 'sk':
-            SEARCH_BASIS.append(combinator2program[c])
+            add_to_search_basis(combinator2program[c])
         elif sk == '':
-            SEARCH_BASIS.append(c)
+            add_to_search_basis(c)
         else:
             raise Exception("Bad sk type in combinator string: "+cstr)
 
+def add_to_search_basis(c):
+    global SEARCH_BASIS
+
+    SEARCH_BASIS.append(c)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Enumeration of combinators

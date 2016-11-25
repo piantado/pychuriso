@@ -5,6 +5,7 @@ depth bound that is independent on each. This is dumb because depth n solutions 
 
 """
 from reduction import *
+import combinators
 from combinators import all_combinators
 from Facts import *
 from misc import check_unique
