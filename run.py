@@ -33,7 +33,7 @@ def get_reduction_count(soln, facts):
         assert f.check(soln), f  # run all of the applies
     return reduction.GLOBAL_REDUCE_COUNTER - start
 
-def display_winner(defines, solution, variables, facts, shows):
+def display_winner(defines, solution, facts, shows):
     """ Display a solution. This is zero-delimited so we can sort -z, with run times and lengths at the top """
 
     print "################################################################################"
@@ -44,10 +44,6 @@ def display_winner(defines, solution, variables, facts, shows):
 
     # print "# ---------- In search basis ----------"
     for k, v in solution.items():
-
-        if k in variables:
-            assert v==k
-            continue
 
         assert k in defines or is_normal_form(v)
         print "%s := %s" % (k, tostring(v))
@@ -65,7 +61,7 @@ def display_winner(defines, solution, variables, facts, shows):
     print "\0"
 
 
-def condensed_display(defines, solution, variables, facts, shows):
+def condensed_display(defines, solution, facts, shows):
     """
         A single-line output, of the type that might be used for grammar inference
         This prints out the solution unmber, total length, reduction count, counts for a bunch of combinators
@@ -117,9 +113,9 @@ if __name__ == "__main__":
     for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
 
         if arguments['--condensed']:
-            condensed_display(symbolTable, solution, variables, facts, shows)
+            condensed_display(symbolTable, solution, facts, shows)
         else:
-            display_winner(symbolTable, solution, variables, facts, shows)
+            display_winner(symbolTable, solution, facts, shows)
 
         if TOTAL_SOLUTION_COUNT >= MAX_FIND:
             break

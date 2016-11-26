@@ -6,6 +6,7 @@ tokens = ['LP', 'RP', 'SYM', 'EQ', 'NEQ', 'PEQ', 'ASSN', 'OR', 'LBRACE', 'RBRACE
 
 reserved = {
     'forall'   : 'FORALL_KW',
+    'symbol'   : 'SYMBOL_KW',
     'unique'   : 'UNIQUE_KW',
     'add'      : 'ADD_KW',
     'show'     : 'SHOW_KW',

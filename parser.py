@@ -21,7 +21,8 @@ def p_line(p):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def p_forall_statement(p):
-    """ forall_statement : FORALL_KW symlist"""
+    """ forall_statement : FORALL_KW symlist
+                         | SYMBOL_KW symlist"""
     for a in p[2]:
         assert len(a) == 1, "*** Variables must be single characters %s" % a
 

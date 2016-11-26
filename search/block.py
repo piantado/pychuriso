@@ -56,8 +56,9 @@ def search_(partial, facts, unique, max_depth, basis, normal=True, show=False):
 
 
 from copy import deepcopy
-def search(start, facts, unique, max_depth, basis, **kwargs):
+def search(start, facts, unique, max_depth, basis, quiet=False, **kwargs):
     for d in xrange(max_depth):
-        print "# Increasing depth to", d
+        if not quiet:
+            print "# Increasing depth to", d
         for soln in search_(deepcopy(start), facts, unique, d, basis, **kwargs):
             yield soln

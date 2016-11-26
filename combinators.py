@@ -100,44 +100,6 @@ def get_depth(c):
     """ What depth would c have been enumerated on? """
     return (len(c)-1)/2
 
-def check_applies(c):
-    """ Make sure the condition on applies is satisfied (st the number of arguments is correct) """
-    nopen = 1
-    for ci in c:
-        if nopen == 0: return False # cannot have anything once we hit zero
-
-        if ci=='S':
-            nopen -= 1
-        elif ci == 'K':
-            nopen -= 1
-        elif ci == '.':
-            nopen += 1 # we fill one, but we open two
-
-        if nopen < 0: return False # cannot go below zero
-    return nopen==0 # good only if we exit with no applies open
-
-
-def next_combinator(c):
-    """ A string-based counter for combinators. Right now, very stupid and slow and only works for SK"""
-    c = list(c)
-    while True:
-
-        for i in xrange(len(c)):
-            if c[i] == 'S':
-                c[i] = 'K'
-                break
-            elif c[i] == 'K':
-                c[i] = '.'
-                break
-            elif c[i] == '.':
-                c[i] = 'S'
-                # no break, to carry
-
-                if i == len(c)-1: # if we carry on the last
-                    c =['S'] * (len(c)+1)
-
-        if check_applies(c):
-            return ''.join(c)
 
 def substitute(x, defns):
     if isinstance(x, list):
@@ -146,17 +108,3 @@ def substitute(x, defns):
     else:
         return defns.get(x,x)
 
-
-if __name__ == "__main__":
-    #
-    c = 'S'
-    while True:
-        print ''.join(c)
-        c = next_combinator(c)
-        if(len(c)) >= 14: break;
-
-    # for c in all_combinators():
-    #     # print get_depth(c), c
-    #     # assert check_applies(c)
-    #     print ''.join(c)
-    #     if(len(c)) >= 14: break;

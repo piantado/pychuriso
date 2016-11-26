@@ -23,3 +23,8 @@ def flatten(l):
                     yield sub
             else:
                 yield el
+
+def q(x):
+    return "'%s'"%str(x)
+def qq(x):
+    return "\"%s\""%str(x)
