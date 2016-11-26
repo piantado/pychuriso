@@ -96,13 +96,13 @@ def condensed_display(defines, solution, variables, facts, shows):
 if __name__ == "__main__":
 
     from docopt import docopt
-    arguments = docopt(__doc__, version="pychuriso 0.002")
+    arguments = docopt(__doc__, version="pychuriso 0.01")
 
     # Set the search basis (must happen before parsing or else it overwrites "add" keywords)
     basis = basis_from_argstring(arguments['--search-basis'])
 
     symbolTable, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
-    load_source(arguments['<input>'], symbolTable, uniques, facts, shows, basis)
+    load_source(arguments['<input>'], symbolTable, uniques, facts, shows, basis) # modifies the arguments
 
     # test out the ordering of facts
     if not arguments['--no-order']:
