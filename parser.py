@@ -179,7 +179,7 @@ def string_from_binary_list(l):
 import re
 import combinators
 
-def load_source(file, defines, variables, uniques, facts, shows, basis):
+def load_source(file, symbolTable, uniques, facts, shows, basis):
 
     with open(file) as f:
         for l in f:
@@ -196,12 +196,13 @@ def load_source(file, defines, variables, uniques, facts, shows, basis):
 
                 # and update depending on what the line is
                 if t == 'define':
-                    assert p[1] not in defines, "*** Duplicate define for %s " % p[1]
-                    defines[p[1]] = combinator_from_binary_list(make_left_binary(p[2]))
+                    assert p[1] not in symbolTable, "*** Duplicate define for %s " % p[1]
+                    symbolTable[p[1]] = combinator_from_binary_list(make_left_binary(p[2]))
                 elif t == 'unique':
                     uniques.append( p[1] )
                 elif t == 'forall':
-                    variables.extend(p[1])
+                    for v in p[1]:
+                        symbolTable[v] = v # variables are stored as themselves
                 elif t == 'add': # add to the search basis
                     basis.append(combinator_from_binary_list(make_left_binary(p[1])))
                 elif t == 'show':

@@ -101,30 +101,25 @@ if __name__ == "__main__":
     # Set the search basis (must happen before parsing or else it overwrites "add" keywords)
     basis = basis_from_argstring(arguments['--search-basis'])
 
-    defines, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
-    load_source(arguments['<input>'], defines, variables, uniques, facts, shows, basis)
-
-    # set up the starting solution
-    start = dict()
-    for d,v in defines.items(): start[d] = v  # add the defines
-    for v in variables:         start[v] = v  # variables have themselves as values, already asserted to be single chars
+    symbolTable, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
+    load_source(arguments['<input>'], symbolTable, uniques, facts, shows, basis)
 
     # test out the ordering of facts
     if not arguments['--no-order']:
-        facts = order_facts(start, facts)
-        print "# Best fact ordering: yielding score %s" % compute_complexity(defines, facts), facts
+        facts = order_facts(symbolTable, facts)
+        print "# Best fact ordering: yielding score %s" % compute_complexity(symbolTable, facts), facts
     else:
-        print "# Running with fact ordering %s" % compute_complexity(defines, facts), facts
+        print "# Running with fact ordering %s" % compute_complexity(symbolTable, facts), facts
 
     MAX_FIND = int(arguments['--max-find'])
 
     # Now do the search
-    for solution in search(start, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
+    for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
 
         if arguments['--condensed']:
-            condensed_display(defines, solution, variables, facts, shows)
+            condensed_display(symbolTable, solution, variables, facts, shows)
         else:
-            display_winner(defines, solution, variables, facts, shows)
+            display_winner(symbolTable, solution, variables, facts, shows)
 
         if TOTAL_SOLUTION_COUNT >= MAX_FIND:
             break
