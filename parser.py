@@ -12,6 +12,7 @@ def p_line(p):
              | define_statement
              | unique_statement
              | add_statement
+             | addr_statement
              | show_statement"""
     # print "Line:", list(p)
     p[0] = p[1]
@@ -44,6 +45,12 @@ def p_add_statement(p):
     """ add_statement : ADD_KW struct """
     p[0] = ('add', p[2])
 
+
+def p_addr_statement(p):
+    """ addr_statement : ADDR_KW SYM """
+    # this is an "add raw" that will add things to the search basis, but not parse them as combinator structures
+    # We may want this to add "symbols" to the search basis
+    p[0] = ('addr', p[2])
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # List of symbols
@@ -206,6 +213,8 @@ def load_source(file, symbolTable, uniques, facts, shows, basis):
                         symbolTable[v] = v # variables are stored as themselves
                 elif t == 'add': # add to the search basis
                     basis.append(combinator_from_binary_list(make_left_binary(p[1])))
+                elif t == 'addr':  # add raw dot string to combinator basis
+                    basis.append(p[1])
                 elif t == 'show':
 
                     p1b = make_left_binary(p[1])

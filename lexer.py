@@ -9,6 +9,7 @@ reserved = {
     'symbol'   : 'SYMBOL_KW',
     'unique'   : 'UNIQUE_KW',
     'add'      : 'ADD_KW',
+    'addr'     : 'ADDR_KW', #raw add -- expects ...SKW... string
     'show'     : 'SHOW_KW',
     'in'       : 'IN',
     'not'      : 'NOT'
