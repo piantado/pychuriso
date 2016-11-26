@@ -179,13 +179,7 @@ def string_from_binary_list(l):
 import re
 import combinators
 
-def load_source(file):
-
-    defines   = {}
-    variables = []
-    uniques   = []
-    facts     = []
-    shows     = []
+def load_source(file, defines, variables, uniques, facts, shows, basis):
 
     with open(file) as f:
         for l in f:
@@ -209,11 +203,9 @@ def load_source(file):
                 elif t == 'forall':
                     variables.extend(p[1])
                 elif t == 'add': # add to the search basis
-                    combinators.add_to_search_basis(combinator_from_binary_list(make_left_binary(p[1])))
+                    basis.append(combinator_from_binary_list(make_left_binary(p[1])))
                 elif t == 'show':
 
                     p1b = make_left_binary(p[1])
 
                     shows.append( (string_from_binary_list(p1b), p1b) )
-
-    return defines, variables, uniques, facts, shows

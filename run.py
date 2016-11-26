@@ -21,7 +21,7 @@ from copy import deepcopy
 import reduction
 from parser import load_source
 from FactOrder import compute_complexity, order_facts
-from combinators import substitute
+from combinators import substitute, basis_from_argstring
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -99,10 +99,10 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version="pychuriso 0.002")
 
     # Set the search basis (must happen before parsing or else it overwrites "add" keywords)
-    import combinators
-    combinators.set_search_basis(arguments['--search-basis'])
+    basis = basis_from_argstring(arguments['--search-basis'])
 
-    defines, variables, uniques, facts, shows =  load_source(arguments['<input>'])
+    defines, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
+    load_source(arguments['<input>'], defines, variables, uniques, facts, shows, basis)
 
     # set up the starting solution
     start = dict()
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     MAX_FIND = int(arguments['--max-find'])
 
     # Now do the search
-    for solution in search(start, facts, uniques, int(arguments['--max-depth']), normal=not arguments['--not-normal-form'], show=arguments['--trace']):
+    for solution in search(start, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
 
         if arguments['--condensed']:
             condensed_display(defines, solution, variables, facts, shows)
