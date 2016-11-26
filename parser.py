@@ -192,6 +192,10 @@ def load_source(file, symbolTable, uniques, facts, shows, basis):
     with open(file) as f:
         for l in f:
             l = l.strip() # remove whitespace
+
+            # strip comments
+            l = re.sub(r"#.+$", "", l)
+
             if re.match(r"\s*#", l): continue # skip comments
             if not re.match(r"[^\s]", l): continue # skip whitespace
 
