@@ -14,6 +14,7 @@ Usage:
     --no-order                    Do not re-order the constraints
 """
 
+import sys
 from search.block import search
 from reduction import tostring,  reduce_combinator, ReductionException
 from programs import is_normal_form
@@ -59,6 +60,7 @@ def display_winner(defines, solution, facts, shows):
         print "show %s -> %s == {%s}" % (s, tostring(r), ', '.join(equalset))
 
     print "\0"
+    sys.stdout.flush()
 
 
 def condensed_display(defines, solution, facts, shows):
@@ -87,6 +89,7 @@ def condensed_display(defines, solution, facts, shows):
         print "\"%s\"" % ','.join(list(equalset)),
 
     print "\n",
+    sys.stdout.flush()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":
