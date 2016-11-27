@@ -1,0 +1,19 @@
+# Not a true list reversal since it changes the tree order (should be append rather than cons on the rhs)
+# or see associate example 
+
+# Add cons
+add ((B C) (C I))
+cons := ((B C) (C I))
+
+forall x y
+
+(reverse (cons x y)) ~= (cons (reverse y) x)
+
+
+# (cons a (cons b (cons c d)))
+# (cons  (cons b (cons c d)) a)
+# (cons  (cons (cons c d) b) a)
+# (cons  (cons (cons d c) b) a)
+
+
+
