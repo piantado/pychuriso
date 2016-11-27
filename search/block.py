@@ -41,8 +41,8 @@ def search_(partial, facts, unique, max_depth, basis, normal=True, show=False):
                         yield soln
                     del partial[f0.rhs]
             except ReductionException:
-                if f0.y in partial:  # hmm needed? In case we get a reduction exception? O
-                    del partial[f0.y]
+                if f0.rhs in partial:  # hmm needed? In case we get a reduction exception? O
+                    del partial[f0.rhs]
         else:
             # define an open symbol
             s = open_symbols[0]
