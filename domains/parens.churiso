@@ -1,0 +1,22 @@
+
+unique a ac b bc c cc d dc
+
+(next a) = b
+(next (a b)) = bc
+(next (a b bc)) = ac
+
+(next c) = d
+(next (c d)) = dc
+(next (c d dc)) = cc
+
+(next (a c))   in {a, ac, b, bc, c, cc, d, dc}
+(next (a c cc)) in {a, ac, b, bc, c, cc, d, dc}
+(next (c b))   in {a, ac, b, bc, c, cc, d, dc}
+(next (c b bc)) in {a, ac, b, bc, c, cc, d, dc}
+
+show (next (a c))
+show (next (a c cc))
+show (next (c b))
+show (next (c b bc))
+
+

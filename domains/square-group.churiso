@@ -1,0 +1,23 @@
+# https://proofwiki.org/wiki/Definition:Symmetry_Group_of_Rectangle/Cayley_Table
+
+unique e r h v
+
+(e e) = e
+(e r) = r
+(e h) = h
+(e v) = v
+
+(r e) = r
+(r r) = e
+(r h) = v
+(r v) = h
+
+(h e) = h
+(h r) = v
+(h h) = e
+(h v) = r
+
+(v e) = v
+(v r) = h
+(v h) = r
+(v v) = e

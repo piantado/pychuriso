@@ -6,5 +6,7 @@ forall f
 
 (f (Y f)) ~= (Y f)
 
+(succ one) := two
+(succ two) ~= three
 
 

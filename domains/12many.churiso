@@ -1,0 +1,6 @@
+unique one two many
+
+two  = (succ one)
+many = (succ two)
+many = (succ many)
+

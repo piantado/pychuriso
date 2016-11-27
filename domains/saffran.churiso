@@ -1,0 +1,24 @@
+# I wonder if we can form some "words" and learn?
+# tupiro, golabu, bidaku, padoti
+
+# So with hard logical constraints, we shouldn't be able to learn much here -- we will form representations
+# that are consistent with anyting (in the limit) that we see. 
+
+
+unique tu pi ro   go la bu   bi da ku   pa do ti
+
+observed = (tu pi ro go la bu bi da ku pa do ti)
+observed = (pa do ti tu pi ro bi da ku go la bu pa do ti go la bu)
+
+observed = (pa do ti tu pi ro bi da ku go la bu)
+observed = (pa do ti go la bu tu pi ro bi da ku go la bu)
+
+show (tu pi ro)
+show (go la bu)
+show (bi da ku)
+show (pa do ti)
+
+show (tu pi tu)
+show (go la la)
+show (pi ro go)
+show (la bu bi)

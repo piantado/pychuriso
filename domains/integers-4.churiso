@@ -1,0 +1,16 @@
+unique one two three four five
+
+# Define integers through the first few meanings
+two = (succ one) 
+three = (succ two) 
+four = (succ three) 
+five = (succ four) 
+
+# And print these for everything we find:
+show (succ five) 
+show (succ (succ five)) 
+show (succ (succ (succ five))) 
+
+# limit a little to help our search
+#limit one 4
+

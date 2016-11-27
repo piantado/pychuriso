@@ -110,6 +110,7 @@ if __name__ == "__main__":
     MAX_FIND = int(arguments['--max-find'])
 
     # Now do the search
+    print "# Using search basis ", basis
     for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
 
         if arguments['--condensed']:

@@ -1,0 +1,9 @@
+unique one two many
+
+two = (plus one one)
+many = (plus two one)
+many = (plus one two)
+many = (plus two two)
+many = (plus many two)
+many = (plus two many)
+many = (plus many many)

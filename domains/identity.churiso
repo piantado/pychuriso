@@ -1,0 +1,5 @@
+unique f x
+
+x = (f x)
+
+show (f x)

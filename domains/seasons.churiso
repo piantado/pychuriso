@@ -1,0 +1,9 @@
+unique fall winter spring summer
+
+# Define integers through the first few meanings
+fall   = (after summer) 
+winter = (after fall) 
+spring = (after winter) 
+summer = (after spring) 
+
+

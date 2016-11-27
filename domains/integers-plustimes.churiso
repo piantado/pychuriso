@@ -1,0 +1,51 @@
+unique one two three four five six seven eight
+
+# Define integers through the first few meanings
+two = (succ one) 
+three = (succ two) 
+four = (succ three) 
+five = (succ four) 
+six = (succ five) 
+seven = (succ six) 
+eight = (succ seven) 
+
+# Addition
+
+two = (plus one one)
+three = (plus one two)
+four = (plus one three)
+five = (plus one four)
+
+three = (plus two one)
+four = (plus two two)
+five = (plus two three)
+six = (plus two four)
+
+four = (plus three one)
+five = (plus three two)
+six = (plus three three)
+seven = (plus three four)
+
+five = (plus four one)
+six = (plus four two)
+seven = (plus four three)
+eight = (plus four four)
+
+# Multiplication
+
+one  = (times one one)
+two = (times one two)
+three = (times one three)
+four = (times one four)
+
+two  = (times two one)
+four = (times two two)
+six = (times two three)
+eight = (times two four)
+
+three  = (times three one)
+six = (times three two)
+
+four  = (times four one)
+eight = (times four two)
+

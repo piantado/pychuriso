@@ -1,0 +1,9 @@
+# Y* is the mutual recursion Y combinator
+
+forall f g
+
+(f (g (Y* f g))) ~= (Y* f g)
+
+
+
+

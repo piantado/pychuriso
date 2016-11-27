@@ -1,0 +1,8 @@
+
+forall x y
+
+(y x) = (reverse x y)
+
+
+
+

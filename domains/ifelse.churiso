@@ -1,0 +1,12 @@
+
+true  := (K K)
+false := K
+
+forall x y
+
+x = (ifelse true x y)
+y = (ifelse false x y)
+
+
+
+

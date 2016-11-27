@@ -1,0 +1,23 @@
+# Group of symmetries of a rectangle (compose e.g. F)
+#https://en.wikipedia.org/wiki/Dihedral_group
+#https://en.wikipedia.org/wiki/Examples_of_groups#dihedral_group_of_order_8
+
+unique e a a2 a3 b ba ba2 ba3 
+
+# Just directly encode this graph: 
+# https://upload.wikimedia.org/wikipedia/commons/5/58/Cayley_Graph_of_Dihedral_Group_D4.svg
+
+a  = (compose a e)
+a2 = (compose a a)
+a3 = (compose a a2)
+e  = (compose a a3)
+
+ba = (compose b a)
+ba2 = (compose b a2)
+ba3 = (compose b a3)
+b = (compose b e)
+
+ba = (compose a ba2)
+b  = (compose a ba)
+ba3 = (compose a b)
+ba2 = (compose a ba3)

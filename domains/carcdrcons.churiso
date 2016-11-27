@@ -11,11 +11,12 @@ unique car cons cdr
 # If we want to fix this to have one value
 #define car ((S C K) I)
 #define car (K)
+forall x y 
 
 x = (car (cons x y)) 
 y = (cdr (cons x y)) 
 
-forall x y 
+
 
 
 
