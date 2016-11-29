@@ -47,7 +47,7 @@ There are key language features that can be used in the input file.
 >```define```: allows you to explicitly set a combinator structure for a specified symbol.</br>
 >```forall```: anything of the form specified will map to the same symbol.</br>
 >```not```: negation of facts. e.g. ```[not (f x) = y]```<br>
-> Complex logical expressions are also allowed, using python syntax. (e.g. [not (f x) in {a,b,c,d}] | (g x) = y | x = y)<br>
+> Complex logical expressions are also allowed. (e.g. [not (f x) in {a,b,c,d}] | (g x) = y | x = y)<br>
 >```show```: indicates to print out the solution to a new problem, given the combinators mapped to the base facts.</br>
 
 
