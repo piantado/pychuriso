@@ -1,0 +1,9 @@
+unique a b c
+I:= (S K K)
+
+a = (a a)
+c = (I c)
+b = (I b)
+
+
+
