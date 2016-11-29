@@ -1,0 +1,21 @@
+# A working memory system capable of tracking just a few 
+# items, derived from combinator structures
+
+unique x xx xxx empty fail
+unique add_ sub
+
+# can add and remove from the empty set
+x    = (add_ empty)
+xx   = (add_ x)
+xxx  = (add_ xx)
+fail = (add_ xxx)
+fail = (add_ fail)
+
+empty = (sub x)
+x     = (sub xx)
+xx    = (sub xxx)
+fail  = (sub fail)
+
+
+
+

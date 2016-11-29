@@ -1,175 +1,226 @@
-"""
-Parsing routines for churiso source files. NOTE: This currently only handles binary rules
-"""
+import ply.yacc as yacc
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Parse single S-expressions, and statements (e.g. (f x) = (g (f y))
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+from lexer import tokens
 
-import pyparsing as pp
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Each line of source
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-w = pp.Word(pp.alphanums+'%_*-')
-lp = pp.Suppress("(")
-rp = pp.Suppress(")")
+def p_line(p):
+    """ line : fact
+             | forall_statement
+             | define_statement
+             | unique_statement
+             | add_statement
+             | addr_statement
+             | show_statement"""
+    # print "Line:", list(p)
+    p[0] = p[1]
 
-sexp = pp.Forward()
-sexp << (w | pp.Group(lp + pp.OneOrMore(sexp) + rp))
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Keywords
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-op = pp.Literal("=") | pp.Literal("!=")
-statement = pp.Group(sexp + op + sexp)
+def p_forall_statement(p):
+    """ forall_statement : FORALL_KW symlist
+                         | SYMBOL_KW symlist"""
+    for a in p[2]:
+        assert len(a) == 1, "*** Variables must be single characters %s" % a
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Convert a complex s-expression into a bunch of binary ones
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    p[0] = ('forall', p[2])
 
-from misc import gensym
-from SimpleFact import SimpleFact
+def p_unique_statement(p):
+    """ unique_statement : UNIQUE_KW symlist"""
+    p[0] = ('unique', p[2])
+
+def p_show_statement(p):
+    """ show_statement : SHOW_KW struct"""
+    p[0] = ('show', p[2])
+
+def p_define_statement(p):
+    """ define_statement : SYM ASSN struct """
+    p[0] = ('define', p[1], p[3])
+
+def p_add_statement(p):
+    """ add_statement : ADD_KW struct """
+    p[0] = ('add', p[2])
 
 
-def treeize(l):
+def p_addr_statement(p):
+    """ addr_statement : ADDR_KW SYM """
+    # this is an "add raw" that will add things to the search basis, but not parse them as combinator structures
+    # We may want this to add "symbols" to the search basis
+    p[0] = ('addr', p[2])
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# List of symbols
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# a list of symbols
+def p_symlist(p):
+    """ symlist : SYM
+                | symlist SYM """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1]
+        p[0].append(p[2])
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Base combinator rules
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def p_fact(p):
+    """fact : struct EQ struct
+            | struct NEQ struct
+            | struct PEQ struct
+            | struct IN LBRACE fact_set RBRACE
+            | NOT fact
+            | LBRACKET fact RBRACKET
+            | fact OR fact """
+    if p[2] == '=':
+        p[0] = EqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
+    elif p[2] == '!=':
+        p[0] = InEqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
+    elif p[2] == '~=':
+        p[0] = PartialEqualityFact(make_left_binary(p[1]), make_left_binary(p[3]))
+    elif p[2] == 'in':
+        p[0] = InFact(make_left_binary(p[1]), [make_left_binary(v) for v in p[4]])
+    elif p[1] == 'not':
+        assert isinstance(p[2], Fact)
+        p[0] = NegationFact(p[2])
+    elif p[1] == '[':
+        assert isinstance(p[2], Fact)
+        p[0] = p[2]
+    elif p[2] == '|':
+        if isinstance(p[1], Disjunction):
+            p[0] = p[1]
+            p[0].add(make_left_binary(p[3]))
+        else:
+            p[0] = Disjunction([make_left_binary(p[1]), make_left_binary(p[3])])
+
+
+def p_fact_set(p):
+    """ fact_set : struct
+                 | fact_set COMMA struct"""
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1]
+        p[0].append(p[3])
+
+
+def p_struct(p):
+    """struct : SYM
+              | struct struct
+              | LP struct RP """
+    # This returns a list of lists for a structure
+    if len(p) == 2: # SYM
+        p[0] = p[1]
+    elif len(p) == 3: # struct struct
+        if not isinstance(p[1], list):
+            p[1] = [p[1]]
+
+        if not isinstance(p[2], list):
+            p[2] = [p[2]]
+
+        p[0] = p[1] + p[2]
+    elif len(p) == 4: # LP struct RP
+       p[0] = [p[2]]
+    else:
+        assert False, "ERROR %s" % list(p)
+
+
+def p_error(p):
+    print "Syntax error in input", p
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The actual parser
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+parser = yacc.yacc()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Code for handling the tree structures of combinators
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+from Facts import *
+
+def make_left_binary(l):
     """
     Take a list like [a b c] and make it into a binary tree like [[a b] c]
-    respecting the standrad order of combinatory logic
+    respecting the standard order of combinatory logic
     """
     if not isinstance(l, list):
         return l
-    elif len(l) <= 2:
-        return [treeize(l[0]), treeize(l[1])]
+    elif len(l) == 1: # unlist singleton lists
+        return make_left_binary(l[0])
+    elif len(l) == 2:
+        return [make_left_binary(l[0]), make_left_binary(l[1])]
     else:
-        newl = [[l[0], l[1]]]
+        newl = [ [make_left_binary(l[0]), make_left_binary(l[1])] ]
         newl.extend(l[2:])
-        return treeize(newl)
+        return make_left_binary(newl)
 
+def combinator_from_binary_list(l):
+    # Takes a list like ['a', ['b', 'c']] and converts to .a.bc
 
-def binarize(l, to, op='=', y=None):
-    """
-    Take a l and decompose it into binary rules, putting them all into "to",
-    with the SimpleFact using op and (f x)=y.
-    """
-
-    l = treeize(l)
-    f, x = l
-
-    if isinstance(f, list):
-        gs = gensym()
-        binarize(f, to, '=', gs) # these must be equals
-        f = gs
-
-    if isinstance(x, list):
-        gs = gensym()
-        binarize(x, to, '=', gs)
-        x = gs
-
-    to.append(SimpleFact(f, x, op, y))
-
-
-def parse_statement(s, facts):
-    """ Parse statemnets adding it to the facts """
-
-    lhs, op, rhs = statement.parseString(s).asList()[0]
-
-   # Defaulty we assume if there is a single symbol, it is on the right
-    if not isinstance(rhs, list):
-        binarize(lhs, facts, op=op, y=rhs)
-    if not isinstance(lhs, list):
-        binarize(rhs, facts, op=op, y=lhs)
+    if isinstance(l, list):
+        assert len(l) == 2, "List must be binary!"
+        return '.' + combinator_from_binary_list(l[0]) + combinator_from_binary_list(l[1])
     else:
-        assert isinstance(lhs,list) and isinstance(rhs,list)
-        gs = gensym()
-        binarize(lhs, facts, op='=', y=gs) # one is equal to gs
-        binarize(rhs, facts, op=op,  y=gs ) # one is op-equal to gs
+        return l
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Parse a program source file
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def string_from_binary_list(l):
+    if isinstance(l, list):
+        assert len(l) == 2, "List must be binary!"
+        return '(%s %s)' % (string_from_binary_list(l[0]), string_from_binary_list(l[1]))
+    else:
+        return l
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Code for handling the tree structures of combinators
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import re
-from programs import fromstring
+import combinators
 
-def parse_source(file):
-    """ Parse an entire source file, returning defines, variables, uniques, and binarized facts """
-
-    defines   = {}
-    variables = []
-    uniques   = []
-    facts     = []
-    shows     = dict()
+def load_source(file, symbolTable, uniques, facts, shows, basis):
 
     with open(file) as f:
         for l in f:
             l = l.strip() # remove whitespace
+
+            # strip comments
+            l = re.sub(r"#.+$", "", l)
+
             if re.match(r"\s*#", l): continue # skip comments
             if not re.match(r"[^\s]", l): continue # skip whitespace
 
-            r = re.match(r"\s*unique\s+([a-zA-Z0-9\s\-_]+)",l)
-            if r:
-                uniques.append( list(r.groups()[0].split(" ")) )
-                continue
+            p = parser.parse(l)
 
-            r = re.match(r"\s*variable\s+([a-zA-Z0-9\s]+)", l)
-            if r:
-                v =  list(r.groups()[0].split(" "))
-                assert max(len(vi) for vi in v) == 1, "*** Variables must be single characters in pychuriso"
+            if isinstance(p, Fact):
+                facts.append(p)
+            else:
+                t = p[0] # first thing is the kind of line we're handling
 
-                variables.extend( v )
-                continue
+                # and update depending on what the line is
+                if t == 'define':
+                    assert p[1] not in symbolTable, "*** Duplicate define for %s " % p[1]
+                    symbolTable[p[1]] = combinator_from_binary_list(make_left_binary(p[2]))
+                elif t == 'unique':
+                    uniques.append( p[1] )
+                elif t == 'forall':
+                    for v in p[1]:
+                        symbolTable[v] = v # variables are stored as themselves
+                elif t == 'add': # add to the search basis
+                    basis.append(combinator_from_binary_list(make_left_binary(p[1])))
+                elif t == 'addr':  # add raw dot string to combinator basis
+                    basis.append(p[1])
+                elif t == 'show':
 
-            r = re.match(r"\s*show\s+([\(\)a-zA-Z0-9\s\-_]+)",l)
-            if r:
-                # r.groups()[0] is now an S-expression made of symbols
-                # We will binarize it and store it as a new set of facts, that can
-                # then be evaled in display_winner
+                    p1b = make_left_binary(p[1])
 
-                se = r.groups()[0]
-
-                # make some facts for this with *show* as the symbol (which is where display looks for it)
-                showfacts = []
-                parse_statement("*show* = " + se, showfacts)
-
-                assert se not in shows, "*** Error: multiple identical shows"
-                shows[se] = showfacts
-                continue
-
-            r = re.match(r"\s*([a-zA-Z0-9]+)\s*:=\s*([a-zA-Z0-9\-_\(\)\s]+)$", l)
-            if r:
-                defines[r.groups()[0]] = fromstring(r.groups()[1])
-                continue
-
-
-            # else parse
-            parse_statement(l, facts)
-
-    return defines, variables, uniques, facts, shows
-
-
-if __name__ == "__main__":
-    #
-    # facts = []
-    # parse_statement("((g f1) (f2 x1)) != (y (gg z))",facts)
-    #
-    # print facts
-    # print op
-    # print rhs
-
-    #parse_source("domains/boolean.txt")
-    # facts = []
-    # print parse_statement("(t f) = (a t)", facts )
-
-    print sexp.parseString("(is-brown (pair brown X)) ").asList()[0]
-
-# def list2SimpleFacts(lhs, op, rhs):
-#
-#     def expand_side(x):
-#         if len(x) <= 2:
-#             return x
-#         else:
-#             # pull off the first element
-#             x0 = x[0]
-#
-#             return
-#
-#
-#
-# def string2list(s):
-#     """ Parse an S-expression into a list"""
-#     return sexp.parseString(s).asList()
+                    shows.append( (string_from_binary_list(p1b), p1b) )

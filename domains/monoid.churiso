@@ -1,0 +1,77 @@
+#magma with associativity
+
+unique a b c e
+
+(a a) in {a,b,c,e}
+(a b) in {a,b,c,e}
+(a c) in {a,b,c,e}
+
+(b a) in {a,b,c,e}
+(b b) in {a,b,c,e}
+(b c) in {a,b,c,e}
+
+(c a) in {a,b,c,e}
+(c b) in {a,b,c,e}
+(c c) in {a,b,c,e}
+
+# identity
+
+(a e) = a
+(b e) = b
+(c e) = c
+
+(e a) = a
+(e b) = b
+(e c) = c
+
+(e e) = e
+
+# associativity rules
+
+(a (a a)) = ((a a) a)
+(a (a b)) = ((a a) b)
+(a (a c)) = ((a a) c)
+
+(a (b a)) = ((a b) a)
+(a (b b)) = ((a b) b)
+(a (b c)) = ((a b) c)
+
+(a (c a)) = ((a c) a)
+(a (c b)) = ((a c) b)
+(a (c c)) = ((a c) c)
+
+
+(b (a a)) = ((b a) a)
+(b (a b)) = ((b a) b)
+(b (a c)) = ((b a) c)
+
+(b (b a)) = ((b b) a)
+(b (b b)) = ((b b) b)
+(b (b c)) = ((b b) c)
+
+(b (c a)) = ((b c) a)
+(b (c b)) = ((b c) b)
+(b (c c)) = ((b c) c)
+
+
+(c (a a)) = ((c a) a)
+(c (a b)) = ((c a) b)
+(c (a c)) = ((c a) c)
+
+(c (b a)) = ((c b) a)
+(c (b b)) = ((c b) b)
+(c (b c)) = ((c b) c)
+
+(c (c a)) = ((c c) a)
+(c (c b)) = ((c c) b)
+(c (c c)) = ((c c) c)
+
+show (a a)
+show (a b)
+show (a c)
+show (b a)
+show (b b)
+show (b c)
+show (c a)
+show (c b)
+show (c c)

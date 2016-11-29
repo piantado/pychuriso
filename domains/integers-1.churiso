@@ -1,0 +1,11 @@
+unique one two three four
+
+# Define integers through the first few meanings
+two = (succ one) 
+
+# And print these for everything we find:
+show (succ two) 
+show (succ (succ two)) 
+show (succ (succ (succ two))) 
+
+

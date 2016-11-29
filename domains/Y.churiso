@@ -1,4 +1,4 @@
-variable f
+forall f
 
 # simple definition of the fixed point combinator, requiring equal traces
 

@@ -2,24 +2,26 @@
 
 Options:
 Usage:
-    pychuriso.py <input> [-v | --verbose] [--search-basis=<combinators>] [--show-gs] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
-    -v --verbose                  Display the search incrementally (used for debugging).
-    --search-basis=<combinators>  The search basis [default: ISKBC].
+    -t --trace                  Display the search incrementally (used for debugging).
+    --search-basis=<combinators>  The search basis [default: ISK].
     --show-gs                     Show the auxiliary gs variables
+    --condensed                   Give condensed output
+    --not-normal-form             Search does not require combinators to be normal form
     --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 20].
     --max-find=<int>              Exit if you find this many combinators [default: 10000].
     --no-order                    Do not re-order the constraints
 """
 
 from search.block import search
-from parser import parse_source
-from reduction import tostring,  update_defines, ReductionException
+from reduction import tostring,  reduce_combinator, ReductionException
 from programs import is_normal_form
-from misc import is_gensym
 from copy import deepcopy
-from SimpleFact import compute_complexity
 import reduction
+from parser import load_source
+from FactOrder import compute_complexity, order_facts
+from combinators import substitute, basis_from_argstring
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -31,107 +33,93 @@ def get_reduction_count(soln, facts):
         assert f.check(soln), f  # run all of the applies
     return reduction.GLOBAL_REDUCE_COUNTER - start
 
-def display_winner(partial, variables, facts, shows):
+def display_winner(defines, solution, facts, shows):
     """ Display a solution. This is zero-delimited so we can sort -z, with run times and lengths at the top """
 
     print "################################################################################"
     global TOTAL_SOLUTION_COUNT
 
     # confirm all constraints
-    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in partial.values()), get_reduction_count(partial, facts)
+    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
 
-    print "# ---------- In SK basis ----------"
+    # print "# ---------- In search basis ----------"
     for k, v in solution.items():
 
-        if is_gensym(k) and not arguments['--show-gs']:
-            continue
-
-        if k in variables:
-            assert v==k
-            continue
-
-        assert is_normal_form(v)
+        assert k in defines or is_normal_form(v)
         print "%s := %s" % (k, tostring(v))
 
-    for s, f in shows.items():
-        d = deepcopy(partial)
+    for s, sf in shows:
         try:
-            update_defines(d, f)
+            r = reduce_combinator(substitute(sf, solution))
         except ReductionException:
-            d['*show*'] = 'NON-HALT'
+            r = 'NON-HALT'
 
-        equalset = {k for k in d.keys() if d[k]==d['*show*']}- {'*show*'} # which of our defines is this equal to?
+        equalset = [k for k in solution.keys() if solution[k] == r]  # which of our defines is this equal to?
 
-        print "show %s -> %s == {%s}" % (s, tostring(d['*show*']), ', '.join(equalset) )
+        print "show %s -> %s == {%s}" % (s, tostring(r), ', '.join(equalset))
 
     print "\0"
 
-    TOTAL_SOLUTION_COUNT += 1
 
+def condensed_display(defines, solution, facts, shows):
+    """
+        A single-line output, of the type that might be used for grammar inference
+        This prints out the solution unmber, total length, reduction count, counts for a bunch of combinators
+        then followed by the symbols each show equals
+    """
+    global TOTAL_SOLUTION_COUNT
+    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts),
 
-def order_facts(start, facts):
-    """ Come up with an ordering of facts. For now just greedy """
+    # next get the counts of each combinator
+    for c in 'SKIBCWETM':
+        nc = sum([v.count(c) for v in solution.values()])
+        print nc,
 
-    defined = set(start.keys())
-    ofacts = [] # ordered version
+    # and show the shows
+    for s, sf in shows:
+        d = deepcopy(solution)
+        try:
+            r = reduce_combinator(substitute(sf, solution))
+        except ReductionException:
+            r = 'NON-HALT'
 
-    while len(facts) > 0:
+        equalset = [k for k in solution.keys() if solution[k] == r] # which of our defines is this equal to?
+        print "\"%s\"" % ','.join(list(equalset)),
 
-        # first see if we can verify any facts (thus pruning the search)
-        lst = [f for f in facts if set([f.f, f.x, f.rhs]).issubset(defined) ]  # if everything is defined
-        if len(lst) > 0:
-            ofacts.extend(lst) # we can push them all
-            for f in lst:
-                facts.remove(f)
-            continue
-
-        # next see if we can push any constraints
-        lst = [f for f in facts if f.op=='=' and set([f.f, f.x]).issubset(defined)]  # anything we can push
-        if len(lst) > 0:
-            ofacts.append(lst[0]) # only push the first, since that may permit verifying facts
-            defined.add(lst[0].rhs)
-            facts.remove(lst[0])
-            continue
-
-        # otherwise just pull the first fact (TODO: We can make this smart--pull facts that let us define more), pull facts that only need one f or x
-        f = facts[0]
-        ofacts.append(f)
-        del facts[0]
-        defined.add(f.f) # either it here already or we have to add it
-        defined.add(f.x)
-        defined.add(f.rhs)
-
-    return ofacts
+    print "\n",
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":
 
     from docopt import docopt
-    arguments = docopt(__doc__, version="pychuriso 0.001")
+    arguments = docopt(__doc__, version="pychuriso 0.01")
 
-    defines, variables, uniques, facts, shows =  parse_source(arguments['<input>'])
+    # Set the search basis (must happen before parsing or else it overwrites "add" keywords)
+    basis = basis_from_argstring(arguments['--search-basis'])
 
-    # Set the search basis
-    import combinators
-    combinators.set_search_basis(arguments['--search-basis'])
-
-    # set up the starting solution
-    start = dict()
-    for d,v in defines.items(): start[d] = v  # add the defines
-    for v in variables:         start[v] = v  # variables have themselves as values, already asserted to be single chars
+    symbolTable, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
+    load_source(arguments['<input>'], symbolTable, uniques, facts, shows, basis) # modifies the arguments
 
     # test out the ordering of facts
     if not arguments['--no-order']:
-        facts = order_facts(start, facts)
-        print "# Best fact ordering: yielding score %s" % compute_complexity(defines, facts), facts
+        facts = order_facts(symbolTable, facts)
+        print "# Best fact ordering: yielding score %s" % compute_complexity(symbolTable, facts), facts
     else:
-        print "# Running with fact ordering %s" % compute_complexity(defines, facts), facts
+        print "# Running with fact ordering %s" % compute_complexity(symbolTable, facts), facts
 
     MAX_FIND = int(arguments['--max-find'])
 
     # Now do the search
-    for solution in search(start, facts, uniques, int(arguments['--max-depth']), show=arguments['--verbose']):
-        display_winner(solution, variables, facts, shows)
+    print "# Using search basis ", basis
+    for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
 
-        if TOTAL_SOLUTION_COUNT > MAX_FIND:
+        if arguments['--condensed']:
+            condensed_display(symbolTable, solution, facts, shows)
+        else:
+            display_winner(symbolTable, solution, facts, shows)
+
+        if TOTAL_SOLUTION_COUNT >= MAX_FIND:
             break
+
+        TOTAL_SOLUTION_COUNT += 1
+

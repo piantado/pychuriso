@@ -1,0 +1,4 @@
+
+forall f x y
+
+(y x) = (T x y)

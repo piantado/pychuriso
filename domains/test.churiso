@@ -1,0 +1,13 @@
+
+
+# add the Y combinator
+add ((S (K ((S (K ((S (S ((S I) K))) (S I)))) S))) K)
+
+forall f 
+
+(f (Y f)) ~= (Y f)
+
+(succ one) := two
+(succ two) ~= three
+
+

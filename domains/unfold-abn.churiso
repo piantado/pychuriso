@@ -1,0 +1,35 @@
+#an unfold version of (ab)^n with cons
+
+# cons 
+add ((B C) (C I))
+add (S ((S (K (S (K ((S (K ((S (K ((S (S ((S I) K))) (S I)))) S))) K))))) (K ((B C) (C I)))))
+# add the Y combinator
+# add ((S (K ((S (K ((S (S ((S I) K))) (S I)))) S))) K)
+I := (S K K)
+
+cons := ((B C) (C I))
+unfold := (S ((S (K (S (K ((S (K ((S (K ((S (S ((S I) K))) (S I)))) S))) K))))) (K ((B C) (C I)))))
+
+# recursive version\
+unique a b
+(unfold mygen I) ~= (cons a (cons b (unfold mygen I)))
+
+# single cons version
+#(unfold mygen I) ~= (cons (a b) (unfold mygen I))
+
+# mutual recursive version?
+# symbol a b
+# addr a
+# addr b
+# (unfold mygen I)  ~= (cons a (unfold mygen2 I))
+# (unfold mygen2 I) ~= (cons b (unfold mygen I))
+
+
+
+# version with symbols, including in the searhc basis
+#symbol a b
+#addr a
+#addr b 
+#(unfold mygen I) ~= (a b (unfold mygen I))
+
+

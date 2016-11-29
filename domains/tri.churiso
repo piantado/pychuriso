@@ -1,0 +1,47 @@
+
+# symmetries of an equilateral triangle 
+# https://proofwiki.org/wiki/Definition:Symmetry_Group_of_Equilateral_Triangle/Cayley_Table
+
+unique e p q r s t
+
+(e e) = e
+(e p) = p
+(e q) = q
+(e r) = r
+(e s) = s
+(e t) = t
+
+(p e) = p
+(p p) = q
+(p q) = e
+(p r) = s
+(p s) = t
+(p t) = r
+
+(q e) = q
+(q p) = e
+(q q) = p
+(q r) = t
+(q s) = r
+(q t) = s
+
+(r e) = r
+(r p) = t
+(r q) = s
+(r r) = e
+(r s) = q
+(r t) = p
+
+(s e) = s
+(s p) = r
+(s q) = t
+(s r) = p
+(s s) = e
+(s t) = q
+
+(t e) = t
+(t p) = s
+(t q) = r
+(t r) = q
+(t s) = p
+(t t) = e

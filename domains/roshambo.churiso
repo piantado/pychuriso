@@ -1,0 +1,23 @@
+unique win lose draw
+unique rock papers scissors
+
+# This is the version without a "play" operator
+win  = (rock scissors)
+draw = (rock rock)
+draw = (scissors scissors)
+win  = (scissors paper)
+win  = (paper rock) 
+draw = (paper paper) 
+lose = (rock paper) 
+lose = (paper scissors) 
+lose = (scissors rock) 
+
+#limit rock 3
+#limit paper 3
+#limit scissors 3
+
+
+
+
+
+

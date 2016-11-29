@@ -1,4 +1,4 @@
-unique true false and or not
+unique true false and or not_
 
 true := K
 false := (K K)
@@ -14,6 +14,6 @@ true  = ((or true) false)
 true  = ((or false) true)
 false = ((or false) false)
 
-false = (not true)
-true  = (not false)
+false = (not_ true)
+true  = (not_ false)
 

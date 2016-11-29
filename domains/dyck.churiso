@@ -1,0 +1,37 @@
+unique accept o1 o2 o3 o4 o5 o6
+unique l r
+
+o1 = (l accept) 
+accept = (r o1)
+
+o2 = (l o1)
+o1 = (r o2)
+
+o3 = (l o2)
+o2 = (r o3)
+
+# o4 = (l o3)
+# o4 = (r o5)
+# 
+# o5 = (l o4)
+# o3 = (r o4)
+
+# base rejection case
+accept != (r accept)
+accept != (r (r accept))
+accept != (r (r (r accept)))
+# accept != (l (r accept))
+# 
+show (l (r (r (r (r accept)))))
+show (r (r (r (r (r accept)))))
+show (r (r (r (r accept))))
+show (l (r (r accept)))
+show (l (r (r (r accept))))
+show (r (l (l (r (l (l (r (l accept))))))))
+
+show (r (l (r (l accept))))
+show (r (l (r (l (r (l accept))))))
+show (r (r (l (l accept))))
+show (r (r (r (l (l (l accept))))))
+show (r (r (l (l (r (l accept))))))
+show (r (r (l (r (l (l (r (l accept))))))))

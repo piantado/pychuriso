@@ -1,0 +1,9 @@
+
+forall x y z
+
+# add cons
+add ((B C) (C I))
+cons := ((B C) (C I))
+
+# restructure a tree
+(rebranch (cons x (cons y z))) = (cons (cons x y) z)

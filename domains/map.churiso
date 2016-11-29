@@ -1,0 +1,18 @@
+# add the Y combinator
+add ((S (K ((S (K ((S (S ((S I) K))) (S I)))) S))) K)
+
+cons := ((B C) (C I))
+cdr  := ((C I) (C K))
+car  := ((C I) K)
+
+# Add cons, cdr, car
+add ((B C) (C I))
+add ((C I) (C K))
+add ((C I) K)
+
+forall f x y
+
+(map f (cons x y)) ~= (cons (f x) (map f y))
+
+
+

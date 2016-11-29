@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<!--
+  Churiso syntax highlighting for Kate/kwrite
+ **********************************************************************
+ * This library is free software; you can redistribute it and/or      *
+ * modify it under the terms of the GNU Library General Public        *
+ * License as published by the Free Software Foundation; either       *
+ * version 2 of the License, or (at your option) any later version.   *
+ *                                                                    *
+ * This library is distributed in the hope that it will be useful,    *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of     *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  *
+ * Library General Public License for more details.                   *
+ *                                                                    *
+ * You should have received a copy of the GNU Library General Public  *
+ * License along with this library; if not, write to the              *
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,       *
+ * Boston, MA  02110-1301, USA.                                       *
+ **********************************************************************
+-->
+<language version="1.0" kateversion="2.4" name="Churiso" section="Sources" extensions="*.churiso" mimetype="text/x-scheme" author="Steve Piantadosi" license="GPL" priority="9">
+  <highlighting>
+    <list name="operators">
+      <item> = </item>
+      <item> != </item>
+      <item> := </item>
+      <item> ~= </item>
+      <item> | </item>
+      <item> in </item>
+      <item> not </item>
+    </list>
+    <list name="characters">
+      <item> #\nul </item>
+      <item> #\soh </item>
+      <item> #\stx </item>
+      <item> #\etx </item>
+      <item> #\eot </item>
+      <item> #\enq </item>
+      <item> #\ack </item>
+      <item> #\bel </item>
+      <item> #\bs </item>
+      <item> #\ht </item>
+      <item> #\nl </item>
+      <item> #\vt </item>
+      <item> #\np </item>
+      <item> #\cr </item>
+      <item> #\so </item>
+      <item> #\si </item>
+      <item> #\dle </item>
+      <item> #\dc1 </item>
+      <item> #\dc2 </item>
+      <item> #\dc3 </item>
+      <item> #\dc4 </item>
+      <item> #\nak </item>
+      <item> #\syn </item>
+      <item> #\etb </item>
+      <item> #\can </item>
+      <item> #\em </item>
+      <item> #\sub </item>
+      <item> #\esc </item>
+      <item> #\fs </item>
+      <item> #\gs </item>
+      <item> #\rs </item>
+      <item> #\us </item>
+      <item> #\space </item>
+      <item> #\sp </item>
+      <item> #\newline </item>
+      <item> #\nl </item>
+      <item> #\tab </item>
+      <item> #\ht </item>
+      <item> #\backspace </item>
+      <item> #\bs </item>
+      <item> #\return </item>
+      <item> #\cr </item>
+      <item> #\page </item>
+      <item> #\np </item>
+      <item> #\null </item>
+      <item> #\nul </item>
+    </list>
+    <list name="keywords">
+      <item> show </item>
+      <item> forall </item>
+      <item> symbol </item>
+      <item> unique </item>
+      <item> add </item>
+      <item> addr </item>
+      <item> not </item>
+    </list>
+    <list name="combinators">
+      <item> S </item>
+      <item> K </item>
+      <item> I </item>
+      <item> B </item>
+      <item> C </item>
+      <item> W </item>
+      <item> Y </item>
+    </list>
+    <contexts>
+      <context name="Level0" attribute="Normal" lineEndContext="#stay">
+            <DetectChar attribute="Brackets1" context="Level1" char="("/>
+            <IncludeRules context="Default" />
+      </context>
+      <context name="Default" attribute="Normal" lineEndContext="#stay">
+        <RegExpr attribute="Comment" context="#stay" String="#.*$"/>
+        <keyword attribute="Keyword" context="#stay" String="keywords"/>
+        <keyword attribute="Combinators" context="#stay" String="combinators"/>
+        <keyword attribute="Operator" context="#stay" String="operators"/>
+        <DetectChar attribute="Brackets1" context="Level1" char="("/>
+        
+        
+        <Detect2Chars attribute="Comment" context="MultiLineComment" char="#" char1="!" beginRegion="region"/>
+        <keyword attribute="Keyword" context="#stay" String="keywords"/>
+        <keyword attribute="Operator" context="#stay" String="operators"/>
+        <keyword attribute="Definition" context="function_decl" String="defines"/>
+        <keyword attribute="Char" context="#stay" String="characters"/>
+        <RegExpr attribute="Char" context="#stay" String="#\\."/>
+        <DetectChar attribute="String" context="String" char="&quot;"/>
+        <RegExpr attribute="Char" context="SpecialNumber" String="#[bodxei]"/>
+        <RegExpr attribute="Decimal" context="#stay" String="#[tf]"/>
+        <Float attribute="Float" context="#stay"/>
+        <Int attribute="Decimal" context="#stay"/>
+      </context>
+      <context name="MultiLineComment" attribute="Comment" lineEndContext="#stay">
+        <RegExpr attribute="Comment" context="#pop" String="!#\s*$" endRegion="region" column="0"/>
+      </context>
+      <context name="SpecialNumber" attribute="Normal" fallthrough="true" lineEndContext="#pop">
+        <RegExpr attribute="Decimal" context="#pop" String="\d*(\.\d+)?"/>
+      </context>
+      <context name="String" attribute="String" lineEndContext="#stay">
+        <keyword attribute="Char" context="#stay" String="characters"/>
+        <RegExpr attribute="Char" context="#stay" String="#\\."/>
+        <Detect2Chars attribute="Char" context="#stay" char="\" char1="&quot;"/>
+        <Detect2Chars attribute="Char" context="#stay" char="\" char1="\"/>
+        <DetectChar attribute="String" context="#pop" char="&quot;"/>
+      </context>
+      <context name="function_decl" attribute="Function" lineEndContext="#stay">
+        <RegExpr attribute="Function" context="#pop" String="\s*[A-Za-z0-9-+\&lt;\&gt;//\*]*\s*" />
+      </context>
+
+      <context name="Level1" attribute="Normal" lineEndContext="#stay">
+           <DetectChar attribute="Brackets2" context="Level2" char="("/>
+           <DetectChar attribute="Brackets1" context="#pop" char=")" />
+           <IncludeRules context="Default" />
+      </context>
+      <context name="Level2" attribute="Normal" lineEndContext="#stay">
+           <DetectChar attribute="Brackets3" context="Level3" char="("/>
+           <DetectChar attribute="Brackets2" context="#pop" char=")" />
+           <IncludeRules context="Default" />
+      </context>
+      <context name="Level3" attribute="Normal" lineEndContext="#stay">
+           <DetectChar attribute="Brackets4" context="Level4" char="("/>
+           <DetectChar attribute="Brackets3" context="#pop" char=")" />
+           <IncludeRules context="Default" />
+      </context>
+      <context name="Level4" attribute="Normal" lineEndContext="#stay">
+           <DetectChar attribute="Brackets5" context="Level5" char="("/>
+           <DetectChar attribute="Brackets4" context="#pop" char=")" />
+           <IncludeRules context="Default" />
+      </context>
+      <context name="Level5" attribute="Normal" lineEndContext="#stay">
+           <DetectChar attribute="Brackets6" context="Level6" char="("/>
+           <DetectChar attribute="Brackets5" context="#pop" char=")" />
+           <IncludeRules context="Default" />
+      </context>
+      <context name="Level6" attribute="Normal" lineEndContext="#stay">
+           <DetectChar attribute="Brackets1" context="Level1" char="("/>
+           <DetectChar attribute="Brackets6" context="#pop" char=")" />
+           <IncludeRules context="Default" />
+      </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal"      defStyleNum="dsNormal" />
+      <itemData name="Keyword"     defStyleNum="dsKeyword" color="#7BAFD4"/>
+      <itemData name="Operator"    defStyleNum="dsKeyword" color="#990000" bold="1"/>
+      <itemData name="Comment"     defStyleNum="dsComment" color="#ff773b" italic="1"/>
+      <itemData name="Combinators" defStyleNum="dsKeyword" color="#000000" bold="1"/>
+      <itemData name="Brackets1"    defStyleNum="dsNormal" color="#000000" selColor="#000000" bold="1" italic="0"/>
+      <itemData name="Brackets2"    defStyleNum="dsNormal" color="#000000" selColor="#000000" bold="1" italic="0"/>
+      <itemData name="Brackets3"    defStyleNum="dsNormal" color="#000000" selColor="#000000" bold="1" italic="0"/>
+      <itemData name="Brackets4"    defStyleNum="dsNormal" color="#000000" selColor="#000000" bold="1" italic="0"/>
+      <itemData name="Brackets5"    defStyleNum="dsNormal" color="#000000" selColor="#000000" bold="1" italic="0"/>
+      <itemData name="Brackets6"    defStyleNum="dsNormal" color="#000000" selColor="#000000" bold="1" italic="0"/>
+      
+      <itemData name="MultiLineComment" defStyleNum="dsNormal"/>
+      <itemData name="function_decl" defStyleNum="dsNormal"/>
+      <itemData name="String" defStyleNum="dsNormal"/>
+      <itemData name="SpecialNumber" defStyleNum="dsNormal"/>
+      
+    </itemDatas>
+  </highlighting>
+  <general>
+    <keywords casesensitive="1" weakDeliminator="-+*?!&lt;&gt;=/:#\"/>
+    <comments>
+      <comment name="singleLine" start="#" />
+    </comments>
+  </general>
+</language>

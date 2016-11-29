@@ -3,8 +3,8 @@
 
 
 True := (K K)
-True   != ((attract p1) p2)
-True   != ((attract p2) p1)
+True != ((attract p1) p2)
+True != ((attract p2) p1)
 True = ((attract p1) n1)
 True = ((attract p1) n2)
 True = ((attract p2) n1)

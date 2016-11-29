@@ -13,7 +13,6 @@ MAX_REDUCE = 100
 GLOBAL_REDUCE_COUNTER = 0 # how many reductions total have we done?
 
 from programs import *
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Define exceptions for various reduction problems
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,6 +35,7 @@ def reduce_combinator(s):
     NOTE: IF you update combinators implemented here, be sure to update programs.is_normal_form
     """
     iters = 0
+
 
     while True:
         stepped = False
@@ -115,7 +115,7 @@ def reduce_combinator(s):
                 y, yend = next_chunk(s, xend+1)
                 z, zend = next_chunk(s, yend+1)
 
-                s = s[:i] + '...' + x + z + y + s[zend+1:]
+                s = s[:i] + '..' + x + z + y + s[zend+1:]
 
                 stepped = True
                 break
@@ -142,22 +142,6 @@ def reduce_combinator(s):
 
     return s
 
-def app(f,x):
-    return reduce_combinator('.'+f+x)
-
-def update_defines(defined, facts):
-    # go through the facts, pushing updates to defines
-    # this is used to "eval" a complex expression
-    # thus, running this and looking at the appropriate item of defined is like evaling a complex expression
-
-    for f in facts:
-        if f.op == '=': # we can only push equality constraints
-            if f.rhs not in defined:
-                defined[f.rhs] = app(defined[f.f], defined[f.x])
-        else:
-            raise Exception("Cannot have anything other than = in update defines.")
-
-    return defined
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":

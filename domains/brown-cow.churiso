@@ -1,6 +1,7 @@
 
 unique True False
-unique brown cow is dangerous
+unique brown cow 
+unique is-dangerous is-brown
 
 True  := (K K)
 False := K
@@ -13,5 +14,5 @@ True  = (is-dangerous (pair brown cow))
 True  = (is-brown brown)
 False = (is-brown cow)
 
-variable X
+forall X
 True  = (is-brown (pair brown X)) 

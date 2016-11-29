@@ -1,0 +1,14 @@
+# build up some scheme primitives
+
+true  := (K K)
+false := K
+
+cons := ((B C) (C I))
+cdr  := ((C I) (C K))
+car  := ((C I) K)
+
+if   := ((S I) (S K))
+
+Y    := ((S (K ((S (K ((S (S ((S I) K))) (S I)))) S))) K)
+
+

@@ -1,0 +1,21 @@
+
+# What happens if our base facts are slightly mis-specified?
+# so that the thing we learn is at a slightly higher level?
+
+True  := (K K)
+False := K
+
+unique dangerous small
+
+True   = (dangerous a)
+False  = (dangerous b)
+False  = (dangerous c)
+
+True  = (small a)
+False = (small b)
+True  = (small c)
+
+# Do I learn that dangerous things are big?
+True = (small x)
+
+show (dangerous x)

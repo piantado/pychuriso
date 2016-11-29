@@ -1,0 +1,8 @@
+
+# Here is a version ith foralls:
+
+forall f x 
+
+(f (f x)) = ((repeat f) x) 
+
+

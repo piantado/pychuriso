@@ -1,0 +1,13 @@
+
+unique True False
+unique accept reject
+
+accept = (start True)
+reject = (start False)
+
+reject = (reject False)
+accept = (reject True)
+
+accept = (accept True)
+accept = (accept False)
+

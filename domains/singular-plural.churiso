@@ -1,0 +1,9 @@
+unique singular plural marker item
+
+# Define integers through the first few meanings
+singular = (marker item) 
+plural   = (marker item item) 
+plural   = (marker item item item)
+plural   = (marker item item item item) 
+
+
