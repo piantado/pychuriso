@@ -36,7 +36,7 @@ if __name__ == "__main__":
             from docopt import docopt
             arguments = docopt(__doc__, version="pychuriso 0.001")
 
-            arguments['<input>']="domains/PureRelations/condition"+str(i)+".txt"
+            arguments['<input>']="domains/Inputs/condition"+str(i)+".txt"
             defines, variables, uniques, facts, shows = parse_source(arguments['<input>'])
 
             # Set the search basis
@@ -67,7 +67,7 @@ if __name__ == "__main__":
                                SimpleFact('c', 'c', '=', '*show*'),
                                ]
 
-            with open('/home/Jenna/Desktop/PureRelations/Rscripts/'+arguments['--output']+ str(c) + '.csv', 'a') as f:
+            with open('/home/Jenna/Desktop/Inputs/Rscripts/'+arguments['--output']+ str(c) + '.csv', 'a') as f:
                 # Now do the search
                 from combinators import set_search_basis
                 set_search_basis(c)
