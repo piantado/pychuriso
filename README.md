@@ -52,7 +52,7 @@ There are key language features that can be used in the input file.
 >```define```: allows you to explicitly set a combinator structure for a specified symbol.</br>
 >```forall```: anything of the form specified will map to the same symbol.</br>
 >```not```: negation of facts. e.g. ```[not (f x) = y]```<br>
-> Complex logical expressions are also allowed. (e.g. [not (f x) in {a,b,c,d}] | (g x) = y | x = y)<br>
+> Complex logical expressions are also allowed. (e.g. ```[not (f x) in {a,b,c,d}] | (g x) = y | x = y)```<br>
 >```show```: indicates to print out the solution to a new problem, given the combinators mapped to the base facts.</br>
 
 
@@ -66,7 +66,14 @@ pychuriso has a parser to handle the input.txt file. This uses regular expressio
     facts     = []
     shows     = dict()
 ```
-> Single statements are parsed using ```binarize()```and are transformed into an instance of ```SimpleFact```. A ```Simple Fact``` has a single application on the left-hand side (f x) and a single right-hand side outcome (e.g. = y).
+Single statements are parsed using ```binarize()```and are transformed into an instance of ```Fact```. A ```Fact``` has a single application on the left-hand side (f x) and a single right-hand side outcome (e.g. = y). ```Fact``` has several subclasses to determine reduction code for the relationship between the lhs and rhs. These include:
+> NegationFact<br>
+> EqualityFact<br>
+> InequalityFact<br>
+> InFact<br>
+> DisjunctionFact<br>
+> PartialEqualityFact<br>
+
 
 reduction
 ----------
