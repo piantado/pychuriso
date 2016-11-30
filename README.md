@@ -41,6 +41,11 @@ The base facts to be encoded are written in an input.txt file. Examples of these
 - Scheme ```cons```, ```cdr```, ```car```
 - dominance relations
 - propositional logic (e.g. brown cow)
+- geometry
+- rock-paper-scissors
+- data structures
+- group theory
+- same/different
 
 There are key language features that can be used in the input file.
 >```unique```: each of the symbols following ```unique``` must be represented by distinct combinator structures.</br>
