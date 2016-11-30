@@ -66,6 +66,8 @@ pychuriso has a parser to handle the input.txt file. This uses regular expressio
     facts     = []
     shows     = dict()
 ```
+
+
 Single statements are parsed using ```binarize()```and are transformed into an instance of ```Fact```. A ```Fact``` has a single application on the left-hand side (f x) and a single right-hand side outcome (e.g. = y). ```Fact``` has several subclasses to determine reduction code for the relationship between the lhs and rhs. These include:
 
 > NegationFact<br>
