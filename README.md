@@ -91,6 +91,8 @@ the search
 -----------
 Before searching, facts can be reordered to prune/optimize the search. This is done by first checking if any facts can be verified, and then by checking if any constraints can be pushed. ```compute_complexity``` allows us to determine many remaining searches through combinators we need. The search will be **O(```compute_complexity(defines, facts)```)**.
 
+The default search is set to ```block``` which enumerates all solutions with an increasing depth bound that is independent on each.
+
 run.py
 -----------
 
