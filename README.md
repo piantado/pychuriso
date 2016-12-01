@@ -89,7 +89,7 @@ As mentioned, **BCTMW** can be defined in terms of S and K  (thus penalizing len
 
 the search
 -----------
-
+Before searching, facts can be reordered to prune/optimize the search. This is done by first checking if any facts can be verified, and then by checking if any constraints can be pushed. ```compute_complexity``` allows us to determine many remaining searches through combinators we need. The search will be **O(```compute_complexity(defines, facts)```)**.
 
 run.py
 -----------
