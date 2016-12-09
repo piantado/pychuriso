@@ -1,0 +1,225 @@
+---
+title: "Marvin the Robot Experiments"
+author: "Jenna Register"
+date: "November, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Experiment One
+Experiment One tests for consistent responses for 1-example abstract relations with novel objects. Participants see the three specified arguments in the form of (f x) = y. They are then asked to generalize to the various questions and respond with one of the **n + 1** objects they have already seen.
+
+#### Do people provide structured generalizations for these abstract relations?
+
+```{r,echo=FALSE}
+data = read.csv("exp1data.csv")
+#View(data)
+```
+### Pre-processing data
+
+```{r}
+library(ggplot2)
+
+
+# We decided to change things after the pilot, so the first 10 people from the pilot have to be discarded.
+#data=data[-c(1:90),]
+#if a worker responded way too fast, drop 'em!
+#fail = data$WorkerID[data$RT<1000]
+#we don't really want to see this column
+#data=data[data$Argument1!=" Reason",]
+
+# exclude workers who failed the check
+#data=data[!(data$WorkerID %in% fail),]
+#data=droplevels(data)
+#anaonymize data (this is already done for the file you have)
+#data$WorkerID=as.numeric(data$WorkerID)
+```
+### Plotting the responses
+```{r, fig.width = 13, fig.height = 11}
+
+#plot the counts of responses for each condition
+# x-axis shows the response given
+# y-axis shows the number of participants who gave that response
+# faceted by the Condition and the Question. Participants were only given 1 condition.
+plt = ggplot(data,aes(x=Response,fill=ConditionID))+
+  geom_histogram(aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
+  #geom_histogram()+
+  facet_grid(~Question~ConditionID)+
+  xlab("Response to Test Question")+
+  ylab("Proportion of Response")+
+  ggtitle("Distribution of Responses to Test Questions Across Conditions")
+plt
+```
+
+### Reaction Time Over Trials Between Conditions
+#### This may indicate how "easy" each condition is, or possibly hint to the simplicity of hypotheses used.
+```{r}
+plt=ggplot(data,aes(Trial,RT,color=ConditionID))+
+  stat_summary(fun.y=mean,geom="line")+
+  stat_summary(fun.data=mean_cl_boot,geom="pointrange")+
+  ggtitle("RT over Trials")
+plt
+
+
+```
+
+### Generating proportion tables for each condition
+
+```{r}  
+#here we construct the proportion tables for each condition to add to a dataframe for human data from Experiment One
+listy = list()
+
+for(val in c(0,1,2,3,4)){
+  t = table(data$Response[data$Condition==val],data$Question[data$Condition==val])
+  tp = prop.table(t,2)
+  frame = as.data.frame(tp)
+  frame$cond = val
+  listy[[val+1]] = frame
+}
+humanframe = do.call(rbind,listy)
+colnames(humanframe) <- c("Response","Question","Proportion","Condition")
+#View(humanframe)
+```
+# Modeling with pychuriso
+We want to capture human behavior with ChurIso! So we are going to compare all the possible combinator bases average solutions to the human data. We use all the combinations of SKIBCTWME. The following is how we process the output from the pychuriso modeling.
+
+# Experiment Two
+
+Experiment Two expands upon Experiment One by including 2 examples in the form of (f x) = y. This allows us to build up more complicated structures, and also move away from simple sequences.
+
+####Can people respond consistently to more complicated relational systems?
+####Do they use the same patterns as Experiment One for the first example?
+####Why is Constant difficult?
+
+Condition Name | Example 1 | Example 2
+---------------|-----------|-----------
+Successor      | a b→c      |a c→d
+Self-Apply New |a a→b         |b b→c
+Self-Apply Same|a a→a|b b→b
+Return-Apply|a b→a|a c→a
+Return-Argument|a b→b|a c→c
+Return-Constant|a a→b|a c→b
+Symmetry|a a→b|b b→c
+Negation|a b→c|a c→b
+
+```{r, echo=FALSE}
+data = read.csv("exp2data.csv")
+#View(data)
+```
+
+### Pre-processing data
+
+```{r}
+library(ggplot2)
+```
+
+### Plotting the responses
+```{r, fig.width = 13, fig.height = 11}
+plt =ggplot(data, aes(x=Response, fill=ConditionID)) +
+  geom_histogram(aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
+  facet_grid(~Question~ConditionID) +
+  ggtitle("Distribution of Responses to Test Questions Across Conditions")+
+  ylab("Proportion of Responses")
+  
+  
+plt
+```
+
+### Reaction Time Over Trials Between Conditions
+#### This may indicate how "easy" each condition is, or possibly hint to the simplicity of hypotheses used.
+```{r}
+plt=ggplot(data,aes(Trial,RT,color=ConditionID))+
+  stat_summary(fun.y=mean,geom="line")+
+  stat_summary(fun.data=mean_cl_boot,geom="pointrange")+
+  ggtitle("RT over Trials")
+plt
+
+
+```
+
+#Experiment Three
+
+Experiment Three uses only two arguments, with the Special-Transformo-Box 3000 acting as the **apply** function. This further addresses the problem of treating this task like a sequence task. With one and two examples, the number of systems is small.
+
+Condition|Example 1|Example 2
+---------------|-----------|-----------
+Successor|a→**BOX**→b|b→**BOX**→c
+Constanta|a→**BOX**→a|b→**BOX**→a
+Constantb|a→**BOX**→b|b→**BOX**→b
+Identity|a→**BOX**→a|b→**BOX**→c
+Negation|a→**BOX**→b|b→**BOX**→a
+
+####Run 1 example version: 
+a -> BOX -> a
+a -> BOX -> b
+
+####Why is Constant difficult?
+####What kind of model produces the funky results for Constant?
+####Can we build up further? 3 Examples?
+
+```{r echo=FALSE} 
+data = read.csv("exp3data.csv")
+```
+
+###Pre-processing data
+
+```{r}
+library(ggplot2)
+
+
+```
+
+### Plotting the responses
+
+```{r, fig.width = 13, fig.height = 11}
+plt = ggplot(data,aes(x=Response,fill=ConditionID))+
+  
+  geom_histogram(aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
+  #geom_histogram()+
+  facet_grid(~Question~ConditionID)+
+  xlab("Response to Test Question")+
+  ylab("Proportion of Response")+
+  geom_rect(data = subset(data,Question == ' c' & ConditionID==" ConstantA"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' c' & ConditionID==" ConstantB"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' d' & ConditionID==" ConstantA"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' d' & ConditionID==" ConstantB"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' c' & ConditionID==" Identity"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' d' & ConditionID==" Identity"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' c' & ConditionID==" Negation"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' d' & ConditionID==" Negation"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' c' & ConditionID==" Successor"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  geom_rect(data = subset(data,Question == ' d' & ConditionID==" Successor"),aes(fill="Critical Response"),xmin = -Inf,xmax = Inf,ymin = -Inf,ymax = Inf,alpha = .01) +
+  ggtitle("Distribution of Responses to Test Questions Across Conditions")+
+  ylim(0,1)+
+  theme(legend.title=element_blank())
+plt
+```
+
+### Reaction Time Over Trials Between Conditions
+#### This may indicate how "easy" each condition is, or possibly hint to the simplicity of hypotheses used.
+```{r}
+plt=ggplot(data,aes(Trial,RT,color=ConditionID))+
+  stat_summary(fun.y=mean,geom="line")+
+  stat_summary(fun.data=mean_cl_boot,geom="pointrange")+
+  ggtitle("RT over Trials")
+plt
+
+
+```
+
+##Questions
+
+####What generative model makes this response to Constant the simplest hypothesis?
+
+####Can we find a fitting combinator basis?
+
+####If we do find a combinator basis that fits nicely, then what are we proposing? That generalizations are performed in this strictly functional, lambda-calculus-like way? Or that combinatory logic is a good area to explore when discussing mental representations, as given by this kind of evidence.
+
+####Is the LOT model better? (probably, if you have super specific primitives...)
+
+####What else can we say about people's generalizations in this totally "pure" task? 
+
+####Animals tho????
