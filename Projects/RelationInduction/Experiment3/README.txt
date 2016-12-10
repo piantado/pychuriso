@@ -1,4 +1,4 @@
-Experiment Two
+Experiment Three
 2-example, 2 objects per example
 
 Each subject sees one of the following conditions:
@@ -10,4 +10,6 @@ Identity         a→a         b→c
 Negation         a→b         b→a
 
 A version of the experiment where the Special Transformo-Box 3000 is the apply function.
+
+
 

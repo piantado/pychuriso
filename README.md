@@ -41,13 +41,18 @@ The base facts to be encoded are written in an input.txt file. Examples of these
 - Scheme ```cons```, ```cdr```, ```car```
 - dominance relations
 - propositional logic (e.g. brown cow)
+- geometry
+- rock-paper-scissors
+- data structures
+- group theory
+- same/different
 
 There are key language features that can be used in the input file.
 >```unique```: each of the symbols following ```unique``` must be represented by distinct combinator structures.</br>
 >```define```: allows you to explicitly set a combinator structure for a specified symbol.</br>
 >```forall```: anything of the form specified will map to the same symbol.</br>
 >```not```: negation of facts. e.g. ```[not (f x) = y]```<br>
-> Complex logical expressions are also allowed. (e.g. [not (f x) in {a,b,c,d}] | (g x) = y | x = y)<br>
+> Complex logical expressions are also allowed. (e.g. ```[not (f x) in {a,b,c,d}] | (g x) = y | x = y)```<br>
 >```show```: indicates to print out the solution to a new problem, given the combinators mapped to the base facts.</br>
 
 
@@ -61,7 +66,17 @@ pychuriso has a parser to handle the input.txt file. This uses regular expressio
     facts     = []
     shows     = dict()
 ```
-> Single statements are parsed using ```binarize()```and are transformed into an instance of ```SimpleFact```. A ```Simple Fact``` has a single application on the left-hand side (f x) and a single right-hand side outcome (e.g. = y).
+
+
+Single statements are parsed using ```binarize()```and are transformed into an instance of ```Fact```. A ```Fact``` has a single application on the left-hand side (f x) and a single right-hand side outcome (e.g. = y). ```Fact``` has several subclasses to determine reduction code for the relationship between the lhs and rhs. These include:
+
+> NegationFact<br>
+> EqualityFact<br>
+> InequalityFact<br>
+> InFact<br>
+> DisjunctionFact<br>
+> PartialEqualityFact<br>
+
 
 reduction
 ----------
@@ -74,7 +89,9 @@ As mentioned, **BCTMW** can be defined in terms of S and K  (thus penalizing len
 
 the search
 -----------
+Before searching, facts can be reordered to prune/optimize the search. This is done by first checking if any facts can be verified, and then by checking if any constraints can be pushed. ```compute_complexity``` allows us to determine how many remaining searches through combinators we need. The search will be **O(```compute_complexity(defines, facts)```)**.
 
+The default search is set to ```block``` which enumerates all solutions with an increasing depth bound that is independent on each.
 
 run.py
 -----------
