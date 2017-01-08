@@ -4,7 +4,6 @@ add ((S (K ((S (K ((S (S ((S I) K))) (S I)))) S))) K)
 # Add cons
 add ((B C) (C I))
 
-
 cons := ((B C) (C I))
 
 forall f x
