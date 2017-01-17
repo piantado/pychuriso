@@ -7,7 +7,7 @@ Usage:
     -v --verbose                  Display the search incrementally (used for debugging).
     --search-basis=<combinators>  The search basis [default: ISKBC].
     --show-gs                     Show the auxiliary gs variables
-    --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 10].
+    --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 12].
     --max-find=<int>              Exit if you find this many combinators [default: 10000].
     --no-order                    Do not re-order the constraints
     --output=<string>             The name of the output file
@@ -21,13 +21,6 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version="pychuriso 0.001")
     condition = 0
     MAX_FIND = int(arguments['--max-find'])
-
-    # # SKITBMWCE
-    # combos = ['GSKH', 'GSKHI', 'GSKHIE', 'GBMWCESKHI', 'GSK', 'GSKI', 'GSKIE', 'GBMWC', 'GBMWCE',
-    #           'GTSKH', 'GTSKHI', 'GTSKHIE', 'GTBMWCESKHI', 'GTSK', 'GTSKI', 'GTSKIE', 'GTBMWC', 'GTBMWCE',
-    #           'SKH', 'SKHI', 'SKHIE', 'BMWCESKHI', 'SK', 'SKI', 'SKIE', 'BMWC', 'BMWCE',
-    #            'TSKH', 'TSKHI', 'TSKHIE', 'TBMWCESKHI', 'TSK', 'TSKI', 'TSKIE', 'TBMWC', 'TBMWCE'
-    #            ]
     combos = [arguments['--search-basis']]
 
     generalizations = [ ['a', 'a'], ['a', 'b'], ['a','c'], ['b', 'a'], ['b', 'b'], ['b','c'], ['c', 'a'], ['c', 'b'], ['c','c']]
