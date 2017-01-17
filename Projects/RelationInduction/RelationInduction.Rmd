@@ -198,6 +198,43 @@ plt = ggplot(data,aes(x=Response,fill=ConditionID))+
 plt
 ```
 
+
+### Reaction Time Over Trials Between Conditions
+#### This may indicate how "easy" each condition is, or possibly hint to the simplicity of hypotheses used.
+```{r}
+plt=ggplot(data,aes(Trial,RT,color=ConditionID))+
+  stat_summary(fun.y=mean,geom="line")+
+  stat_summary(fun.data=mean_cl_boot,geom="pointrange")+
+  ggtitle("RT over Trials")
+plt
+
+
+```
+
+
+### Plotting for the 1-example case of Experiment 3
+Condition|Example
+---------------|-----------
+Different|a→**BOX**→b
+Same|a→**BOX**→a
+
+```{r}
+data=read.csv("exp3oneEx.csv")
+plt = ggplot(data,aes(x=Response,fill=ConditionID))+
+  geom_bar(aes(y = ..density..,group=Question,fill = ConditionID)) +
+  facet_grid(~Question~ConditionID)+
+  ggtitle("Distribution of Responses to Test Questions Across Conditions")+
+  xlab("Response to Test Question")+
+  ylab("Proportion of Response")
+  
+plt
+```
+
+#### Handpicking through some weird responses yielded some weird answers: In the Same condition (given **a yields a**), some participants responded that **b yields c**. This was curious, so I looked into it. Some of these responses included **a yields b** (which is an incorrect reproduction of the example given). Reasons ranged from uninformative (e.g. _"based on what we know"_) to specific (e.g. _"IT SEEM TO GO IN ORDER OF THE IMAGES SHOWING THAT APPEARED NEXT IN THE PATTERN"_). In total, there were 6 participants who responded in this way, and the majority gave reasons describing randomness or not understanding the task.
+
+####So how about in the Different condition, where we see that **b yields a**? This is a totally reasonable response under the model of sampling from a set of symbols that do not equal the first. e.g. (_sample(set(symbol!=self))_). It also may serve as some evidence for commutativity in this problem. 
+
+
 ### Reaction Time Over Trials Between Conditions
 #### This may indicate how "easy" each condition is, or possibly hint to the simplicity of hypotheses used.
 ```{r}
@@ -223,3 +260,5 @@ plt
 ####What else can we say about people's generalizations in this totally "pure" task? 
 
 ####Animals tho????
+
+####Can we assume that people maintain the same program throughout the whole experiment? Or with new data do they switch?
