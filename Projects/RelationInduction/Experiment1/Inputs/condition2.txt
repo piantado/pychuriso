@@ -1,5 +1,12 @@
-unique a b c
+unique a b c d
 I:= (S K K)
+
+# enforce some relationship between items
+b = (gs a)
+c = (gs b)
+d = (gs c) 
+
+
 a = (a b)
 b = (I b)
 c = (I c)
