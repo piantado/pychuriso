@@ -1,4 +1,4 @@
-Experiment One
+==Experiment One==
 1-example, 3 objects per example
 
 Each subject sees one of the following conditions:
