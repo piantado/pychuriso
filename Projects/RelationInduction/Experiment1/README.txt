@@ -1,4 +1,4 @@
-==Experiment One==
+Experiment One
 1-example, 3 objects per example
 
 Each subject sees one of the following conditions:
@@ -23,3 +23,7 @@ c b→?
 
 We are studying the ability to reason about abstract (pure) relational structures.
 We are hoping to infer the priors on different combinators.
+
+The Model
+
+We can get the predictions from Churiso
