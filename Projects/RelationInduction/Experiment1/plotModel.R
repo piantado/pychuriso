@@ -1,8 +1,10 @@
 library(ggplot2)
+library(plyr)
 library(dplyr)
 
 # B <- "SKH" # which do we plot?
 human = read.csv("human.csv")
+colnames(human) = c("answer","generalization","probability","condition")
 
 #what does the human data look like?
 human$generalization <- gsub(" ","",human$generalization)
@@ -13,13 +15,16 @@ humplt
 
 #put the human frame into the form of the model frame
 hp <- human %>% arrange(generalization) %>% as.data.frame()
+hp <- hp[,c(2,4,1,3)]
 
 #initialize the correlations table
 correlations = data.frame(Basis=character(),Correlation=double(),Kendall=double())
 
+#inititalize the faceted correlations table
+faceted_cors = data.frame(Basis=character(), Condition = integer(), Generalization = character(),Correlation = double())
 
 #go through all the model outputs
-for(f in list.files("MetropolisResults/model-outputs/", full.names=TRUE)) {
+for(f in list.files("model-outputs/", full.names=TRUE)) {
     if(!(file.info(f)$size==0)){
       
         d <- read.table(f, header=TRUE)
@@ -28,12 +33,18 @@ for(f in list.files("MetropolisResults/model-outputs/", full.names=TRUE)) {
         d$p <- 2**-(d$length-min(d$length)) ## TODO: Fix zero problems
     
         normalize <- function(x) { x/sum(x)} # fix normalization!
-    
+        
         ## add up prob over hypotheses (rows), then renormalize within generalization,condition
-        ag <- d %>% group_by(generalization, condition, answer) %>% summarise(sump=sum(p)) %>% group_by(generalization, condition) %>% mutate(probability=normalize(sump)) %>% as.data.frame()
+        ag <- d %>% 
+          group_by(generalization, condition, answer) %>% 
+          summarise(sump=sum(p)) %>% 
+          group_by(generalization, condition) %>% 
+          mutate(probability=normalize(sump)) %>% 
+          as.data.frame()
+        
         ag <- ag[!(ag$generalization=="cc"),]
         #clean up the name of the combinator basis
-        name <- gsub("MetropolisResults/model-outputs//","",f)
+        name <- gsub("model-outputs//","",f)
         name <-gsub(".txt","",name)
         
         if(length(hp$probability)==length(ag$probability)){
@@ -51,24 +62,44 @@ for(f in list.files("MetropolisResults/model-outputs/", full.names=TRUE)) {
             k = cor.test(hp$probability,ag$probability,method="kendall")
             
             correlations <-rbind(correlations,data.frame(Basis=name,Correlation=c$estimate, Kendall=k$estimate))
-            View(correlations)
+            
+            #what about faceted correlations? 
+            #if a model prediction is overall kind of crappy because it missed a single condition, 
+            #we still want to see how well it did!
+            
+            #rename ag probability before cbinding
+            colnames(ag)[5] <- "modprobability"
+            all <- cbind(hp, ag$modprobability)
+            colnames(all)[5]="modprobability"
+            cors <- ddply(all, c("condition","generalization"), summarise, cor = round(cor(probability, modprobability), 2))
+            cors$basis = name
+            faceted_cors <-rbind(faceted_cors,cors)
+            
+            
       }
         
   }
 }
 
 write.csv(correlations,"correlations.csv")
+write.csv(cors,"testingfaceted.csv")
+write.csv(faceted_cors,"othertestomg.csv")
+
+
+
 correlations = read.csv("correlations.csv")
+
+
 correlations$Fill = "Lower than .35"
 correlations$Fill[correlations$Kendall>.35]="Higher than .35"
 
 correlations =correlations[order(-correlations$Kendall),]
-correlations = correlations[1:50,]
+View(correlations)
 
 plt = ggplot(correlations,aes(Basis,Kendall,fill=Fill))+
   geom_bar(stat="identity")+
   theme(axis.text.x = element_text(angle=60, hjust=1))
   
 plt
-
-
+View(correlations)
+ggsave("Correlations.pdf" ,plt,width=10)
