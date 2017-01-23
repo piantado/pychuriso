@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Response,Question,Proportion,Condition
+=======
+answer,generalization,probability,condition
+>>>>>>> 66784afc86bfbfad5e60b74e536534c762224c0d
  a, a a,0.9756097561,0
  b, a a,0.0243902439,0
  c, a a,0,0
