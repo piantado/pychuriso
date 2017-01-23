@@ -26,4 +26,10 @@ We are hoping to infer the priors on different combinators.
 
 The Model
 
-We can get the predictions from Churiso
+We can get the predictions from Churiso for each of the questions that humans saw. We can recreate the plot that showed human data, using these model predictions. The goal of the first steps here is to:
+
+Find a combinator basis that performs closest to human data. (We are using Kendall-Tau).
+Investigate into why the model may be failing or succeeding (on certain conditions, questions maybe?)
+Compare with a LOT model.
+
+Could it be that we can model behavior using the LCL theory and Churiso? Surely, it may be the case that our mental representations are indeed LCL, but we cannot capture this behaviorally in this task (or any other).
