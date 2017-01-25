@@ -96,14 +96,14 @@ write.csv(faceted_cors,"condition_cors.csv")
 
 #plot the overall correlations
 correlations = read.csv("correlations.csv")
-correlations$Fill = "Lower than .35"
-correlations$Fill[correlations$Kendall>.35]="Higher than .35"
+correlations$Legend = "Lower than .4"
+correlations$Legend[correlations$Kendall>.4]="Higher than .4"
 
 correlations =correlations[order(-correlations$Kendall),]
 correlations = correlations[1:100,]
 View(correlations)
 
-plt = ggplot(correlations,aes(Basis,Kendall,fill=Fill))+
+plt = ggplot(correlations,aes(Basis,Kendall,fill=Legend))+
   geom_bar(stat="identity")+
   theme(axis.text.x = element_text(angle=60, hjust=1))
   
@@ -115,28 +115,31 @@ ggsave("Correlations.pdf" ,plt,width=10)
 cond_correlations = read.csv("condition_cors.csv")
 cond_correlations =cond_correlations[order(-cond_correlations$cor),]
 
+#generate plots for each condition (plot only bases that do better than .7 of the mean correlation)
 for(i in 0:4){
- name = paste("cc_",i,sep="")
- m = max(cond_correlations$cor[cond_correlations$condition==i])*.8
- name = cond_correlations[which(cond_correlations$condition==i & cond_correlations$cor>m),]
+  print(i)
+ #name = paste("cc_",i,sep="")
+  m = max(cond_correlations$cor[cond_correlations$condition==i])*.7
+  #d = cond_correlations[which(cond_correlations$condition==i & cond_correlations$cor>m),]
+  print(cond_correlations[which(cond_correlations$condition==i & cond_correlations$cor>m),])
+  plt = ggplot(data = cond_correlations[which(cond_correlations$condition==i & cond_correlations$cor>m),], aes(x=basis, y=cor)) + 
+     geom_bar(stat="identity")+
+     facet_grid(~condition)+
+     theme(axis.text.x = element_text(angle=60, hjust=1))
+  print(plt)
 }
-#lists cc_0, cc_1, cc_2, cc_3, cc_4
+library(dplyr)
+cc <- cond_correlations %>%
+ 
+                    group_by(condition) %>%
+                    arrange(condition,desc(cor)) %>%
+                    top_n(n=10, wt=cor)
 
 
-plotdata <- function(x) {
-  ggplot(data = x, aes(x=basis, y=cor)) + 
-    geom_bar(stat="identity")+
-    facet_grid(~condition)+
-    theme(axis.text.x = element_text(angle=60, hjust=1))
-  
-}
-
-
-conds = list(cc_0, cc_1, cc_2, cc_3, cc_4)
-lapply(conds, plotdata)
-plt = ggplot(cond_correlations,aes(basis,cor, fill=as.factor(condition)))+
+plt = ggplot(cc,aes(basis,cor, fill=as.factor(condition)))+
   geom_bar(stat="identity")+
-  facet_grid(~condition)+
+  facet_grid(~condition, scales="free",space="free")+
+  
   theme(axis.text.x = element_text(angle=60, hjust=1))
 
 plt
