@@ -3,7 +3,7 @@ library(plyr)
 library(dplyr)
 
 # B <- "SKH" # which do we plot?
-human = read.csv("human.csv")
+human = read.csv("human.csv", header=TRUE)
 colnames(human) = c("answer","generalization","probability","condition")
 
 #what does the human data look like?
@@ -21,8 +21,8 @@ hp <- hp[,c(2,4,1,3)]
 correlations = data.frame(Basis=character(),Correlation=double(),Kendall=double())
 
 #inititalize the faceted correlations table
-faceted_cors = data.frame(Basis=character(), Condition = integer(), Generalization = character(),Correlation = double())
-
+#faceted_cors = data.frame(Basis=character(), Condition = integer(), Generalization = character(),Correlation = double())
+faceted_cors = NULL
 #go through all the model outputs
 for(f in list.files("model-outputs/", full.names=TRUE)) {
     if(!(file.info(f)$size==0)){
@@ -71,9 +71,18 @@ for(f in list.files("model-outputs/", full.names=TRUE)) {
             colnames(ag)[5] <- "modprobability"
             all <- cbind(hp, ag$modprobability)
             colnames(all)[5]="modprobability"
-            cors <- ddply(all, c("condition","generalization"), summarise, cor = round(cor(probability, modprobability), 2))
+            
+            #let's see the correlations for each condition (we could do by generalization also, but then we are dealing with very few points)
+            cors <- ddply(na.omit(all), c("condition"), summarise, cor = round(cor(probability, modprobability), 2))
             cors$basis = name
-            faceted_cors <-rbind(faceted_cors,cors)
+            
+            #put together the correlations by condition
+            faceted_cors = rbind(faceted_cors,cors)
+            
+            #now let's compare the model to random
+            
+            #generate a bunch of randomizations of the human data
+            
             
             
       }
@@ -82,18 +91,16 @@ for(f in list.files("model-outputs/", full.names=TRUE)) {
 }
 
 write.csv(correlations,"correlations.csv")
-write.csv(cors,"testingfaceted.csv")
-write.csv(faceted_cors,"othertestomg.csv")
+write.csv(faceted_cors,"condition_cors.csv")
 
 
-
+#plot the overall correlations
 correlations = read.csv("correlations.csv")
-
-
 correlations$Fill = "Lower than .35"
 correlations$Fill[correlations$Kendall>.35]="Higher than .35"
 
 correlations =correlations[order(-correlations$Kendall),]
+correlations = correlations[1:100,]
 View(correlations)
 
 plt = ggplot(correlations,aes(Basis,Kendall,fill=Fill))+
@@ -101,5 +108,49 @@ plt = ggplot(correlations,aes(Basis,Kendall,fill=Fill))+
   theme(axis.text.x = element_text(angle=60, hjust=1))
   
 plt
-View(correlations)
+#View(correlations)
 ggsave("Correlations.pdf" ,plt,width=10)
+
+#plot the correlations by condition
+cond_correlations = read.csv("condition_cors.csv")
+cond_correlations =cond_correlations[order(-cond_correlations$cor),]
+
+for(i in 0:4){
+ name = paste("cc_",i,sep="")
+ m = max(cond_correlations$cor[cond_correlations$condition==i])*.8
+ name = cond_correlations[which(cond_correlations$condition==i & cond_correlations$cor>m),]
+}
+#lists cc_0, cc_1, cc_2, cc_3, cc_4
+
+
+plotdata <- function(x) {
+  ggplot(data = x, aes(x=basis, y=cor)) + 
+    geom_bar(stat="identity")+
+    facet_grid(~condition)+
+    theme(axis.text.x = element_text(angle=60, hjust=1))
+  
+}
+
+
+conds = list(cc_0, cc_1, cc_2, cc_3, cc_4)
+lapply(conds, plotdata)
+plt = ggplot(cond_correlations,aes(basis,cor, fill=as.factor(condition)))+
+  geom_bar(stat="identity")+
+  facet_grid(~condition)+
+  theme(axis.text.x = element_text(angle=60, hjust=1))
+
+plt
+ggsave("Correlation_by_Condition.pdf", plt, width=10, height=4)
+
+#we need to test if our model is doing any better than random...
+#let's scramble! (shuffles by condition and generalization)
+scrambled <- na.omit(human) %>%
+             group_by(condition,generalization) %>%
+             mutate(probability=sample(probability))
+              
+#View(scrambled)
+
+humplt = ggplot(scrambled, aes(answer, probability, fill=as.factor(condition)))+
+  geom_bar(stat="identity")+
+  facet_grid(~generalization~condition)
+humplt
