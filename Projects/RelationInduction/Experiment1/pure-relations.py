@@ -36,7 +36,7 @@ if __name__ == "__main__":
             basis = basis_from_argstring(str(c))
 
             symbolTable, variables, uniques, facts, shows = {}, [], [], [], []  # initialize
-            load_source("Inputs/condition%s.txt" % condition, symbolTable, uniques, facts, shows, basis)  # modifies the arguments
+            load_source("Inputs/Exp1_nogs/condition%s.txt" % condition, symbolTable, uniques, facts, shows, basis)  # modifies the arguments
 
             seen = set()
             for nsolution, solution in enumerate(search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis)):
