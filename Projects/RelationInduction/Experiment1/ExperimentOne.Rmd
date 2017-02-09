@@ -221,7 +221,8 @@ plt = ggplot(mc, aes(x=MaxCorrelations)) +
   geom_density()+
   ggtitle("Distribution of Correlations to Random Data")+
   geom_vline(data = correlations, aes(xintercept = max(correlations$Correlation),color="red"),linetype="dashed")+
-  geom_text(aes(x=max(correlations$Correlation), label="Maximum Model Correlation to Human Data", y=3))
+  geom_text(aes(x=max(correlations$Correlation)-.02, label="Maximum Model Correlation to Human Data", y=3,angle=90))+
+  theme(legend.position="none")
   
 plt
 ```

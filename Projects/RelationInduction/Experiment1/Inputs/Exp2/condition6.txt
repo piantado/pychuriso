@@ -9,6 +9,6 @@ d = (gs c)
 
 
 a = (I a)
-b = (a b)
-c = (a c)
+b = (a a)
+c = (b b)
 d = (I d)
