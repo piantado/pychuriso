@@ -1,7 +1,5 @@
 ## TODO:
 ## Human needs to output counts N
-## One problem with MSE is these cases where there is no human data! Those plots are zeros but they shouldn't be counted at all
-
 
 library(ggplot2)
 library(plyr)
@@ -9,7 +7,7 @@ library(dplyr)
 
 # B <- "SKH" # which do we plot?
 human = read.csv("human.csv", header=TRUE)
-colnames(human) = c("answer","generalization","human.probability","condition")
+colnames(human) = c("x","answer","generalization","human.probability","condition","human.count")
 human$generalization <- gsub(" ","",human$generalization)
 human$answer <- gsub(" ","",human$answer) # shoot me, there were spaces
 human$condition <- as.factor(human$condition)
@@ -23,8 +21,8 @@ humplt
 
 #put the human frame into the form of the model frame
 hp <- human %>% arrange(generalization) %>% as.data.frame()
-hp <- hp[,c(2,4,1,3)]
-
+hp <- hp[,c(2,4,1,3,5,6)]
+hp$x <- NULL
 #initialize the correlations table
 correlations = data.frame(Basis=character(),Correlation=double(),Kendall=double())
 
@@ -48,7 +46,7 @@ for(param in c(0.01, 0.1, 1.0, 10.0, 20.0, 50.0)) {
             # what if our probability was proportional to the runtime
 #             d$p <- 2**-(1.0*(d$length-min(d$length, na.rm=TRUE))) ## TODO: Fix zero problems
             d$p <- 2**-(param*(d$runtime-min(d$runtime, na.rm=TRUE))) ## TODO: Fix zero problems
-        
+
             ## add up prob over hypotheses (rows), then renormalize within generalization,condition
             ag <- d %>% 
               group_by(generalization, condition, answer) %>% 
@@ -66,7 +64,7 @@ for(param in c(0.01, 0.1, 1.0, 10.0, 20.0, 50.0)) {
             # Merge together
             m <- merge(hp, ag, by=c("generalization", "condition", "answer"), all.x=TRUE, all.y=TRUE)
             m[is.na(m$human.probability),"human.probability"] <- 0 # fix the human zeros
-             
+            
             # Let's make a plot with both since its easier to see
             plt <- ggplot(m, aes(x=answer, y=human.probability, fill=condition)) +
                     geom_bar(stat="identity") + 
@@ -79,6 +77,7 @@ for(param in c(0.01, 0.1, 1.0, 10.0, 20.0, 50.0)) {
             plt     
             ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
             
+
             D <- rbind(D, data.frame(basis=d$basis[1], 
                                      cor=cor.test(m$human.probability, m$model.probability)$estimate,
                                      mse=mean( (m$human.probability-m$model.probability)**2.0, na.rm=TRUE ),

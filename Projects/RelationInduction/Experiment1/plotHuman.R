@@ -33,14 +33,19 @@ plt
 
 
 listy = list()
-
+data <- read.csv("exp1data.csv",header=TRUE)
 for(val in c(0,1,2,3,4)){
   t = table(data$Response[data$Condition==val],data$Question[data$Condition==val])
   tp = prop.table(t,2)
   frame = as.data.frame(tp)
   frame$cond = val
+  t = as.data.frame(t)
+  frame = cbind(frame,t$Freq)
   listy[[val+1]] = frame
+ 
 }
 humanframe = do.call(rbind,listy)
-colnames(humanframe) <- c("Response","Question","Proportion","Condition")
+colnames(humanframe) <- c("Response","Question","Proportion","Condition","Frequency")
 View(humanframe)
+
+write.csv(humanframe,"human.csv")

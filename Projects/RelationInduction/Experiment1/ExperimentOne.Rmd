@@ -9,7 +9,7 @@ output: html_document
 
 Here we will be analyzing how well Churiso can capture human behavior in the "Marvin the Robot" tasks. 
 
-```{r}
+```{r include=FALSE}
 library(ggplot2)
 library(plyr)
 library(dplyr)
@@ -18,10 +18,12 @@ library(dplyr)
 ## Checking out the Human Data
 ```{r}
 human = read.csv("human.csv", header=TRUE)
-colnames(human) = c("answer","generalization","probability","condition")
+human$X <- NULL
+colnames(human) = c("answer","generalization","probability","condition","frequency")
 
 #what does the human data look like?
 human$generalization <- gsub(" ","",human$generalization)
+human$answer <- gsub(" ","",human$answer)
 humplt = ggplot(human, aes(answer, probability, fill=as.factor(condition)))+
   geom_bar(stat="identity")+
   facet_grid(~generalization~condition)
@@ -29,7 +31,8 @@ humplt
 
 #put the human frame into the form of the model frame
 hp <- human %>% arrange(generalization) %>% as.data.frame()
-hp <- hp[,c(2,4,1,3)]
+
+hp <- hp[,c(2,4,1,3,5)]
 
 hp
 
@@ -40,41 +43,15 @@ hp
 #plot the overall correlations
 correlations = read.csv("correlations.csv")
 correlations$Legend = "Lower than .4"
-correlations$Legend[correlations$Kendall>.4]="Higher than .4"
+correlations$Legend[correlations$cor>.4]="Higher than .4"
 
-correlations =correlations[order(-correlations$Kendall),]
+correlations =correlations[order(-correlations$cor),]
 correlations = correlations[1:100,]
 #View(correlations)
 
-plt = ggplot(correlations,aes(Basis,Kendall,fill=Legend))+
-  geom_bar(stat="identity")+
-  theme(axis.text.x = element_text(angle=60, hjust=1))
-  
-plt
-#ggsave("Correlations.pdf" ,plt,width=10)
 
-```
+bestmodel <-correlations[correlations$cor==max(correlations$cor),]
 
-
-##Working With Correlations by Condition##
-```{r fig.width=15, fig.height=7}
-#plot the correlations by condition
-cond_correlations = read.csv("condition_cors.csv")
-cc <- cond_correlations %>%
- 
-                    group_by(condition) %>%
-                    arrange(condition,desc(cor)) %>%
-                    top_n(n=10, wt=cor)
-
-
-plt = ggplot(cc,aes(basis,cor, fill=as.factor(condition)))+
-  geom_bar(stat="identity")+
-  facet_grid(~condition, scales="free",space="free")+
-  
-  theme(axis.text.x = element_text(angle=60, hjust=1))
-
-plt
-#ggsave("Correlation_by_Condition.pdf", plt, width=10, height=4)
 
 ```
 
@@ -82,9 +59,6 @@ plt
 ```{r}
 maxes = list()
 max_ks = list()
-
-max_by_cond = NULL
-
 ```
 
 ```{r loop}
@@ -105,14 +79,15 @@ for (i in 0:100){
   for(f in list.files("ag/", full.names=TRUE)) {
    
       ag <- read.csv(f, header=TRUE)
-      name = gsub("ag/output", "",f)
+      name = gsub("ag/", "",f)
       
       # what if our probability was proportional to the runtime
       
+        if(length(scrambled$probability) == length(ag$model.probability)){
       
         #saving the correlations to a dataframe
-        c = cor.test(scrambled$probability,ag$modprobability)
-        k = cor.test(scrambled$probability,ag$modprobability,method="kendall")
+        c = cor.test(scrambled$probability,ag$model.probability)
+        k = cor.test(scrambled$probability,ag$model.probability,method="kendall")
         
         correlations <-rbind(correlations,data.frame(Basis=name,Correlation=c$estimate, Kendall=k$estimate))
         
@@ -125,17 +100,14 @@ for (i in 0:100){
         
        #View(faceted_cors)
 
+        }
   }
-  
+  correlations=na.omit(correlations)
   m = max(correlations$Correlation)
   mk = max(correlations$Kendall)
   maxes<-append(maxes,m)
   max_ks <-append(max_ks,mk)
   
-  
-  #m_by_cond <- na.omit(faceted_cors) %>%
-                #group_by(condition, basis) %>%
-                #mutate(MaxCor = max(cor))
   
   
   
@@ -152,15 +124,14 @@ scrambled
 #Take a look at an example ag frame (technically, the last one called in the loop)
 ag
 
-mc_before<-data.frame(unlist(maxes))
-names(mc_before) <-c("MaxCorrelations")
-write.csv(mc_before,"MaxCorrelations.csv")
+scramblemax_before<-data.frame(unlist(maxes))
 mk_before<-data.frame(unlist(max_ks))
+names(scramblemax_before) <-c("MaxCorrelations")
 names(mk_before) <-c("MaxKendalls")
-write.csv(mk_before,"MaxKendalls.csv")
 
+max_data <- as.data.frame(c(scramblemax_before,mk_before))
+write.csv(max_data,"MaxtoScramble.csv")
 
-#write.csv(m_by_cond,"Max_By_Condition.csv")
 ```
 
 ```{r readin}
@@ -171,84 +142,42 @@ correlations=read.csv("correlations.csv",header=TRUE)
 
 ```{r}
 #maximum correlations to random
-mc = read.csv("MaxCorrelations.csv",header=TRUE)
+scramblemax = read.csv("MaxtoScramble.csv",header=TRUE)
 
 ```
-
-```{r}
-#maximum kendalls
-mk = read.csv("MaxKendalls.csv", header=TRUE)
-
-```
-
 
 ##Let's take a look at the distribution of max correlations now!##
 
-```{r fig.width=7}
-
-plt = ggplot(mc, aes(x=MaxCorrelations)) + geom_density() +
-  xlab("Correlation")+
-  ggtitle("Model to Random Scramble (Correlation)")
-plt
-```
-
 ```{r}
-#maximum kendalls to random
-plt = ggplot(mk, aes(x=MaxKendalls)) + geom_density()+xlab("Kendall Tau") + ggtitle("Model to Random Scramble (Kendall)")
-plt
-```
-
-```{r}
-#HUMAN COR.TESTS
-plt = ggplot(correlations, aes(x=Correlation)) +
-  geom_density() +
-  ggtitle("Model to Human Data (Correlation)")+
-  geom_density(data=mc,aes(x=MaxCorrelations),color="blue")
-  
-plt
-
-```
-
-```{r}
-#HUMAN KENDALL TAUS
-plt = ggplot(correlations, aes(x=Kendall)) + geom_density()+ggtitle("Model to Human Data (Kendall)")
-plt
-
-```
-
-```{r}
-plt = ggplot(mc, aes(x=MaxCorrelations)) + 
+plt = ggplot(scramblemax, aes(x=MaxCorrelations)) + 
   geom_density()+
   ggtitle("Distribution of Correlations to Random Data")+
+  xlab("Correlation")+
+  ylab("Density")+
   geom_vline(data = correlations, aes(xintercept = max(correlations$Correlation),color="red"),linetype="dashed")+
   geom_text(aes(x=max(correlations$Correlation)-.02, label="Maximum Model Correlation to Human Data", y=3,angle=90))+
+  theme_bw()+
   theme(legend.position="none")
   
 plt
+ggsave("MaxCorrelations.pdf",plt)
+
 ```
 
 
 
 ```{r p vals}
-mc$Better = FALSE
-mc$Better[mc$m >= max(correlations$Correlation)] = TRUE
+scramblemax$Better = FALSE
+scramblemax$Better[scramblemax$MaxCorrelations >= max(correlations$Correlation)] = TRUE
 
-num = length(mc$Better[mc$Better==TRUE]) #number of better than REAL human max correlation
-denom = length(mc$Better)#number of worse than REAL human max correlation
+num = length(scramblemax$Better[scramblemax$Better==TRUE]) #number of better than REAL human max correlation
+denom = length(scramblemax$Better)#number of worse than REAL human max correlation
 
 #p val for cor.test
-num/length(mc$Better)
+num/length(scramblemax$Better)
 
-
-mk$Better = FALSE
-mk$Better[mk$MaxKendalls >= max(correlations$Kendall)] = TRUE
-
-
-numk = length(mk$Better[mk$Better==TRUE]) #number of better than REAL human max correlation
-denomk = length(mk$Better)#number of worse than REAL human max correlation
-
-#pval for Kendall Tau
-numk/length(mk$Better)
 ```
+
+
 
 
