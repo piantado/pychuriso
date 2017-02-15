@@ -1,4 +1,4 @@
-"""A Python implementation of churiso and binary lambda calculus
+"""A Python implementation of churiso
 
 Options:
 Usage:
@@ -13,7 +13,7 @@ Usage:
     --output=<string>             The name of the output file
 """
 
-from run import *
+from pychuriso.run import *
 
 
 if __name__ == "__main__":

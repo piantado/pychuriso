@@ -97,7 +97,10 @@ run.py
 -----------
 
 
+syntax highlighting
+-------------------
 
+If you use kate/kwrite/kile you can copy churiso.xml to ~/.local/share/katepart5/syntax/ (Ubuntu 16.1) or /usr/share/kde4/apps/katepart/syntax/ (earlier Ubuntu)
 
 
 

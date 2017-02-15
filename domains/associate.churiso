@@ -5,5 +5,5 @@ forall x y z
 add ((B C) (C I))
 cons := ((B C) (C I))
 
-# restructure a tree
+# restructure a tree; note NOT the recursive version
 (rebranch (cons x (cons y z))) = (cons (cons x y) z)

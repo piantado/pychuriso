@@ -1,21 +1,35 @@
 # A working memory system capable of tracking just a few 
 # items, derived from combinator structures
 
-unique x xx xxx empty fail
-unique add_ sub
+unique empty one two three fail
 
-# can add and remove from the empty set
-x    = (add_ empty)
-xx   = (add_ x)
-xxx  = (add_ xx)
-fail = (add_ xxx)
-fail = (add_ fail)
+(x empty) = one
+(x one)   = two
+(x two)   = three
+(x three) = fail
+(x fail)  = fail 
 
-empty = (sub x)
-x     = (sub xx)
-xx    = (sub xxx)
-fail  = (sub fail)
+(pop fail)  = fail
+(pop three) = two
+(pop two)   = one
+(pop one)   = empty
+(pop empty) = fail
 
-
+## One way to do this that is hard to satisfy is below, 
+# with add and subtract functions. Not sure why it's hard. 
+# unique x xx xxx empty fail
+# unique add_ sub
+# x    = (add_ empty)
+# xx   = (add_ x)
+# xxx  = (add_ xx)
+# fail = (add_ xxx)
+# fail = (add_ fail)
+# 
+# empty = (sub x)
+# x     = (sub xx)
+# xx    = (sub xxx)
+# fail  = (sub fail)
+# 
+# 
 
 

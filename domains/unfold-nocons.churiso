@@ -1,4 +1,0 @@
-
-forall f x
-
-(unfold f x) ~= ((f x) (unfold f (f x)))

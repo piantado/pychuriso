@@ -1,4 +1,4 @@
-"""A Python implementation of churiso and binary lambda calculus
+"""A Python implementation of churiso
 
 Options:
 Usage:
