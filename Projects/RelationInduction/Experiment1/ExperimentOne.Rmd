@@ -42,6 +42,7 @@ hp
 ```{r fig.width=15, fig.height=7}
 #plot the overall correlations
 correlations = read.csv("correlations.csv")
+correlations=na.omit(correlations)
 correlations$Legend = "Lower than .4"
 correlations$Legend[correlations$cor>.4]="Higher than .4"
 
@@ -79,6 +80,7 @@ for (i in 0:100){
   for(f in list.files("ag/", full.names=TRUE)) {
    
       ag <- read.csv(f, header=TRUE)
+      ag <- na.omit(ag)
       name = gsub("ag/", "",f)
       
       # what if our probability was proportional to the runtime
@@ -102,7 +104,7 @@ for (i in 0:100){
 
         }
   }
-  correlations=na.omit(correlations)
+
   m = max(correlations$Correlation)
   mk = max(correlations$Kendall)
   maxes<-append(maxes,m)
@@ -137,6 +139,7 @@ write.csv(max_data,"MaxtoScramble.csv")
 ```{r readin}
 #the human correlations
 correlations=read.csv("correlations.csv",header=TRUE)
+correlations <-na.omit(correlations)
 
 ```
 
@@ -154,8 +157,8 @@ plt = ggplot(scramblemax, aes(x=MaxCorrelations)) +
   ggtitle("Distribution of Correlations to Random Data")+
   xlab("Correlation")+
   ylab("Density")+
-  geom_vline(data = correlations, aes(xintercept = max(correlations$Correlation),color="red"),linetype="dashed")+
-  geom_text(aes(x=max(correlations$Correlation)-.02, label="Maximum Model Correlation to Human Data", y=3,angle=90))+
+  geom_vline(data = correlations, aes(xintercept = max(correlations$cor),color="red"),linetype="dashed")+
+  geom_text(aes(x=max(correlations$cor)-.02, label="Maximum Model Correlation to Human Data", y=3,angle=90))+
   theme_bw()+
   theme(legend.position="none")
   
@@ -167,8 +170,9 @@ ggsave("MaxCorrelations.pdf",plt)
 
 
 ```{r p vals}
+scramblemax <- na.omit(scramblemax)
 scramblemax$Better = FALSE
-scramblemax$Better[scramblemax$MaxCorrelations >= max(correlations$Correlation)] = TRUE
+scramblemax$Better[scramblemax$MaxCorrelations >= max(correlations$cor)] = TRUE
 
 num = length(scramblemax$Better[scramblemax$Better==TRUE]) #number of better than REAL human max correlation
 denom = length(scramblemax$Better)#number of worse than REAL human max correlation

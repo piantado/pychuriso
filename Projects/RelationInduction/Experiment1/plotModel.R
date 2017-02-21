@@ -1,6 +1,12 @@
+#!/usr/bin/Rscript
+
+#cat run-args-mini.txt | parallel --jobs 25 "nice -n 0 python pure-relations.py --search-basis='{}' --max-depth=5 --max-find=10000 | Rscript plotModel.R"
+
 ## TODO:
 ## When we compute the permuted samples, we should remove the samples that the model was given, probably? These are penalized in randomized samples but are not really penalized for the real sample since there is fitting. 
-
+input<-file('stdin','r')
+f <- readLines(input)
+print(f)
 
 library(ggplot2)
 library(plyr)
@@ -24,19 +30,22 @@ human$generalization <- as.factor(human$generalization)
 hp <- human %>% arrange(generalization) %>% as.data.frame()
 hp <- hp[,c(2,4,1,3,5,6)]
 hp$x <- NULL
-#initialize the correlations table
-correlations = data.frame(Basis=character(),Correlation=double(),Kendall=double())
 
 normalize <- function(x) { x/sum(x, na.rm=TRUE)} # fix normalization!
             
 D <- NULL # summary table for the true data
 P <- NULL # table of permuted versions
-# for(f in c("model-outputs/SKHIE.txt")){#list.files("model-outputs/", full.names=TRUE)) {
-for(f in list.files("model-outputs/", full.names=TRUE)) {
-for(param in c(0.01, 0.1, 1.0, 10.0, 20.0, 50.0, 100.0)) {
 
-            d <- read.table(gzfile(f), header=TRUE)
-            if(nrow(d)==0) { next } 
+#take each file from stdin and process it, outputting into model-statistics/
+
+
+#seem to do best with param = 1
+for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
+
+            #d <- read.table(f, header=TRUE)
+            d <- f
+            print(nrow(d))
+            if(nrow(d)==0) { next } # move on if empty
             d$condition <- as.factor(d$condition)
             
             # what if our probability was proportional to the runtime
@@ -81,7 +90,7 @@ for(param in c(0.01, 0.1, 1.0, 10.0, 20.0, 50.0, 100.0)) {
                                      ll=sum(m$human.count*log(m$model.probability*0.99 + 0.01/5.0), na.rm=TRUE),
                                      param=param,
                                      missing= sum(is.na(m$human.probability-m$model.probability))
-                                     ))
+            ))
                            
             # since the data is all loaded, do the permuted version
             # we'll make a column "p" so we can pull out p=1, p=2, etc. to get the different permutations
@@ -94,27 +103,23 @@ for(param in c(0.01, 0.1, 1.0, 10.0, 20.0, 50.0, 100.0)) {
                 # now save the permuted data in P
                 P <- rbind(P, data.frame(n=n,  # what permutation are we on?
                                 basis=d$basis[1], 
-                                cor=cor.test(m$human.probability, m$model.probability)$estimate,
-                                mse=mean( (m$human.probability-m$model.probability)**2.0, na.rm=TRUE ),
-                                ll=sum(m$human.count*log(m$model.probability*0.99 + 0.01/5.0), na.rm=TRUE),
+                                rcor=cor.test(m$human.probability, m$model.probability)$estimate,
+                                rmse=mean( (m$human.probability-m$model.probability)**2.0, na.rm=TRUE ),
+                                rll=sum(m$human.count*log(m$model.probability*0.99 + 0.01/5.0), na.rm=TRUE),
                                 param=param,
-                                missing= sum(is.na(m$human.probability-m$model.probability))
+                                rmissing= sum(is.na(m$human.probability-m$model.probability))
                                 ))
             }
-      }
-      
-      print(head(D[order(-D$ll),]))
-      
 }
-  
-## Now if we want we can process the permutations
-## Compute the ll for each permutation (indexed by n)
-maxes <- P %>% group_by(n) %>% summarise(ll=max(ll), cor=max(cor), mse=min(mse)) %>% as.data.frame()
+     
+      colnames(P) <- c("x","basis","p_cor","p_mse","p_ll","param","missing")
+      
+      
+      #merge together to have an output for 
+      final = merge(P,D, by=c("basis", "param", "missing"), all.x=TRUE, all.y=TRUE)
+      print(head(final[order(-final$ll),]))
+      
 
-# Now a histogram of maxes will show what we want
-plt <- ggplot(maxes, aes(x=ll)) +
-        geom_histogram() +
-        geom_vline(xintercept=max(D$ll), col="red", size=2) # draw a line at the real max
 
-# We could plot the others but we probably want to plot the cor of the max ll, not the max cor, right?
-# In that case we need to change above where maxes is defined
+write.csv(final,paste("model-statistics/",final$basis[1]))
+
