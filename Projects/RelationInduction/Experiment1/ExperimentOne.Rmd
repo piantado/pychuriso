@@ -170,8 +170,9 @@ ggsave("MaxCorrelations.pdf",plt)
 
 
 ```{r p vals}
+scramblemax <- na.omit(scramblemax)
 scramblemax$Better = FALSE
-scramblemax$Better[scramblemax$MaxCorrelations >= max(correlations$Correlation)] = TRUE
+scramblemax$Better[scramblemax$MaxCorrelations >= max(correlations$cor)] = TRUE
 
 num = length(scramblemax$Better[scramblemax$Better==TRUE]) #number of better than REAL human max correlation
 denom = length(scramblemax$Better)#number of worse than REAL human max correlation

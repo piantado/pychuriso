@@ -37,7 +37,7 @@ normalize <- function(x) { x/sum(x)} # fix normalization!
 D <- NULL # summary table 
 # for(f in c("model-outputs/SKHIE.txt")){#list.files("model-outputs/", full.names=TRUE)) {
 for(f in list.files("model-outputs/", full.names=TRUE)) {
-for(param in c(0.01, 0.1, 1.0, 10.0)) {
+for(param in c(0.01, 0.1, 1.0, 10.0,100.0)) {
 
             d <- read.table(f, header=TRUE)
             d$condition <- as.factor(d$condition)
@@ -76,7 +76,7 @@ for(param in c(0.01, 0.1, 1.0, 10.0)) {
                     #ylim(0,1)
             plt     
             ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
-            
+            write.csv(m,paste("ag/", d$basis[1],"-", param,".csv",sep=""))
             D <- rbind(D, data.frame(basis=d$basis[1], 
                                      cor=cor.test(m$human.probability, m$model.probability)$estimate,
                                      mse=mean( (m$human.probability-m$model.probability)**2.0, na.rm=TRUE ),
@@ -87,7 +87,7 @@ for(param in c(0.01, 0.1, 1.0, 10.0)) {
       }
 }
   
-write.csv(D,"ModeltoHuman.csv")
+write.csv(D,"correlations.csv")
 # 
 #write.csv(correlations,"correlations.csv")
 #write.csv(faceted_cors,"condition_cors.csv")
