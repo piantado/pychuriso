@@ -4,13 +4,15 @@
 
 ## TODO:
 ## When we compute the permuted samples, we should remove the samples that the model was given, probably? These are penalized in randomized samples but are not really penalized for the real sample since there is fitting. 
-input<-file('stdin','r')
-f <- readLines(input)
-print(f)
 
 library(ggplot2)
 library(plyr)
 library(dplyr)
+
+d <- read.table(file('stdin','r'), header=TRUE)
+
+stopifnot(nrow(d)>0) #make sure there are more than zero lines 
+
 
 # B <- "SKH" # which do we plot?
 human = read.csv("human.csv", header=TRUE)
@@ -19,12 +21,6 @@ human$generalization <- gsub(" ","",human$generalization)
 human$answer <- gsub(" ","",human$answer) # shoot me, there were spaces
 human$condition <- as.factor(human$condition)
 human$generalization <- as.factor(human$generalization)
-
-#what does the human data look like?
-# humplt = ggplot(human, aes(answer, human.probability, fill=as.factor(condition)))+
-#   geom_bar(stat="identity")+
-#   facet_grid(~generalization~condition)
-# humplt
 
 #put the human frame into the form of the model frame
 hp <- human %>% arrange(generalization) %>% as.data.frame()
@@ -43,8 +39,6 @@ P <- NULL # table of permuted versions
 for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
 
             #d <- read.table(f, header=TRUE)
-            d <- f
-            print(nrow(d))
             if(nrow(d)==0) { next } # move on if empty
             d$condition <- as.factor(d$condition)
             
@@ -62,10 +56,6 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
             
             ag <- ag[!(ag$generalization=="cc"),]
             
-            #clean up the name of the combinator basis
-            name <- gsub("model-outputs//","",f)
-            name <-gsub(".txt","",name)
-            
             # Merge together
             m <- merge(hp, ag, by=c("generalization", "condition", "answer"), all.x=TRUE, all.y=TRUE)
             m[is.na(m$human.probability),"human.probability"] <- 0 # fix the human zeros -- should not matter since these should have zero count
@@ -76,7 +66,7 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
                     geom_bar(stat="identity") + 
                     facet_grid(generalization ~ condition)+
                     geom_point(aes(x=answer,y=model.probability)) +
-                    ggtitle(name)+
+                    ggtitle(d$basis[1])+
                     xlab("Response")+
                     ylab("Probability Under the Model")
                     #ylim(0,1)
@@ -121,5 +111,5 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
       
 
 
-write.csv(final,paste("model-statistics/",final$basis[1]))
+write.csv(final,paste("model-statistics/",final$basis[1], sep=""))
 
