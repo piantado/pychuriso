@@ -1,4 +1,7 @@
 #!/usr/bin/Rscript
+
+#cat run-args-mini.txt | parallel --jobs 25 "nice -n 0 python pure-relations.py --search-basis='{}' --max-depth=5 --max-find=10000 | Rscript plotModel.R"
+
 ## TODO:
 ## When we compute the permuted samples, we should remove the samples that the model was given, probably? These are penalized in randomized samples but are not really penalized for the real sample since there is fitting. 
 input<-file('stdin','r')
