@@ -3,6 +3,7 @@
 ## When we compute the permuted samples, we should remove the samples that the model was given, probably? These are penalized in randomized samples but are not really penalized for the real sample since there is fitting. 
 input<-file('stdin','r')
 f <- readLines(input)
+print(f)
 
 library(ggplot2)
 library(plyr)
@@ -38,7 +39,9 @@ P <- NULL # table of permuted versions
 #seem to do best with param = 1
 for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
 
-            d <- read.table(gzfile(f), header=TRUE)
+            #d <- read.table(f, header=TRUE)
+            d <- f
+            print(nrow(d))
             if(nrow(d)==0) { next } # move on if empty
             d$condition <- as.factor(d$condition)
             
@@ -104,36 +107,16 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
                                 rmissing= sum(is.na(m$human.probability-m$model.probability))
                                 ))
             }
-      }
+}
+     
+      colnames(P) <- c("x","basis","p_cor","p_mse","p_ll","param","missing")
       
-      print(head(D[order(-D$ll),]))
       
+      #merge together to have an output for 
+      final = merge(P,D, by=c("basis", "param", "missing"), all.x=TRUE, all.y=TRUE)
+      print(head(final[order(-final$ll),]))
       
 
 
-write.csv(D,"model-statistics/ModeltoHuman.csv")
-write.csv(P,"model-statistics/ModeltoRandom.csv")
+write.csv(final,paste("model-statistics/",final$basis[1]))
 
-## Now if we want we can process the permutations
-## Compute the ll for each permutation (indexed by n)
-max_ll_cor <- P$cor[P$ll==max(P$ll)]
-maxes <- P %>% group_by(n) %>% summarise(ll=max(ll), cor=max_ll_cor, mse=min(mse)) %>% as.data.frame()
-
-# Now a histogram of maxes will show what we want
-plt <- ggplot(maxes, aes(x=ll)) +
-        geom_histogram() +
-        geom_vline(xintercept=max(D$ll), col="red",linetype="dashed",size=1) +# draw a line at the real max
-        xlab("Log Likelihood")
-plt
-ggsave("model-statistics/LLhist.pdf",plt)
-
-# Now a histogram of maxes will show what we want
-plt <- ggplot(D, aes(x=mse)) +
-  geom_histogram() +
-  geom_vline(xintercept=max(P$mse), col="red",linetype="dashed",size=1) +# draw a line at the real max
-  xlab("Mean Squared Error")
-plt
-ggsave("model-statistics/MSEhist.pdf",plt)
-
-# We could plot the others but we probably want to plot the cor of the max ll, not the max cor, right?
-# In that case we need to change above where maxes is defined
