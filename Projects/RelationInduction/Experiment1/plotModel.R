@@ -9,6 +9,7 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 
+
 d <- read.table(file('stdin','r'), header=TRUE)
 
 stopifnot(nrow(d)>0) #make sure there are more than zero lines 
@@ -71,7 +72,7 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
                     ylab("Probability Under the Model")
                     #ylim(0,1)
             plt     
-            ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
+            #ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
             
 
             D <- rbind(D, data.frame(basis=d$basis[1], 
@@ -93,20 +94,20 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
                 # now save the permuted data in P
                 P <- rbind(P, data.frame(n=n,  # what permutation are we on?
                                 basis=d$basis[1], 
-                                rcor=cor.test(m$human.probability, m$model.probability)$estimate,
-                                rmse=mean( (m$human.probability-m$model.probability)**2.0, na.rm=TRUE ),
-                                rll=sum(m$human.count*log(m$model.probability*0.99 + 0.01/5.0), na.rm=TRUE),
+                                cor=cor.test(m$human.probability, m$model.probability)$estimate,
+                                mse=mean( (m$human.probability-m$model.probability)**2.0, na.rm=TRUE ),
+                                ll=sum(m$human.count*log(m$model.probability*0.99 + 0.01/5.0), na.rm=TRUE),
                                 param=param,
-                                rmissing= sum(is.na(m$human.probability-m$model.probability))
+                                missing= sum(is.na(m$human.probability-m$model.probability))
                                 ))
             }
 }
      
-      colnames(P) <- c("x","basis","p_cor","p_mse","p_ll","param","missing")
-      
-      
-      #merge together to have an output for 
-      final = merge(P,D, by=c("basis", "param", "missing"), all.x=TRUE, all.y=TRUE)
+      P$Data = "Random"
+      D$n = seq.int(nrow(D))
+      D$Data = "Human"
+      D <- D[,c(7, 1,2,3,4,5,6,8)]
+      final = rbind(P,D)
       print(head(final[order(-final$ll),]))
       
 
