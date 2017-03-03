@@ -11,9 +11,11 @@ Usage:
     --max-find=<int>              Exit if you find this many combinators [default: 10000].
     --no-order                    Do not re-order the constraints
     --output=<string>             The name of the output file
+    --no-gs                       Are we using the gs relationship? Eventually a more general argument here
+    --funky                       Are we using the function version? e.g. a = (f a a)
 """
 
-from pychuriso.run import *
+from run import *
 
 
 if __name__ == "__main__":
@@ -22,6 +24,24 @@ if __name__ == "__main__":
     condition = 0
     MAX_FIND = int(arguments['--max-find'])
     combos = [arguments['--search-basis']]
+
+    #what we want: command line arguments for the following:
+        # which 'relationship' function are we using? gs? something else? if using one, we write to the input file to include.
+        # are we using f? if so, we need different generalizations
+
+    def remove_gs(file):
+
+        data = file.readlines()
+        for i,line in enumerate(data):
+            if "= (gs" in line:
+                data[i]=""
+        with open("Inputs/newcondition%s.txt" % condition, 'w+') as newfile:
+            newfile.writelines(data)
+        f = newfile
+        return f
+
+
+
 
     generalizations = [ ['a', 'a'], ['a', 'b'], ['a','c'], ['b', 'a'], ['b', 'b'], ['b','c'], ['c', 'a'], ['c', 'b'], ['c','c']]
 
@@ -33,10 +53,17 @@ if __name__ == "__main__":
         print "# Starting on: " + c
 
         for condition in [0,1,2,3,4]:
+            f = open("Inputs/condition%s.txt" % condition,'r')
+            if arguments['--no-gs']:
+
+                f=remove_gs(f)
+
+
+
             basis = basis_from_argstring(str(c))
 
             symbolTable, variables, uniques, facts, shows = {}, [], [], [], []  # initialize
-            load_source("Inputs/Exp1_nogs/condition%s.txt" % condition, symbolTable, uniques, facts, shows, basis)  # modifies the arguments
+            load_source(f, symbolTable, uniques, facts, shows, basis)  # modifies the arguments
 
             seen = set()
             for nsolution, solution in enumerate(search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis)):
