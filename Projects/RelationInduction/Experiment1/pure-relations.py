@@ -40,8 +40,16 @@ if __name__ == "__main__":
         f = newfile
         return f
 
+    def make_it_funky(file):
 
-
+        data = file.readlines()
+        for i,line in enumerate(data):
+            if "= (gs" in line:
+                data[i]=""
+        with open("Inputs/newcondition%s.txt" % condition, 'w+') as newfile:
+            newfile.writelines(data)
+        f = newfile
+        return f
 
     generalizations = [ ['a', 'a'], ['a', 'b'], ['a','c'], ['b', 'a'], ['b', 'b'], ['b','c'], ['c', 'a'], ['c', 'b'], ['c','c']]
 
