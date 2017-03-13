@@ -8,4 +8,4 @@ for l in range(0,len(c)+1):
         all.append(''.join(v))
 for t in all:
     print t
-print len(all)
+#print len(all)
