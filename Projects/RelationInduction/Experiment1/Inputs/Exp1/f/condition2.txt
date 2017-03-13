@@ -1,0 +1,6 @@
+unique a b c d
+forall a b c d
+I:= (S K K)
+
+# a b -> a
+a = (f a b a b c d)
