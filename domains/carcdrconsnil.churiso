@@ -1,0 +1,44 @@
+# https://en.wikipedia.org/wiki/Church_encoding#List_encodings
+forall a b c d e f g
+
+# It's helpful to have Church pairs
+# true := K
+# false := (K I)
+# not := ((B C (C I)) (K I) K)
+# pair := (B C (C I))
+# fst := (S I (K K))
+# snd := (S I (K (S K)))
+
+(isnil nil) = true
+(isnil (cons a b)) = false
+(car (cons a b)) = a
+(cdr (cons a b)) = b
+
+## symbols requiring definition
+# isnil := (B not fst)
+# isnil := (B ((B C (C I)) (K I) K) (S I (K K)))
+#
+# nil := (pair true true)
+# nil := (C ((C I) K) K) 
+#
+# cons = ((B (B B) (B B)) pair false pair)
+# cons := (B (B (C ((C I) (K I)))) (B C (C I)))
+#
+# car = f2 = (B fst snd)
+# car := (B (S I (K K)) (S I (K (S K))))
+#
+# cdr = f3 = (B snd snd)
+# cdr := (B (S I (K (S K))) (S I (K (S K))))
+
+show nil
+show (cons a nil)
+show (car (cons a nil))
+show (car (cons a (cons b (cons c (cons d nil)))))
+show (car (cons a (cons b nil)))
+show (car (cons a nil))
+show (car (cons (cons a nil) (cons b nil)))
+show (cdr (cons a nil))
+show (cdr (cons a (cons b (cons c (cons d nil)))))
+show (cdr (cons a (cons b nil)))
+show (cdr (cons a nil))
+show (cdr (cons (cons a nil) (cons b nil)))
