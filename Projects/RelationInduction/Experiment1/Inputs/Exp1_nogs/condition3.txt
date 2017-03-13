@@ -1,8 +1,0 @@
-unique a b c d
-I:= (S K K)
-
-
-
-b = (a b)
-c = (I c)
-a = (I a)

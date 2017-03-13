@@ -22,17 +22,12 @@ from run import *
 if __name__ == "__main__":
     from docopt import docopt
     arguments = docopt(__doc__, version="pychuriso 0.001")
-    condition = 0
     MAX_FIND = int(arguments['--max-find'])
     combos = [arguments['--search-basis']]
-
-
-
+    
     generalizations = [ ['a', 'a'], ['a', 'b'], ['a','c'], ['b', 'a'], ['b', 'b'], ['b','c'], ['c', 'a'], ['c', 'b'], ['c','c']]
 
-
     if 'f' in arguments['--input']:
-
         generalizations = [ ['f','a', 'a'], ['f','a', 'b'], ['f','a','c'], ['f','b', 'a'], ['f','b', 'b'], ['f','b','c'], ['f','c', 'a'], ['f','c', 'b']]
 
     # print a header
@@ -43,14 +38,10 @@ if __name__ == "__main__":
         print "# Starting on: " + c
 
         for condition in [0,1,2,3,4]:
-            f = arguments['--input'] % condition
-
-
-
             basis = basis_from_argstring(str(c))
 
             symbolTable, variables, uniques, facts, shows = {}, [], [], [], []  # initialize
-            load_source(f, symbolTable, uniques, facts, shows, basis)  # modifies the arguments
+            load_source( arguments['--input'] % condition, symbolTable, uniques, facts, shows, basis)  # modifies the arguments
 
             seen = set()
             for nsolution, solution in enumerate(search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis)):
@@ -65,10 +56,6 @@ if __name__ == "__main__":
 
                 l  =  sum(len(v) for v in solution.values())
                 rc = get_reduction_count(solution, facts)
-
-                #print solution
-
-
 
                 for g in generalizations:
 
@@ -87,6 +74,6 @@ if __name__ == "__main__":
                         else:
                             equalset = {'c'}
 
-                    print condition, nsolution, solution,c, ''.join(g), l, rc, "'%s'" % ''.join(sorted(equalset))
-                    with open(arguments['--output'], 'a') as f:
-                        print >> f, condition, nsolution, c, ''.join(g), l, rc, "'%s'" % ''.join(sorted(equalset))
+                    print condition, nsolution, c, ''.join(g), l, rc, "'%s'" % ''.join(sorted(equalset))
+                    #with open(arguments['--output'], 'a') as f:
+                        #print >> f, condition, nsolution, c, ''.join(g), l, rc, "'%s'" % ''.join(sorted(equalset))
