@@ -1,0 +1,4 @@
+forall x
+
+# the gobbler
+(G x) = G
