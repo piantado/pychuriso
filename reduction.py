@@ -53,14 +53,7 @@ def reduce_combinator(s):
 
                 stepped = True
                 break
-            if i+5<=end and s[i:i+3]=='..H': # AAKxy -> y -- a version of k that's backwards
-                x, xend = next_chunk(s, i+3)
-                y, yend = next_chunk(s, xend+1)
 
-                s = s[:i] + y + s[(yend+1):]
-
-                stepped = True
-                break
             if i+7<=end and s[i:i+4]=='...S': # AAASxyz -> AAxzAyz
                 x, xend = next_chunk(s, i+4)
                 y, yend = next_chunk(s, xend+1)
@@ -70,6 +63,8 @@ def reduce_combinator(s):
 
                 stepped = True
                 break
+
+            # I = (S K K)
             if i+3<=end and s[i:i+2]=='.I': # AIx -> x
                 x, xend = next_chunk(s, i+2)
 
@@ -77,6 +72,18 @@ def reduce_combinator(s):
 
                 stepped = True
                 break
+
+            # H = (K I)
+            if i+5<=end and s[i:i+3]=='..H': # AAHxy -> y -- a version of k that's backwards
+                x, xend = next_chunk(s, i+3)
+                y, yend = next_chunk(s, xend+1)
+
+                s = s[:i] + y + s[(yend+1):]
+
+                stepped = True
+                break
+
+            # G = ((S (K ((S S) K))) (K (K ((S S) K))))
             if i + 3 <= end and s[i:i + 2] == '.G':  # AGx -> G (gobbler!)
                     x, xend = next_chunk(s, i + 2)
 
@@ -84,6 +91,7 @@ def reduce_combinator(s):
 
                     stepped = True
                     break
+
             if i+9<=end and s[i:i+5]=='....E': #AAAAExyab -> if x==y: a else b
 
                 x, xend = next_chunk(s, i+5)
@@ -99,22 +107,27 @@ def reduce_combinator(s):
                 stepped = True
                 break
 
-            if i+5<=end and s[i:i+3]=='..T': # AATxy -> yx
+            # T = (C I)
+            if i+5<=end and s[i:i+3]=='..T': # AATxy -> Ayx
                 x, xend = next_chunk(s, i+3)
                 y, yend = next_chunk(s, xend+1)
 
-                s = s[:i] + y + x + s[(yend+1):]
+                s = s[:i] + '.' + y + x + s[(yend+1):]
 
                 stepped = True
                 break
-            if i+3<=end and s[i:i+2]=='.M': # AMx -> xx
+
+            # M = (S I I)
+            if i+3<=end and s[i:i+2]=='.M': # AMx -> Axx
                 x, xend = next_chunk(s, i+2)
                 y, yend = next_chunk(s, xend)
 
-                s = s[:i] + x + x + s[(yend+1):]
+                s = s[:i] + '.' + x + x + s[(yend+1):]
 
                 stepped = True
                 break
+
+            # B = (S (K S) K)
             if i+7<=end and s[i:i+4]=='...B': # AAABxyz -> AxAyz
                 x, xend = next_chunk(s, i+4)
                 y, yend = next_chunk(s, xend+1)
@@ -124,7 +137,9 @@ def reduce_combinator(s):
 
                 stepped = True
                 break
-            if i+7<=end and s[i:i+4]=='...C': # AAACxyz -> AAAxzy
+
+            # C = (S (B B S) (K K))
+            if i+7<=end and s[i:i+4]=='...C': # AAACxyz -> AAxzy
                 x, xend = next_chunk(s, i+4)
                 y, yend = next_chunk(s, xend+1)
                 z, zend = next_chunk(s, yend+1)
@@ -134,11 +149,12 @@ def reduce_combinator(s):
                 stepped = True
                 break
 
-            if i+5<=end and s[i:i+3]=='..W': # AAWxy -> xyy
+            # W = (S S (S K))
+            if i+5<=end and s[i:i+3]=='..W': # AAWxy -> AAxyy
                 x, xend = next_chunk(s, i+3)
                 y, yend = next_chunk(s, xend+1)
 
-                s = s[:i] + x + y + y +s[(yend+1):]
+                s = s[:i] + '..' + x + y + y +s[(yend+1):]
 
                 stepped = True
                 break
