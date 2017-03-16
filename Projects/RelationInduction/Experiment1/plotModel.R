@@ -11,6 +11,11 @@ library(dplyr)
 
 
 d <- read.table(file('stdin','r'), header=TRUE)
+#cut out the ones that human wasn't asked
+d <- d[!(d$condition==0 &(d$generalization == 'ac' | d$generalization == 'bc' | d$generalization == 'ca' | d$generalization =='cb')),]
+d <- d[!(d$condition==0 & d$answer=='c'),]
+d <- d[!(d$condition==0 & d$answer=='d'),]
+
 
 stopifnot(nrow(d)>0) #make sure there are more than zero lines 
 
@@ -72,7 +77,7 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
                     ylab("Probability Under the Model")
                     #ylim(0,1)
             plt     
-            #ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
+            ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
             
 
             D <- rbind(D, data.frame(basis=d$basis[1], 
@@ -108,7 +113,7 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
       D$Data = "Human"
       D <- D[,c(7, 1,2,3,4,5,6,8)]
       final = rbind(P,D)
-      print(head(final[order(-final$ll),]))
+      print(head(final[order(-final$cor),]))
       
 
 
