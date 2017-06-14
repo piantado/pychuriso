@@ -1,13 +1,13 @@
 # Experiment 4
 
-Successor1
+## Successor1
 
 (f a) = b
 
 (f b) =? {a,b,c}
 
 
-Successor2
+## Successor2
 
 (f a) = b
 
@@ -15,14 +15,14 @@ Successor2
 
 (f c) =? {a,b,c,d}
 
-Constant1
+## Constant1
 
 (f a) = x
 
 (f b) =? {a,b,x,y}
 
 
-Constant2
+## Constant2
 
 (f a) = x
 
@@ -31,14 +31,14 @@ Constant2
 (f c) =? {a,b,c,x,y}
 
 
-Identity1
+## Identity1
 
 (f a) = a
 
 (f b) =? {a,b,c}
 
 
-Identity2
+## Identity2
 
 (f a) = a
 
@@ -47,14 +47,14 @@ Identity2
 (f c) =? {a,b,c,d}
 
 
-SymmetryA
+## SymmetryA
 
 (f a) = b
 
 (f b) =? {a,b,c}
 
 
-SymmetryAB
+## SymmetryAB
 
 (f a) = b
 
