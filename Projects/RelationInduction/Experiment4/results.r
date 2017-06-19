@@ -6,14 +6,14 @@ colnames(data) = c("WorkerID","Trial","TimeStamp","Condition","Argument1","Corre
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 data = data[1:13]
 
-data=data[data$Argument1!=" Reason",]
-data=data[!(data$Trial<8),]
+data=data[data$Argument1!=" Reason",] #removes self-report
+data=data[!(data$Trial<8),] #removes Demographics questions
 data=droplevels(data)
-data$WorkerID=as.numeric(data$WorkerID)
-data <- data[,-c(5,6,8,9,12)]
-data$Response <- trim(data$Response)
-data$Question <- trim(data$Question)
-write.csv(data,"exp4data.csv")
+data$WorkerID=as.numeric(data$WorkerID) #anonymizes WorkerID
+data <- data[,-c(5,6,8,9,12)] #removes the images columns (messy)
+data$Response <- trim(data$Response) #clean whitespace
+data$Question <- trim(data$Question) #clean whitespace
+write.csv(data,"exp4data.csv") #save cleaned data
 
 
 plt = ggplot(data,aes(x=Response,fill=ConditionID))+
