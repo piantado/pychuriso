@@ -1,0 +1,8 @@
+forall a b c d
+unique a b c d
+
+#(f a) = b
+#(f b) = a
+
+b = (f a)
+a = (f b )
