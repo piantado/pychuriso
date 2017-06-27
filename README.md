@@ -59,7 +59,8 @@ There are key language features that can be used in the input file.
 parsing the input
 ----------
 pychuriso has a parser to handle the input.txt file. This uses regular expressions to return:
->```
+
+```
     defines   = {}
     forall = []
     uniques   = []
