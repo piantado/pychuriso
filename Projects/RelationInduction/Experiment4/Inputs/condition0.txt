@@ -2,4 +2,6 @@
 unique a b c
 
 #(f a) = b
-b = (f a a b c)
+b = (f a)
+a = (I a)
+c = (I c)

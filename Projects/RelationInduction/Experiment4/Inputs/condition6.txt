@@ -1,5 +1,6 @@
-forall a b c
+
 unique a b c
 
 #(f a) = b
 b = (f a)
+c = (I c)
