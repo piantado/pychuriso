@@ -109,7 +109,8 @@ citation
 
 Looking to cite pychuriso? Awesome! 
 
-  ```@misc{piantadosi2016pychuriso,
+  ```
+  @misc{piantadosi2016pychuriso,
   author={Steven T. Piantadosi},
   title={ PyChuriso: a python implementation of churiso},
   year={2016},
