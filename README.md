@@ -114,7 +114,8 @@ Looking to cite pychuriso? Awesome!
   title={ PyChuriso: a python implementation of churiso},
   year={2016},
   howpublished={available from https://github.com/piantado/pychuriso}
-}'''
+}
+```
 
 
 
