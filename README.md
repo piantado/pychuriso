@@ -108,7 +108,12 @@ citation
 ----------------
 
 Looking to cite pychuriso? Awesome! 
-
+  @misc{piantadosi2012kelpy,
+	author={Steven T. Piantadosi},
+	title={ Kelpy: a free library for child experimentation in python},
+	year={2012},
+	howpublished={available from https://github.com/piantado/kelpy/}
+	}
   @misc{piantadosi2016pychuriso,
   author={Steven T. Piantadosi},
   title={ PyChuriso: a python implementation of churiso},
