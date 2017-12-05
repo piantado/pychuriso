@@ -24,14 +24,6 @@ if __name__ == "__main__":
     MAX_FIND = int(arguments['--max-find'])
 
     output_data = []
-
-
-
-
-
-
-
-    #np.savetxt(arguments['--output'], "condition nsolution basis generalization length runtime answer")
     # run through all the possible combinations of combinators oh geeze what a tongue twister
 
 
@@ -66,6 +58,7 @@ if __name__ == "__main__":
 
             l  =  sum(len(v) for v in solution.values())
             rc = get_reduction_count(solution, facts)
+            c = sum(catalan_prior(v,arguments) for v in solution.values())
 
             # print solution
 
@@ -88,11 +81,11 @@ if __name__ == "__main__":
                     if (condition ==1) or (condition==2) or (condition==7):
                         equalset = {'d'}
 
-                print condition,nsolution, solution, arguments['--search-basis'],''.join(g), l, rc, "'%s'" % ''.join(sorted(equalset))
-                output_data.append([condition, nsolution, arguments['--search-basis'], ''.join(g), l, rc, "'%s'" % ''.join(sorted(equalset))])
+                print condition,nsolution, arguments['--search-basis'],''.join(g), c, l, rc, "'%s'" % ''.join(sorted(equalset))
+                output_data.append([condition, nsolution, arguments['--search-basis'], ''.join(g), c,l, rc, "'%s'" % ''.join(sorted(equalset))])
 
     # print a header
-    print "condition nsolution basis generalization length runtime answer"
+    print "condition nsolution basis generalization prior length runtime answer"
     for line in output_data:
         print ' '.join(map(str,line))
         print >> open(arguments['--output'],'a'), ' '.join(map(str,line))
