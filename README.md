@@ -104,7 +104,19 @@ If you use kate/kwrite/kile you can copy churiso.xml to ~/.local/share/katepart5
 
 
 
+citation
+----------------
 
+Looking to cite pychuriso? Awesome! 
+
+  ```
+  @misc{piantadosi2016pychuriso,
+  author={Steven T. Piantadosi},
+  title={ PyChuriso: a python implementation of churiso},
+  year={2016},
+  howpublished={available from https://github.com/piantado/pychuriso}
+}
+```
 
 
 
