@@ -74,7 +74,30 @@ plt = ggplot(human,aes(answer,human.probability,fill=conditionID))+
                                "Identity2" ="gray", "Symmetry1"="gray",  "Symmetry2"="gray"))
   
 plt
-ggsave("human_results.pdf",plt)
+z <- ggplotGrob(plt)
+
+library(grid)
+library(gtable)
+# add label for right strip
+z <- gtable_add_cols(z, unit(z$widths[[3]], 'cm'), 21)
+z <- gtable_add_grob(z, 
+                     list(rectGrob(gp = gpar(col = NA, fill = gray(0.5))),
+                          textGrob("Generalization", rot = -90, gp = gpar(col = gray(1)))),
+                     4, 21, 10, name = paste(runif(2)))
+
+# add label for top strip
+z <- gtable_add_rows(z, unit(z$heights[[3]], 'cm'), 2)
+
+# add margins
+z <- gtable_add_cols(z, unit(1/8, "line"), 7)
+
+
+
+# draw it
+grid.newpage()
+grid.draw(z)
+
+ggsave("human_results.pdf",z)
 View(human)
 
 #put the human frame into the form of the model frame
@@ -89,11 +112,11 @@ P <- NULL # table of permuted versions
 
 #take each file from stdin and process it, outputting into model-statistics/
 
-
+#choose 2^-n length, for that depth find the number of trees, then find number of ways to fill in the slots 
 #seem to do best with param = 1
 for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
   
-  colnames(d)<-c("condition", "nsolution", "basis", "generalization", "runtime", "length", "answer")
+  colnames(d)<-c("condition", "nsolution", "basis", "generalization", "prior", "length", "runtime", "answer")
   d <- d[1:7]
  # print(colnames(d))
   if(nrow(d)==0) { next } # move on if empty
@@ -102,9 +125,12 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
   d$answer<-as.factor(d$answer)
   d$runtime<-as.numeric(d$runtime)
   d$length <-as.numeric(d$length)
+  d$prior <-as.numeric(d$prior)
   # what if our probability was proportional to the runtime
   #             d$p <- 2**-(1.0*(d$length-min(d$length, na.rm=TRUE))) ## TODO: Fix zero problems
-  d$p <- 2**-(param*(d$runtime-min(d$runtime, na.rm=TRUE))) ## TODO: Fix zero problems
+  #d$p <- 2**-(param*(d$runtime-min(d$runtime, na.rm=TRUE))) ## TODO: Fix zero problems
+  d$p = param * d$prior * exp(-runtime)
+  
   
   ## add up prob over hypotheses (rows), then renormalize within generalization,condition
   ag <- d %>% 

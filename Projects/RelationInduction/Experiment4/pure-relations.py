@@ -81,7 +81,7 @@ if __name__ == "__main__":
                     if (condition ==1) or (condition==2) or (condition==7):
                         equalset = {'d'}
 
-                print condition,nsolution, arguments['--search-basis'],''.join(g), c, l, rc, "'%s'" % ''.join(sorted(equalset))
+                print condition, nsolution, arguments['--search-basis'],''.join(g), c, l, rc, "'%s'" % ''.join(sorted(equalset))
                 output_data.append([condition, nsolution, arguments['--search-basis'], ''.join(g), c,l, rc, "'%s'" % ''.join(sorted(equalset))])
 
     # print a header
