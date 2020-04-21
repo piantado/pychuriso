@@ -1,7 +1,0 @@
-unique a b c
-#(f a) = a
-#(f b) = b
-
-a = (f a)
-b = (f b)
-c = (I c)

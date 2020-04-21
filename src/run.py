@@ -38,13 +38,12 @@ def get_reduction_count(soln, facts):
     return reduction.GLOBAL_REDUCE_COUNTER - start
 
 
-def catalan_prior(value, args):
+def catalan_prior(value, basis):
 
     #N is the leaves on the tree, k is the number of combinators we are using in our basis, C is the catalan prior
 
     N= len("".join(filter(lambda char: char != ".", value)))
-    k = len(args['--search-basis'])
-    C = log(2**-N,2) - log(catalan_numbers[N-1]) - N *log(k)
+    C = log(2**-N,2) - log(catalan_numbers[N-1]) - N * log(len(basis))
     return C
 
 
@@ -61,7 +60,7 @@ def display_winner(defines, solution, facts, shows):
     #print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
 
     #version where we use catalan prior
-    print TOTAL_SOLUTION_COUNT, sum(catalan_prior(v) for v in solution.values()),sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
+    print TOTAL_SOLUTION_COUNT, sum(catalan_prior(v, basis) for v in solution.values()), sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
 
 
     # print "# ---------- In search basis ----------"
