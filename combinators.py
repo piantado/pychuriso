@@ -54,12 +54,11 @@ def combinators_at_depth_uncached(d, basis, normal=True):
                 for y in combinators_at_depth(d-1-di, basis, normal):
                     if normal and not is_normal_form(y): continue
 
-                    s = '.'+x+y
-
-                    if normal and not is_normal_form(s):
-                        continue
-                    else:
-                        yield s
+                    # In the past, we checked if this return was normal form; but actually
+                    # this is a mistake when we have sk combinators we can't toss
+                    # out non-normal stuff here because it may become non-normal
+                    # once we have complex SK combinators
+                    yield '.'+x+y
 
 
 combinator_cache = dict()
@@ -84,7 +83,7 @@ def combinators_at_depth(d, basis, normal=True):
 
             # otherwise, cache and return
             if d <= MAX_CACHE:
-                l = list(combinators_at_depth_uncached(d, basis, normal))
+                l = tuple(combinators_at_depth_uncached(d, basis, normal))
                 combinator_cache[k] = l
                 for c in l:
                     yield c
