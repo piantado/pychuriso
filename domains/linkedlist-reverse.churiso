@@ -15,5 +15,3 @@ forall x y
 # (cons  (cons (cons c d) b) a)
 # (cons  (cons (cons d c) b) a)
 
-
-

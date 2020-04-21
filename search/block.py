@@ -1,6 +1,6 @@
 """
 
-The dumbest and simplest search algorithm (mainly for debugging, checking): enumerate all solutions with an increasing
+The dumbest and simplest search algorithm: enumerate all solutions with an increasing
 depth bound that is independent on each. This is dumb because depth n solutions re-search all of depth 1...(n-1) solutions.
 
 """

@@ -72,7 +72,7 @@ for(param in c(0.1, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2.0)) {
                     ylab("Probability Under the Model")
                     #ylim(0,1)
             plt     
-            #ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
+            ggsave(paste("model-plots/",d$basis[1],"-", param,".pdf",sep=""), plt)
             
 
             D <- rbind(D, data.frame(basis=d$basis[1], 

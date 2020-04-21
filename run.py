@@ -45,9 +45,7 @@ def display_winner(defines, solution, facts, shows):
 
     # print "# ---------- In search basis ----------"
     for k, v in solution.items():
-
-        assert k in defines or is_normal_form(v)
-        print "%s := %s" % (k, tostring(v))
+        print "%s := %s" % (k, tostring(v))  #,  "\t# ", v
 
     for s, sf in shows:
         try:
@@ -109,6 +107,8 @@ if __name__ == "__main__":
         print "# Best fact ordering: yielding score %s" % compute_complexity(symbolTable, facts), facts
     else:
         print "# Running with fact ordering %s" % compute_complexity(symbolTable, facts), facts
+
+    sys.stdout.flush()
 
     MAX_FIND = int(arguments['--max-find'])
 
