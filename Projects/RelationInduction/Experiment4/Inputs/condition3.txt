@@ -1,0 +1,9 @@
+
+unique a b c d e
+
+#(f a) = c
+#(f b) = c
+c = (f a)
+c = (f b)
+d = (I d)
+e = (I e)

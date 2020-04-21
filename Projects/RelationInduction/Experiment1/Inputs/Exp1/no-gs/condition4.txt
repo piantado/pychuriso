@@ -1,9 +1,0 @@
-unique a b c d
-I:= (S K K)
-
-# enforce some relationship between items
-
-
-c = (a b)
-a = (I a)
-b = (I b)

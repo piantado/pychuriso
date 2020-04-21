@@ -23,6 +23,9 @@ import reduction
 from parser import load_source
 from FactOrder import compute_complexity, order_facts
 from combinators import substitute, basis_from_argstring
+from math import log
+from misc import catalan_numbers
+
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -34,6 +37,18 @@ def get_reduction_count(soln, facts):
         assert f.check(soln), f  # run all of the applies
     return reduction.GLOBAL_REDUCE_COUNTER - start
 
+
+def catalan_prior(value, args):
+
+    #N is the leaves on the tree, k is the number of combinators we are using in our basis, C is the catalan prior
+
+    N= len("".join(filter(lambda char: char != ".", value)))
+    k = len(args['--search-basis'])
+    C = log(2**-N,2) - log(catalan_numbers[N-1]) - N *log(k)
+    return C
+
+
+
 def display_winner(defines, solution, facts, shows):
     """ Display a solution. This is zero-delimited so we can sort -z, with run times and lengths at the top """
 
@@ -41,11 +56,25 @@ def display_winner(defines, solution, facts, shows):
     global TOTAL_SOLUTION_COUNT
 
     # confirm all constraints
-    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
+
+    #version where we just use length as prior
+    #print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
+
+    #version where we use catalan prior
+    print TOTAL_SOLUTION_COUNT, sum(catalan_prior(v) for v in solution.values()),sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
+
 
     # print "# ---------- In search basis ----------"
     for k, v in solution.items():
+<<<<<<< HEAD
         print "%s := %s" % (k, tostring(v))  #,  "\t# ", v
+=======
+
+        assert k in defines or is_normal_form(v)
+        #before we convert to string, compute the catalan prior?
+
+        print "%s := %s" % (k, tostring(v))
+>>>>>>> 7157bc7ea908ae25392b1110a3e6f99c6a377457
 
     for s, sf in shows:
         try:
@@ -115,7 +144,7 @@ if __name__ == "__main__":
     # Now do the search
     print "# Using search basis ", basis
     for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
-
+        print solution
         if arguments['--condensed']:
             condensed_display(symbolTable, solution, facts, shows)
         else:

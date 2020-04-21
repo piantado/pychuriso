@@ -59,14 +59,14 @@ There are key language features that can be used in the input file.
 parsing the input
 ----------
 pychuriso has a parser to handle the input.txt file. This uses regular expressions to return:
->```
+
+```
     defines   = {}
     forall = []
     uniques   = []
     facts     = []
     shows     = dict()
 ```
-
 
 Single statements are parsed using ```binarize()```and are transformed into an instance of ```Fact```. A ```Fact``` has a single application on the left-hand side (f x) and a single right-hand side outcome (e.g. = y). ```Fact``` has several subclasses to determine reduction code for the relationship between the lhs and rhs. These include:
 
@@ -104,7 +104,19 @@ If you use kate/kwrite/kile you can copy churiso.xml to ~/.local/share/katepart5
 
 
 
+citation
+----------------
 
+Looking to cite pychuriso? Awesome! 
+
+  ```
+  @misc{piantadosi2016pychuriso,
+  author={Steven T. Piantadosi},
+  title={ PyChuriso: a python implementation of churiso},
+  year={2016},
+  howpublished={available from https://github.com/piantado/pychuriso}
+}
+```
 
 
 

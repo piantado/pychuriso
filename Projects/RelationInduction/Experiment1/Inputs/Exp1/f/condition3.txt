@@ -1,9 +1,0 @@
-unique a b c d
-I:= (S K K)
-
-
-#a b -> b
-
-b = (f a b a b c d)
-
-
