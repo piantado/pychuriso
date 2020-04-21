@@ -11,7 +11,7 @@ do
 
     nice -n 19 pypy run.py --search-basis=SK             domains/$domain.churiso > output/$domain-SK.txt                 2> output/$domain-SK.log &
     nice -n 19 pypy run.py --search-basis=SKIsk          domains/$domain.churiso > output/$domain-SKIsk.txt              2> output/$domain-SKIsk.log &
-    nice -n 19 pypy run.py --search-basis=KBskCskWsk     domains/$domain.churiso > output/$domain-KBskCskWsk.txt        2> output/$domain-KBskCskWsk.log &
+    nice -n 19 pypy run.py --search-basis=KBskCskWsk     domains/$domain.churiso > output/$domain-KBskCskWsk.txt         2> output/$domain-KBskCskWsk.log &
     nice -n 19 pypy run.py --search-basis=SKCskBskWskIsk domains/$domain.churiso > output/$domain-SKCskBskWskIsk.txt     2> output/$domain-SKCskBskWskIsk.log &
 
 done

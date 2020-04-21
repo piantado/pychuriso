@@ -66,15 +66,8 @@ def display_winner(defines, solution, facts, shows):
 
     # print "# ---------- In search basis ----------"
     for k, v in solution.items():
-<<<<<<< HEAD
+
         print "%s := %s" % (k, tostring(v))  #,  "\t# ", v
-=======
-
-        assert k in defines or is_normal_form(v)
-        #before we convert to string, compute the catalan prior?
-
-        print "%s := %s" % (k, tostring(v))
->>>>>>> 7157bc7ea908ae25392b1110a3e6f99c6a377457
 
     for s, sf in shows:
         try:
