@@ -19,7 +19,7 @@ from misc import check_unique
 def search_(partial, facts, unique, depth, show=False):
     """ Take a partial solution and some facts and enumerate the remaining solutions at this depth """
 
-    if show: print "Searching with partial ", depth, ["%s:%s"% (k,tostring(v))  for k,v in partial.items()  if not is_gensym(k) ], facts[:1]
+    if show: print("Searching with partial ", depth, ["%s:%s"% (k,tostring(v))  for k,v in list(partial.items())  if not is_gensym(k) ], facts[:1])
 
     if len(facts) == 0:
         yield partial
@@ -35,7 +35,7 @@ def search_(partial, facts, unique, depth, show=False):
         if f0.f not in partial:
 
             # if rem==1, we just filled it up with f0.f, so we require exactly this depth
-            for d in ([depth] if rem == 1 else xrange(depth+1)):
+            for d in ([depth] if rem == 1 else range(depth+1)):
                 for v in combinators_at_depth(d, normal=True):
                     if check_unique(partial, unique, f0.f, v):
                         # print "Setting %s := %s" % (f0.f, v)
@@ -47,7 +47,7 @@ def search_(partial, facts, unique, depth, show=False):
         elif f0.x not in partial:
 
             # if rem==1, we just filled it up with f0.x, so we require exactly this depth
-            for d in ([depth] if rem == 1 else xrange(depth+1)):  # we have to do this instead of all_combinators b/c we need the depth, which may not agree with get_depth in our SEARCH_BASIS
+            for d in ([depth] if rem == 1 else range(depth+1)):  # we have to do this instead of all_combinators b/c we need the depth, which may not agree with get_depth in our SEARCH_BASIS
                 for v in combinators_at_depth(d, normal=True):
                     if check_unique(partial, unique, f0.x, v):
                         # print "Setting %s := %s" % (f0.x, v)
@@ -108,7 +108,7 @@ def search_(partial, facts, unique, depth, show=False):
 
 from copy import deepcopy
 def search(start, facts, unique, max_depth, **kwargs):
-    for d in xrange(max_depth+1):
-        print "# Increasing depth to", d
+    for d in range(max_depth+1):
+        print("# Increasing depth to", d)
         for soln in search_(deepcopy(start), facts, unique, d, **kwargs):
             yield soln

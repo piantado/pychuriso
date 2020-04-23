@@ -14,7 +14,7 @@ reserved = {
     'in'       : 'IN',
     'not'      : 'NOT'
 }
-tokens += reserved.values()
+tokens += list(reserved.values())
 
 t_ignore  = ' \t'
 
@@ -44,6 +44,6 @@ def t_SYM(t):
 
 
 def t_error(t):
-    print("Illegal character %s" % t.value[0])
+    print(("Illegal character %s" % t.value[0]))
 
 lexer = lex.lex()

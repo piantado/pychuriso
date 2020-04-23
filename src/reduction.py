@@ -43,7 +43,7 @@ def reduce_combinator(s):
 
         end = len(s)
 
-        for i in xrange(end): # each character
+        for i in range(end): # each character
 
             if i+5<=end and s[i:i+3]=='..K': # AAKxy -> x
                 x, xend = next_chunk(s, i+3)
@@ -175,7 +175,7 @@ def reduce_combinator(s):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":
-    from combinators import all_combinators
+    from .combinators import all_combinators
 
     '''for c in all_combinators():
         try:

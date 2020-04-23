@@ -12,6 +12,12 @@ The name "ChurIso" comes from _**Chur**ch Encoding_, which corresponds to buildi
 ```
 The base facts can be encoded using S and K. The system that ChurIso finds is consistent with these base facts. In other words, reducing ```succ := ((S ((S S) S)) K)``` applied to ```spring := (K (K K))``` will yield the combinator structure of ```summer := K```!
 
+dependencies
+-----------
+
+You will need: docopt ply 
+
+
 combinators
 -----------
 A **combinator** is a higher-order function that uses only function application and earlier defined combinators to define a result from its arguments. You have already seen **S** and **K**. These are reduced as follows:

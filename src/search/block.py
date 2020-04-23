@@ -11,7 +11,7 @@ from misc import check_unique
 
 def search_(partial, facts, unique, max_depth, basis, normal=True, show=False):
     """ Take a partial solution and some facts and enumerate the remaining solutions at this depth """
-    if show: print "Searching with partial ", max_depth, ["%s:%s"% (k,tostring(v))  for k,v in partial.items()], facts[:1]
+    if show: print("Searching with partial ", max_depth, ["%s:%s"% (k,tostring(v))  for k,v in list(partial.items())], facts[:1])
 
     if len(facts) == 0:
         # A good solution
@@ -57,8 +57,8 @@ def search_(partial, facts, unique, max_depth, basis, normal=True, show=False):
 
 from copy import deepcopy
 def search(start, facts, unique, max_depth, basis, quiet=False, **kwargs):
-    for d in xrange(max_depth):
+    for d in range(max_depth):
         if not quiet:
-            print "# Increasing depth to", d
+            print("# Increasing depth to", d)
         for soln in search_(deepcopy(start), facts, unique, d, basis, **kwargs):
             yield soln

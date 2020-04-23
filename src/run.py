@@ -16,11 +16,12 @@ Usage:
 """
 
 import sys
+import re
 from search.block import search
 from reduction import tostring,  reduce_combinator, ReductionException
 from copy import deepcopy
 import reduction
-from parser import load_source
+from parsing import load_churiso_sourcefile
 from FactOrder import compute_complexity, order_facts
 from combinators import substitute, make_solution_sk, combinator2program
 
@@ -37,38 +38,25 @@ def get_reduction_count(soln, facts):
     return reduction.GLOBAL_REDUCE_COUNTER - start
 
 def get_length(soln):
-    return sum(len(v) for v in soln.values())
-
-
-"""
-def catalan_prior(value, basis):
-
-    #N is the leaves on the tree, k is the number of combinators we are using in our basis, C is the catalan prior
-
-    N= len("".join(filter(lambda char: char != ".", value)))
-    C = log(2**-N,2) - log(catalan_numbers[N-1]) - N * log(len(basis))
-    return C
-"""
-
-
+    return sum(len(v) for v in list(soln.values()))
 
 def display_winner(arguments, defines, solution, facts, shows):
     """ Display a solution. This is zero-delimited so we can sort -z, with run times and lengths at the top """
 
-    print "################################################################################"
+    print("################################################################################")
     global TOTAL_SOLUTION_COUNT
 
     # defaulty we convert solution to sk for performance evals
     if not arguments['--show-original-basis']:
         solution = make_solution_sk(solution)
 
-    print TOTAL_SOLUTION_COUNT, get_length(solution), get_reduction_count(solution,facts), sum(catalan_prior(x) for x in solution.values())
+    print(TOTAL_SOLUTION_COUNT, get_length(solution), get_reduction_count(solution,facts), sum(catalan_prior(x) for x in list(solution.values())))
 
     #version where we use catalan prior
     # print TOTAL_SOLUTION_COUNT, sum(catalan_prior(v, basis) for v in solution.values()), sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
 
-    for k, v in solution.items():
-        print "%s := %s" % (k, tostring(v))  #,  "\t# ", v
+    for k, v in list(solution.items()):
+        print("%s := %s" % (k, tostring(v)))  #,  "\t# ", v
 
     for s, sf in shows:
         try:
@@ -76,11 +64,11 @@ def display_winner(arguments, defines, solution, facts, shows):
         except ReductionException:
             r = 'NON-HALT'
 
-        equalset = [k for k in solution.keys() if solution[k] == r]  # which of our defines is this equal to?
+        equalset = [k for k in list(solution.keys()) if solution[k] == r]  # which of our defines is this equal to?
 
-        print "show %s -> %s == {%s}" % (s, tostring(r), ', '.join(equalset))
+        print("show %s -> %s == {%s}" % (s, tostring(r), ', '.join(equalset)))
 
-    print "\0"
+    print("\0")
     sys.stdout.flush()
 
 
@@ -91,12 +79,12 @@ def condensed_display(arguments, defines, solution, facts, shows):
         then followed by the symbols each show equals
     """
     global TOTAL_SOLUTION_COUNT
-    print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts),
+    print(TOTAL_SOLUTION_COUNT, sum(len(v) for v in list(solution.values())), get_reduction_count(solution, facts), end=' ')
 
     # next get the counts of each combinator
     for c in 'SKIBCWETM':
-        nc = sum([v.count(c) for v in solution.values()])
-        print nc,
+        nc = sum([v.count(c) for v in list(solution.values())])
+        print(nc, end=' ')
 
     # and show the shows
     for s, sf in shows:
@@ -106,11 +94,12 @@ def condensed_display(arguments, defines, solution, facts, shows):
         except ReductionException:
             r = 'NON-HALT'
 
-        equalset = [k for k in solution.keys() if solution[k] == r] # which of our defines is this equal to?
-        print "\"%s\"" % ','.join(list(equalset)),
+        equalset = [k for k in list(solution.keys()) if solution[k] == r] # which of our defines is this equal to?
+        print("\"%s\"" % ','.join(list(equalset)), end=' ')
 
-    print "\n",
+    print("\n", end=' ')
     sys.stdout.flush()
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if __name__ == "__main__":
@@ -122,21 +111,21 @@ if __name__ == "__main__":
     basis = arguments['--search-basis']
 
     symbolTable, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
-    load_source(arguments['<input>'], symbolTable, uniques, facts, shows, basis) # modifies the arguments
+    load_churiso_sourcefile(arguments['<input>'], symbolTable, uniques, facts, shows, basis) # modifies the arguments
 
     # test out the ordering of facts
     if not arguments['--no-order']:
         facts = order_facts(symbolTable, facts)
-        print "# Best fact ordering: yielding score %s" % compute_complexity(symbolTable, facts), facts
+        print("# Best fact ordering: yielding score %s" % compute_complexity(symbolTable, facts), facts)
     else:
-        print "# Running with fact ordering %s" % compute_complexity(symbolTable, facts), facts
+        print("# Running with fact ordering %s" % compute_complexity(symbolTable, facts), facts)
 
     sys.stdout.flush()
 
     MAX_FIND = int(arguments['--max-find'])
 
     # Now do the search
-    print "# Using search basis ", basis
+    print("# Using search basis ", basis)
     for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
         if arguments['--condensed']:
             condensed_display(arguments, symbolTable, solution, facts, shows)

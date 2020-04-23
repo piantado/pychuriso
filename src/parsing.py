@@ -1,5 +1,4 @@
 import ply.yacc as yacc
-
 from lexer import tokens
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,7 +133,7 @@ def p_struct(p):
 
 
 def p_error(p):
-    print "Syntax error in input", p
+    print("Syntax error in input", p)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The actual parser
@@ -185,10 +184,9 @@ def string_from_binary_list(l):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import re
-import combinators
+from combinators import *
 
-def load_source(file, symbolTable, uniques, facts, shows, basis):
-
+def load_churiso_sourcefile(file, symbolTable, uniques, facts, shows, basis):
     with open(file) as f:
         for l in f:
             l = l.strip() # remove whitespace
@@ -224,3 +222,4 @@ def load_source(file, symbolTable, uniques, facts, shows, basis):
                     p1b = make_left_binary(p[1])
 
                     shows.append( (string_from_binary_list(p1b), p1b) )
+

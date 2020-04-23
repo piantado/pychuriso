@@ -3,8 +3,7 @@
 Manipulation routines for programs (sequences of combinators)
 
 """
-import scipy
-from math import log
+from math import log, lgamma
 
 class NoCloseException(Exception):
     """ Raised when a program subexpression does not close before the end of the string (for some reason)"""
@@ -17,7 +16,7 @@ class NoCloseException(Exception):
 def find_close(s,pos=0):
     # print "Finding close: ", s, pos
     nopen = 0
-    for i in xrange(pos,len(s)):
+    for i in range(pos,len(s)):
         if s[i] == '.':
             if nopen == 0: # start of strings, applications create two gaps (don't fill one)
                 nopen += 2
@@ -68,10 +67,17 @@ def count_leaves(x):
 def catalan_prior(x, basis):
     """ Choose a length from l ~ exponential(1) and then a tree from that length. Returns log probability """
     l = count_leaves(x)
+
+    def lfactorial(n):
+        return lgamma(n+1)
+
+    def comb(n, k):
+        return lfactorial(n) - lfactorial(k) - lfactorial(n-k)
+
     return -log(l) - log_catalan_number(l-1) - l * log(len(basis))
 
 def log_catalan_number(n):
-    return log(scipy.special.comb(2*n,n)) - log(n+1)
+    return log(comb(2*n,n)) - log(n+1)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Parse partheses into ASK string

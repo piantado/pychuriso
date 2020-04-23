@@ -29,7 +29,7 @@ def combinators_at_depth_uncached(d, basis, normal=False):
         for c in basis:
             yield c
     else:
-        for di in xrange(d): # go 0..(d-1)
+        for di in range(d): # go 0..(d-1)
             # print ">>", di, d-di
             for x in combinators_at_depth(di, basis, normal):
                 if normal and not is_normal_form(x): continue
@@ -77,7 +77,7 @@ def combinators_at_depth(d, basis, normal=True):
 
 
 def all_combinators(basis, max_depth=9999, **kwargs):
-    for d in xrange(max_depth):
+    for d in range(max_depth):
         for c in combinators_at_depth(d, basis, **kwargs):
             yield c
 
@@ -97,8 +97,8 @@ def make_solution_sk(soln):
     """ This converts a solution to only sk (using combinator2program) """
 
     sksolution = dict()
-    for symbol, comb in soln.items():
-        for c,p in combinator2program.items(): # find any defined combinator and replace it
+    for symbol, comb in list(soln.items()):
+        for c,p in list(combinator2program.items()): # find any defined combinator and replace it
             comb = re.sub(c,p,comb)
         sksolution[symbol] = comb
     return sksolution
