@@ -4,6 +4,6 @@ for domain in apply 12many boolean carcdrcons roshambo reverse seasons repeat in
 do
     for basis in SK SKI KBCW SKCBWI
     do
-        stdbuf -oL nohup nice -n 19 pypy run.py --search-basis=$basis domains/$domain.churiso > output/$domain-$basis.txt 2> output/$domain-$basis.log &
+        stdbuf -oL nohup nice -n 19 pypy src/run.py --search-basis=$basis domains/$domain.churiso > output/$domain-$basis.txt 2> output/$domain-$basis.log &
     done    
 done

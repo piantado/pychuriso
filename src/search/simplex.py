@@ -10,16 +10,15 @@ NOTE: This is still inefficient because it re-searches early strings
 """
 
 from reduction import *
-from misc import is_gensym
 from combinators import combinators_at_depth, get_depth
-from SimpleFact import SimpleFact, compute_complexity
+from Facts import Fact, compute_complexity
 from misc import check_unique
 
 
 def search_(partial, facts, unique, depth, show=False):
     """ Take a partial solution and some facts and enumerate the remaining solutions at this depth """
 
-    if show: print("Searching with partial ", depth, ["%s:%s"% (k,tostring(v))  for k,v in list(partial.items())  if not is_gensym(k) ], facts[:1])
+    if show: print("Searching with partial ", depth, ["%s:%s"% (k,tostring(v))  for k,v in list(partial.items())  ], facts[:1])
 
     if len(facts) == 0:
         yield partial

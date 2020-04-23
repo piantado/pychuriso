@@ -13,7 +13,7 @@ combinator2program = {'S':'S',
                       'M':'M'}
 
 from programs import is_normal_form
-
+from reduction import reduce_combinator
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Enumeration of combinators
@@ -21,7 +21,15 @@ from programs import is_normal_form
 
 
 def combinators_at_depth_uncached(d, basis, normal=False):
+    """ Give back the combinators at a given depth, without caching.
+        Note there is actually a bit of subtlety here. Some previous versions required
+        each of the pieces to be in normal form, in order to avoid duplication,
+        But it seems to be a bad idea to require s to be in normal form, because then
+        we miss a lot because we can't form some long combinators that we should.
+        So, here we always yield x+y, but we also reduce it first so that means sometimes
+        we will have some duplicates
 
+    """
     # NOTE That if we check normal, then we may NOT find all combinations
     # when you use terms like Bsk, because these may combine into non-normal forms
 
@@ -43,8 +51,12 @@ def combinators_at_depth_uncached(d, basis, normal=False):
                     # this is a mistake when we have sk combinators we can't toss
                     # out non-normal stuff here because it may become non-normal
                     # once we have complex SK combinators
-                    if normal and not is_normal_form(s): continue
-                    yield s
+                    #if normal and not is_normal_form(s): continue
+                    try:
+                        reduce_combinator(s)
+                        yield s
+                    except ReductionException as e:
+                        pass
 
 
 combinator_cache = dict()
