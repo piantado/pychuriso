@@ -6,4 +6,4 @@
 # need to find the script directory since that's where addColumn.py lives
 scriptDir=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 
-cat ./output/$1-SK.txt ./output/$1-*.txt | grep --binary-files=text --perl --invert-match "^#" | python3 $scriptDir/addColumn.py | sort -k4 -g -z -r
+cat ./output/$1-SK.txt ./output/$1-*.txt | grep --binary-files=text --perl --invert-match "^#" | python3 $scriptDir/addColumn.py | sort -k5 -g -z -r
