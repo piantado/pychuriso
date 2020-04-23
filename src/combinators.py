@@ -14,34 +14,17 @@ combinator2program = {'S':'S',
 
 from programs import is_normal_form
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Set the combinator basis
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-def basis_from_argstring(s):
-    """
-    This parses the string of combinators that we will search over. We can either include a combinator defined in terms of SK
-    (thus penalizing length/complexity in that way) or as a primitive itself. The convention is that combinators you
-    wish to define in terms of SK should be followed by "sk" (case sensitive). So SKIskBskCW will include I And B in terms
-    of SK, but C and W was primitives themselves
-    """
-    basis = []
-    for cstr, c, sk in re.findall("(([A-Z])(sk)?)", s):
-        if sk == 'sk':
-            basis.append(combinator2program[c])
-        elif sk == '':
-            basis.append(c)
-        else:
-            raise Exception("Bad sk type in combinator string: "+cstr)
-
-    return basis
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Enumeration of combinators
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-def combinators_at_depth_uncached(d, basis, normal=True):
+def combinators_at_depth_uncached(d, basis, normal=False):
+
+    # NOTE That if we check normal, then we may NOT find all combinations
+    # when you use terms like Bsk, because these may combine into non-normal forms
+
     if d == 0:
         for c in basis:
             yield c
@@ -54,11 +37,14 @@ def combinators_at_depth_uncached(d, basis, normal=True):
                 for y in combinators_at_depth(d-1-di, basis, normal):
                     if normal and not is_normal_form(y): continue
 
+                    s = '.'+x+y
+
                     # In the past, we checked if this return was normal form; but actually
                     # this is a mistake when we have sk combinators we can't toss
                     # out non-normal stuff here because it may become non-normal
                     # once we have complex SK combinators
-                    yield '.'+x+y
+                    if normal and not is_normal_form(s): continue
+                    yield s
 
 
 combinator_cache = dict()
@@ -106,4 +92,14 @@ def substitute(x, defns):
         return '.'+substitute(x[0], defns)+substitute(x[1], defns)
     else:
         return defns.get(x,x)
+
+def make_solution_sk(soln):
+    """ This converts a solution to only sk (using combinator2program) """
+
+    sksolution = dict()
+    for symbol, comb in soln.items():
+        for c,p in combinator2program.items(): # find any defined combinator and replace it
+            comb = re.sub(c,p,comb)
+        sksolution[symbol] = comb
+    return sksolution
 

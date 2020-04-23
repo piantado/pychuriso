@@ -10,12 +10,11 @@ def catalan(n):
 
     return res
 
-f = open('catalan.txt', 'w+')
+if __name__ == "__main__":
 
-print "Computing the Catalan numbers..."
-# Driver Program to test above function
-
-for i in range(20):
-    print>> f, str(catalan(i)) +",",
-
-print "complete!"
+	f = open('catalan.txt', 'w+')
+	print "Computing the Catalan numbers..."
+	# Driver Program to test above function
+	for i in range(20):
+	    print>> f, str(catalan(i)) +",",
+	print "complete!"

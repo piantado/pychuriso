@@ -2,10 +2,11 @@
 
 Options:
 Usage:
-    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--not-normal-form] [--condensed] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--not-normal-form] [--condensed] [--show-original-basis] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
     -t --trace                  Display the search incrementally (used for debugging).
     --search-basis=<combinators>  The search basis [default: ISK].
+    --show-original-basis         Display and measure performance in the original basis, not SK basis
     --show-gs                     Show the auxiliary gs variables
     --condensed                   Give condensed output
     --not-normal-form             Search does not require combinators to be normal form
@@ -17,27 +18,29 @@ Usage:
 import sys
 from search.block import search
 from reduction import tostring,  reduce_combinator, ReductionException
-from programs import is_normal_form
 from copy import deepcopy
 import reduction
 from parser import load_source
 from FactOrder import compute_complexity, order_facts
-from combinators import substitute, basis_from_argstring
-from math import log
-from misc import catalan_numbers
-
+from combinators import substitute, make_solution_sk, combinator2program
 
 TOTAL_SOLUTION_COUNT = 0
 
 def get_reduction_count(soln, facts):
-    """ How many total reductions does it take? """
+    """ How many total reductions does it take? NOTE: This runs in the sk basis, regardless of search """
 
     start = reduction.GLOBAL_REDUCE_COUNTER
     for f in facts:
-        assert f.check(soln), f  # run all of the applies
+        q = f.check(soln), f  # run all of the applies
+        if(not q): assert False
+
     return reduction.GLOBAL_REDUCE_COUNTER - start
 
+def get_length(soln):
+    return sum(len(v) for v in soln.values())
 
+
+"""
 def catalan_prior(value, basis):
 
     #N is the leaves on the tree, k is the number of combinators we are using in our basis, C is the catalan prior
@@ -45,27 +48,26 @@ def catalan_prior(value, basis):
     N= len("".join(filter(lambda char: char != ".", value)))
     C = log(2**-N,2) - log(catalan_numbers[N-1]) - N * log(len(basis))
     return C
+"""
 
 
 
-def display_winner(defines, solution, facts, shows):
+def display_winner(arguments, defines, solution, facts, shows):
     """ Display a solution. This is zero-delimited so we can sort -z, with run times and lengths at the top """
 
     print "################################################################################"
     global TOTAL_SOLUTION_COUNT
 
-    # confirm all constraints
+    # defaulty we convert solution to sk for performance evals
+    if not arguments['--show-original-basis']:
+        solution = make_solution_sk(solution)
 
-    #version where we just use length as prior
-    #print TOTAL_SOLUTION_COUNT, sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
+    print TOTAL_SOLUTION_COUNT, get_length(solution), get_reduction_count(solution,facts), sum(catalan_prior(x) for x in solution.values())
 
     #version where we use catalan prior
-    print TOTAL_SOLUTION_COUNT, sum(catalan_prior(v, basis) for v in solution.values()), sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
+    # print TOTAL_SOLUTION_COUNT, sum(catalan_prior(v, basis) for v in solution.values()), sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)
 
-
-    # print "# ---------- In search basis ----------"
     for k, v in solution.items():
-
         print "%s := %s" % (k, tostring(v))  #,  "\t# ", v
 
     for s, sf in shows:
@@ -82,7 +84,7 @@ def display_winner(defines, solution, facts, shows):
     sys.stdout.flush()
 
 
-def condensed_display(defines, solution, facts, shows):
+def condensed_display(arguments, defines, solution, facts, shows):
     """
         A single-line output, of the type that might be used for grammar inference
         This prints out the solution unmber, total length, reduction count, counts for a bunch of combinators
@@ -117,7 +119,7 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version="pychuriso 0.01")
 
     # Set the search basis (must happen before parsing or else it overwrites "add" keywords)
-    basis = basis_from_argstring(arguments['--search-basis'])
+    basis = arguments['--search-basis']
 
     symbolTable, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
     load_source(arguments['<input>'], symbolTable, uniques, facts, shows, basis) # modifies the arguments
@@ -136,11 +138,10 @@ if __name__ == "__main__":
     # Now do the search
     print "# Using search basis ", basis
     for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
-        print solution
         if arguments['--condensed']:
-            condensed_display(symbolTable, solution, facts, shows)
+            condensed_display(arguments, symbolTable, solution, facts, shows)
         else:
-            display_winner(symbolTable, solution, facts, shows)
+            display_winner(arguments, symbolTable, solution, facts, shows)
 
         if TOTAL_SOLUTION_COUNT >= MAX_FIND:
             break
