@@ -22,6 +22,7 @@ from reduction import tostring,  reduce_combinator, ReductionException
 from copy import deepcopy
 import reduction
 from parsing import load_churiso_sourcefile
+from Facts import PartialEqualityFact
 from FactOrder import compute_complexity, order_facts
 from combinators import substitute, make_solution_sk, combinator2program
 from programs import catalan_prior
@@ -30,6 +31,12 @@ TOTAL_SOLUTION_COUNT = 0
 
 def get_reduction_count(soln, facts):
     """ How many total reductions does it take? NOTE: This runs in the sk basis, regardless of search """
+
+    # We are going to ignore reduction count if we contain any ~= facts
+    # this way, when we sort by runtime+complexity, we just do complexity for partial reduction facts
+    ## NOTE: in the future maybe we can not count these
+    if(any(isinstance(f,PartialEqualityFact) for f in facts)):
+        return 0
 
     start = reduction.GLOBAL_REDUCE_COUNTER
     for f in facts:
