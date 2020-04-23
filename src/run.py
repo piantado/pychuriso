@@ -11,7 +11,7 @@ Usage:
     --condensed                   Give condensed output
     --not-normal-form             Search does not require combinators to be normal form
     --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 20].
-    --max-find=<int>              Exit if you find this many combinators [default: 10000].
+    --max-find=<int>              Exit if you find this many combinators [default: 1000].
     --no-order                    Do not re-order the constraints
 """
 
