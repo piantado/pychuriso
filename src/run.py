@@ -24,6 +24,7 @@ import reduction
 from parsing import load_churiso_sourcefile
 from FactOrder import compute_complexity, order_facts
 from combinators import substitute, make_solution_sk, combinator2program
+from programs import catalan_prior
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -50,7 +51,7 @@ def display_winner(arguments, defines, solution, facts, shows):
     if not arguments['--show-original-basis']:
         solution = make_solution_sk(solution)
 
-    print(TOTAL_SOLUTION_COUNT, get_length(solution), get_reduction_count(solution,facts), sum(catalan_prior(x) for x in list(solution.values())))
+    print(TOTAL_SOLUTION_COUNT, get_length(solution), get_reduction_count(solution,facts), sum(catalan_prior(x, basis) for x in list(solution.values())))
 
     #version where we use catalan prior
     # print TOTAL_SOLUTION_COUNT, sum(catalan_prior(v, basis) for v in solution.values()), sum(len(v) for v in solution.values()), get_reduction_count(solution, facts)

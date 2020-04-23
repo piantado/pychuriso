@@ -3,7 +3,8 @@
 Manipulation routines for programs (sequences of combinators)
 
 """
-from math import log, lgamma
+from math import log
+from misc import log_catalan_number
 
 class NoCloseException(Exception):
     """ Raised when a program subexpression does not close before the end of the string (for some reason)"""
@@ -68,16 +69,8 @@ def catalan_prior(x, basis):
     """ Choose a length from l ~ exponential(1) and then a tree from that length. Returns log probability """
     l = count_leaves(x)
 
-    def lfactorial(n):
-        return lgamma(n+1)
-
-    def comb(n, k):
-        return lfactorial(n) - lfactorial(k) - lfactorial(n-k)
-
     return -log(l) - log_catalan_number(l-1) - l * log(len(basis))
 
-def log_catalan_number(n):
-    return log(comb(2*n,n)) - log(n+1)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Parse partheses into ASK string

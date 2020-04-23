@@ -1,6 +1,6 @@
 
 import collections
-
+from math import log, lgamma
 
 def check_unique(partial, unique, s, v):
     """ check whether s can equal v under the current partial and unique """
@@ -30,5 +30,14 @@ def qq(x):
     return "\"%s\""%str(x)
 
 
+def lfactorial(n):
+    return lgamma(n+1)
+
+def lchoose(n, k):
+    return lfactorial(n) - lfactorial(k) - lfactorial(n-k)
+
+def log_catalan_number(n):
+    if n == 0: return 0
+    return lchoose(2*n,n) - log(n+1)
 
 
