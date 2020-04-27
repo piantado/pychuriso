@@ -1,5 +1,5 @@
 unique win lose draw
-unique rock papers scissors
+unique rock paper scissors
 
 # This is the version without a "play" operator
 win  = (rock scissors)

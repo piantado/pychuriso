@@ -13,7 +13,7 @@ combinator2program = {'S':'S',
                       'M':'M'}
 
 from programs import is_normal_form
-from reduction import reduce_combinator
+from reduction import reduce_combinator, ReductionException
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Enumeration of combinators
@@ -51,10 +51,16 @@ def combinators_at_depth_uncached(d, basis, normal=False):
                     # this is a mistake when we have sk combinators we can't toss
                     # out non-normal stuff here because it may become non-normal
                     # once we have complex SK combinators
-                    #if normal and not is_normal_form(s): continue
+
+
+                    # But note, here we MUST reduce combinators, or else uniqueness is
+                    # pretty weird since it doesn't require uniqueness of reduced forms.
+                    # When we do this with anything other than SK basis, we might get duplicates
+                    # but we can search more complex structures earlier, which is why its useful. 
+
+
                     try:
-                        reduce_combinator(s)
-                        yield s
+                        yield reduce_combinator(s)
                     except ReductionException as e:
                         pass
 
