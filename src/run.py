@@ -116,7 +116,7 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version="pychuriso 0.01")
 
     # Set the search basis (must happen before parsing or else it overwrites "add" keywords)
-    basis = arguments['--search-basis']
+    basis = list(arguments['--search-basis'])
 
     symbolTable, variables, uniques, facts, shows = {}, [], [], [], [] # initialize
     load_churiso_sourcefile(arguments['<input>'], symbolTable, uniques, facts, shows, basis) # modifies the arguments
