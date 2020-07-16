@@ -56,13 +56,21 @@ def combinators_at_depth_uncached(d, basis, normal=False):
                     # But note, here we MUST reduce combinators, or else uniqueness is
                     # pretty weird since it doesn't require uniqueness of reduced forms.
                     # When we do this with anything other than SK basis, we might get duplicates
-                    # but we can search more complex structures earlier, which is why its useful. 
+                    # but we can search more complex structures earlier, which is why its useful.
 
+                    # We CAN use normal when we only have SK, since we know that we won't skip
+                    # anything by being normla form
 
-                    try:
-                        yield reduce_combinator(s)
-                    except ReductionException as e:
-                        pass
+                    if normal:
+                        if is_normal_form(s):
+                            yield s
+                        else:
+                            continue
+                    else:
+                        try:
+                            yield reduce_combinator(s)
+                        except ReductionException as e:
+                            pass
 
 
 combinator_cache = dict()

@@ -2,14 +2,14 @@
 
 Options:
 Usage:
-    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--not-normal-form] [--condensed] [--show-original-basis] [--max-depth=<int>] [--max-find=<int>] [--no-order]
+    pychuriso.py <input> [-v | --trace] [--search-basis=<combinators>] [--normal-form] [--condensed] [--show-original-basis] [--max-depth=<int>] [--max-find=<int>] [--no-order]
 
     -t --trace                  Display the search incrementally (used for debugging).
     --search-basis=<combinators>  The search basis [default: ISK].
     --show-original-basis         Display and measure performance in the original basis, not SK basis
     --show-gs                     Show the auxiliary gs variables
     --condensed                   Give condensed output
-    --not-normal-form             Search does not require combinators to be normal form
+    --normal-form                 Search only ove rthose in normal form -- NOTE if you do this, setting the combinator basis may not help since some combinators will never/rarely yield normal form terms and thus will be pruned out.
     --max-depth=<int>             Bound the search (note the meaning of this differs by algortihm) [default: 20].
     --max-find=<int>              Exit if you find this many combinators [default: 1000].
     --no-order                    Do not re-order the constraints
@@ -25,7 +25,7 @@ from parsing import load_churiso_sourcefile
 from Facts import PartialEqualityFact
 from FactOrder import compute_complexity, order_facts
 from combinators import substitute, make_solution_sk, combinator2program
-from programs import catalan_prior
+from programs import catalan_prior, fromstring
 
 TOTAL_SOLUTION_COUNT = 0
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     # Now do the search
     print("# Using search basis ", basis)
-    for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=not arguments['--not-normal-form'], show=arguments['--trace']):
+    for solution in search(symbolTable, facts, uniques, int(arguments['--max-depth']), basis, normal=arguments['--normal-form'], show=arguments['--trace']):
         if arguments['--condensed']:
             condensed_display(arguments, symbolTable, solution, facts, shows)
         else:

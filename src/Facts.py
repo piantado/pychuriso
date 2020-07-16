@@ -42,10 +42,18 @@ class EqualityFact(Fact):
     def __str__(self):
         return "<%s = %s>" % (self.lhs, self.rhs)
 
-    def can_push(self, defined):
-        return isinstance(self.rhs, str) and \
-               self.rhs not in defined and \
+    def can_push_r2l(self, defined):
+        # Can we push the value of the rhs to the left
+        return isinstance(self.lhs, str) and self.lhs not in defined and \
+               set(flatten(self.rhs)).issubset(set(defined))
+
+    def can_push_l2r(self, defined):
+        # Can we push the value of the rhs to the left
+        return isinstance(self.rhs, str) and self.rhs not in defined and \
                set(flatten(self.lhs)).issubset(set(defined))
+
+    def can_push(self, defined):
+        return self.can_push_r2l(defined) or self.can_push_l2r(defined)
 
     def check(self, solution):
         try:

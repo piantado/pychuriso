@@ -23,9 +23,15 @@ def order_facts(start, facts):
         # next see if we can push any constraints
         lst = [f for f in facts if isinstance(f, EqualityFact) and f.can_push(defined)]  # anything we can push
         if len(lst) > 0:
-            ofacts.append(lst[0]) # only push the first, since that may permit verifying facts
-            defined.add(lst[0].rhs)
-            facts.remove(lst[0])
+
+            f = lst[0]
+            if(f.can_push_l2r(defined)):
+                defined.add(f.rhs)
+            else:
+                defined.add(f.lhs)
+            ofacts.append(f)  # only push the first, since that may permit verifying facts
+            facts.remove(f)
+
             continue
 
         # otherwise just pull the first fact (TODO: We can make this smart--pull facts that let us define more), pull facts that only need one f or x
